@@ -1,0 +1,44 @@
+[
+  {
+    "id": "cat_1",
+    "name": "Women Essentials",
+    "slug": "women-essentials",
+    "icon": "💄",
+    "description": "Cosmetics, hair care, hygiene, and jewellery for women"
+  },
+  {
+    "id": "cat_2",
+    "name": "Grocery & FMCG",
+    "slug": "grocery-fmcg",
+    "icon": "🛒",
+    "description": "Snacks, beverages, staples, and daily grocery items"
+  },
+  {
+    "id": "cat_3",
+    "name": "Household Essentials",
+    "slug": "household-essentials",
+    "icon": "🏠",
+    "description": "Cleaning supplies, containers, and home utilities"
+  },
+  {
+    "id": "cat_4",
+    "name": "Mobile & Digital Accessories",
+    "slug": "mobile-accessories",
+    "icon": "📱",
+    "description": "Chargers, earphones, cables, power banks, and more"
+  },
+  {
+    "id": "cat_5",
+    "name": "Service Hub",
+    "slug": "service-hub",
+    "icon": "🖨️",
+    "description": "Printing, government services, resume, and digital assistance"
+  },
+  {
+    "id": "cat_6",
+    "name": "Tailoring & Accessories",
+    "slug": "tailoring-accessories",
+    "icon": "🧵",
+    "description": "Threads, buttons, zips, and custom stitching services"
+  }
+]

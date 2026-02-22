@@ -1,0 +1,646 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Baloo+2:wght@700;800;900&display=swap');
+
+// ─── Variables ───────────────────────────────────────────────
+$primary:     #ea580c;
+$primary-lt:  #f97316;
+$primary-xlt: #ffedd5;
+$primary-bg:  #fff7ed;
+$dark:        #1c1917;
+$dark2:       #292524;
+$muted:       #78716c;
+$light-muted: #a8a29e;
+$white:       #ffffff;
+$bg:          #fafaf9;
+$border:      #e7e5e4;
+$green:       #16a34a;
+$green-bg:    #f0fdf4;
+$radius-sm:   8px;
+$radius-md:   14px;
+$radius-lg:   20px;
+$radius-pill: 50px;
+$shadow-sm:   0 2px 8px rgba(0,0,0,0.06);
+$shadow-md:   0 8px 24px rgba(0,0,0,0.10);
+$shadow-orange: 0 10px 28px rgba(234,88,12,0.20);
+$font-body:   'Nunito', 'Segoe UI', sans-serif;
+$font-display:'Baloo 2', cursive;
+$transition:  all 0.25s ease;
+$spring:      all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+
+// ─── Animations ──────────────────────────────────────────────
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+// ─── Base ────────────────────────────────────────────────────
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+.servicesPage {
+  font-family: $font-body;
+  background: $bg;
+  min-height: 100vh;
+  color: $dark;
+}
+
+// ─── Page Header ─────────────────────────────────────────────
+.srvPageHeader {
+  background: linear-gradient(135deg, $primary-bg 0%, $primary-xlt 50%, #fed7aa 100%);
+  padding: 48px 20px 42px;
+  border-bottom: 2px solid #fed7aa;
+}
+
+.srvPageHeaderInner {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.breadcrumb {
+  font-size: 0.72rem;
+  color: $muted;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.srvPageTitle {
+  font-family: $font-display;
+  font-size: clamp(1.9rem, 5vw, 2.8rem);
+  font-weight: 900;
+  color: $dark;
+  margin-bottom: 8px;
+}
+
+.srvPageSubtitle {
+  font-size: 0.92rem;
+  color: $muted;
+  margin-bottom: 28px;
+  line-height: 1.6;
+}
+
+.srvStats {
+  display: flex;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+
+.srvStatItem {
+  text-align: left;
+}
+
+.srvStatNum {
+  font-family: $font-display;
+  font-size: 2rem;
+  font-weight: 900;
+  color: $primary;
+  line-height: 1;
+}
+
+.srvStatLabel {
+  font-size: 0.72rem;
+  color: $muted;
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+// ─── How It Works ─────────────────────────────────────────────
+.howItWorks {
+  background: $white;
+  padding: 44px 20px;
+  border-bottom: 1px solid $border;
+}
+
+.howItWorksInner {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.howTitle {
+  font-family: $font-display;
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: $dark;
+  margin-bottom: 28px;
+  text-align: center;
+}
+
+.howSteps {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 28px;
+    left: 12%;
+    right: 12%;
+    height: 2px;
+    background: linear-gradient(90deg, $primary-xlt, $primary, $primary-xlt);
+    z-index: 0;
+  }
+}
+
+.howStep {
+  text-align: center;
+  position: relative;
+  z-index: 1;
+  animation: fadeSlideUp 0.4s ease both;
+
+  @for $i from 1 through 4 {
+    &:nth-child(#{$i}) { animation-delay: #{($i - 1) * 0.1}s; }
+  }
+}
+
+.howStepIcon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: $white;
+  border: 3px solid $primary-xlt;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  margin: 0 auto 10px;
+  box-shadow: $shadow-md;
+  transition: $spring;
+
+  .howStep:hover & {
+    border-color: $primary;
+    transform: scale(1.1);
+    box-shadow: $shadow-orange;
+  }
+}
+
+.howStepNum {
+  font-size: 0.6rem;
+  font-weight: 800;
+  color: $primary;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+}
+
+.howStepTitle {
+  font-weight: 800;
+  font-size: 0.88rem;
+  color: $dark;
+  margin-bottom: 4px;
+}
+
+.howStepDesc {
+  font-size: 0.72rem;
+  color: $muted;
+  line-height: 1.4;
+}
+
+// ─── Filter Bar ───────────────────────────────────────────────
+.srvFilterBar {
+  background: $white;
+  border-bottom: 1px solid $border;
+  padding: 14px 20px;
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  box-shadow: $shadow-sm;
+}
+
+.srvFilterBarInner {
+  max-width: 1000px;
+  margin: 0 auto;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.srvFilterBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border: 2px solid $border;
+  border-radius: $radius-pill;
+  background: $white;
+  font-size: 0.78rem;
+  font-weight: 700;
+  font-family: $font-body;
+  color: $dark;
+  cursor: pointer;
+  transition: $transition;
+  white-space: nowrap;
+
+  &:hover {
+    border-color: $primary;
+    color: $primary;
+    background: $primary-bg;
+  }
+}
+
+.srvFilterBtnActive {
+  background: $primary !important;
+  border-color: $primary !important;
+  color: $white !important;
+
+  .srvFilterCount {
+    background: rgba(255,255,255,0.25) !important;
+    color: $white !important;
+  }
+}
+
+.srvFilterCount {
+  background: $bg;
+  color: $muted;
+  font-size: 0.62rem;
+  font-weight: 800;
+  padding: 1px 6px;
+  border-radius: $radius-pill;
+  min-width: 20px;
+  text-align: center;
+}
+
+// ─── Services Grid Section ────────────────────────────────────
+.srvGrid {
+  padding: 28px 20px 60px;
+}
+
+.srvGridInner {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.srvResultInfo {
+  font-size: 0.82rem;
+  color: $muted;
+  margin-bottom: 18px;
+
+  strong {
+    color: $primary;
+    font-weight: 800;
+  }
+}
+
+.servicesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+  gap: 20px;
+}
+
+// ─── Service Card ─────────────────────────────────────────────
+.serviceCard {
+  background: $white;
+  border-radius: $radius-lg;
+  padding: 22px;
+  box-shadow: $shadow-sm;
+  border: 2px solid $border;
+  transition: $transition;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  animation: fadeSlideUp 0.4s ease;
+
+  &:hover {
+    border-color: #fed7aa;
+    box-shadow: $shadow-orange;
+    transform: translateY(-3px);
+  }
+}
+
+.serviceCardExpanded {
+  border-color: $primary !important;
+}
+
+// Card Top
+.scTop {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.scIconBox {
+  width: 52px;
+  height: 52px;
+  border-radius: $radius-md;
+  background: $primary-bg;
+  border: 2px solid #fed7aa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  flex-shrink: 0;
+  transition: $spring;
+
+  .serviceCard:hover & {
+    background: $primary;
+    border-color: $primary;
+    transform: scale(1.08);
+    filter: grayscale(1) brightness(10);
+  }
+}
+
+.scMeta {
+  flex: 1;
+  min-width: 0;
+}
+
+.scSubCat {
+  font-size: 0.6rem;
+  font-weight: 800;
+  color: $primary;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 3px;
+  background: $primary-bg;
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: $radius-pill;
+  border: 1px solid #fed7aa;
+}
+
+.scName {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: $dark;
+  line-height: 1.3;
+  margin-bottom: 5px;
+}
+
+.scRating {
+  color: #f59e0b;
+  font-size: 0.72rem;
+  letter-spacing: 0.5px;
+}
+
+.scRatingNum {
+  color: $muted;
+  font-size: 0.65rem;
+  margin-left: 4px;
+}
+
+// Price Row
+.scPriceRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  background: $primary-bg;
+  padding: 10px 14px;
+  border-radius: $radius-md;
+  border: 1px solid #fed7aa;
+}
+
+.scPrice {
+  font-family: $font-display;
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: $primary;
+  line-height: 1;
+}
+
+.scOnwards {
+  font-size: 0.8rem;
+  color: $muted;
+  font-weight: 700;
+}
+
+.scPriceType {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: $muted;
+  background: $white;
+  padding: 2px 8px;
+  border-radius: $radius-pill;
+  border: 1px solid $border;
+}
+
+.scDelivery {
+  margin-left: auto;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: $green;
+  background: $green-bg;
+  padding: 2px 8px;
+  border-radius: $radius-pill;
+  border: 1px solid #bbf7d0;
+}
+
+// Description
+.scDesc {
+  font-size: 0.8rem;
+  color: $muted;
+  line-height: 1.6;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+// Processing Time
+.scTime {
+  font-size: 0.75rem;
+  color: $dark;
+  font-weight: 600;
+  background: $bg;
+  padding: 8px 12px;
+  border-radius: $radius-sm;
+  border: 1px solid $border;
+
+  strong { color: $primary; }
+}
+
+// Documents Toggle
+.scDocsToggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 9px 12px;
+  border: 2px solid $border;
+  border-radius: $radius-sm;
+  background: $white;
+  font-size: 0.78rem;
+  font-weight: 700;
+  font-family: $font-body;
+  color: $dark;
+  cursor: pointer;
+  transition: $transition;
+
+  &:hover {
+    border-color: $primary;
+    color: $primary;
+    background: $primary-bg;
+  }
+}
+
+.scDocsArrow {
+  transition: transform 0.3s ease;
+  font-size: 0.65rem;
+  color: $muted;
+}
+
+.scDocsArrowOpen {
+  transform: rotate(180deg);
+  color: $primary;
+}
+
+// Documents List
+.scDocsList {
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: $radius-sm;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  animation: slideDown 0.25s ease;
+}
+
+.scDocItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 0.75rem;
+  color: #1e40af;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.scDocDot {
+  color: $green;
+  font-weight: 900;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+// Actions
+.scActions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-top: 2px;
+  flex-wrap: wrap;
+}
+
+.scWaBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: #25d366;
+  color: $white;
+  padding: 10px 18px;
+  border-radius: $radius-pill;
+  font-size: 0.82rem;
+  font-weight: 800;
+  font-family: $font-body;
+  text-decoration: none;
+  transition: $transition;
+  white-space: nowrap;
+
+  &:hover {
+    transform: scale(1.04);
+    box-shadow: 0 6px 20px rgba(37,211,102,0.4);
+  }
+}
+
+.scWalkIn {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: $muted;
+  background: $bg;
+  border: 1px solid $border;
+  padding: 8px 12px;
+  border-radius: $radius-pill;
+  white-space: nowrap;
+}
+
+// ─── Bottom CTA ───────────────────────────────────────────────
+.srvCta {
+  background: linear-gradient(135deg, $dark, $dark2);
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.srvCtaInner {
+  max-width: 560px;
+  margin: 0 auto;
+}
+
+.srvCtaEmoji {
+  font-size: 3rem;
+  margin-bottom: 14px;
+}
+
+.srvCtaTitle {
+  font-family: $font-display;
+  font-size: clamp(1.5rem, 4vw, 2.2rem);
+  font-weight: 900;
+  color: $white;
+  margin-bottom: 10px;
+}
+
+.srvCtaSubtitle {
+  color: $light-muted;
+  font-size: 0.88rem;
+  line-height: 1.7;
+  margin-bottom: 24px;
+}
+
+.srvCtaWaBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: #25d366;
+  color: $white;
+  padding: 14px 30px;
+  border-radius: $radius-pill;
+  font-weight: 800;
+  font-size: 0.92rem;
+  text-decoration: none;
+  font-family: $font-body;
+  box-shadow: 0 8px 24px rgba(37,211,102,0.35);
+  transition: $transition;
+
+  &:hover {
+    transform: scale(1.05);
+    box-shadow: 0 12px 32px rgba(37,211,102,0.5);
+  }
+}
+
+// ─── Responsive ──────────────────────────────────────────────
+@media (max-width: 700px) {
+  .howSteps {
+    grid-template-columns: repeat(2, 1fr);
+
+    &::before { display: none; }
+  }
+
+  .servicesGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .srvFilterBarInner {
+    gap: 6px;
+  }
+
+  .srvFilterBtn {
+    font-size: 0.72rem;
+    padding: 6px 10px;
+  }
+}
+
+@media (max-width: 420px) {
+  .howSteps {
+    grid-template-columns: 1fr;
+  }
+
+  .scActions {
+    flex-direction: column;
+    .scWaBtn { width: 100%; justify-content: center; }
+    .scWalkIn { width: 100%; text-align: center; }
+  }
+}

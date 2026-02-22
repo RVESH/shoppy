@@ -1,0 +1,811 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Baloo+2:wght@700;800;900&display=swap');
+
+// ─── Variables ───────────────────────────────────────────────
+$primary:     #ea580c;
+$primary-lt:  #f97316;
+$primary-xlt: #ffedd5;
+$primary-bg:  #fff7ed;
+$dark:        #1c1917;
+$muted:       #78716c;
+$white:       #ffffff;
+$bg:          #fafaf9;
+$border:      #e7e5e4;
+$green:       #16a34a;
+$green-bg:    #f0fdf4;
+$blue:        #2563eb;
+$blue-bg:     #eff6ff;
+$red:         #dc2626;
+$red-bg:      #fff1f2;
+$radius-sm:   8px;
+$radius-md:   14px;
+$radius-lg:   20px;
+$radius-pill: 50px;
+$shadow-sm:   0 2px 8px rgba(0,0,0,0.06);
+$shadow-md:   0 8px 24px rgba(0,0,0,0.10);
+$shadow-orange: 0 10px 28px rgba(234,88,12,0.22);
+$font-body:   'Nunito', 'Segoe UI', sans-serif;
+$font-display:'Baloo 2', cursive;
+$transition:  all 0.25s ease;
+$spring:      all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+
+// ─── Animations ──────────────────────────────────────────────
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes popIn {
+  0%   { transform: scale(0.9); opacity: 0; }
+  70%  { transform: scale(1.05); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes successPulse {
+  0%   { box-shadow: 0 0 0 0 rgba(22,163,74,0.4); }
+  70%  { box-shadow: 0 0 0 10px rgba(22,163,74,0); }
+  100% { box-shadow: 0 0 0 0 rgba(22,163,74,0); }
+}
+
+// ─── Base ────────────────────────────────────────────────────
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+.pdPage {
+  font-family: $font-body;
+  background: $bg;
+  min-height: 100vh;
+  color: $dark;
+  animation: fadeSlideUp 0.4s ease;
+}
+
+// ─── Not Found ────────────────────────────────────────────────
+.pdNotFound {
+  text-align: center;
+  padding: 100px 20px;
+  font-family: $font-body;
+
+  .pdNotFoundEmoji { font-size: 4rem; margin-bottom: 16px; }
+  h2 { font-family: $font-display; font-size: 1.8rem; font-weight: 900; margin-bottom: 8px; }
+  p  { color: $muted; }
+}
+
+// ─── Breadcrumb ───────────────────────────────────────────────
+.pdBreadcrumb {
+  background: $white;
+  border-bottom: 1px solid $border;
+  padding: 10px 20px;
+}
+
+.pdBreadcrumbInner {
+  max-width: 1100px;
+  margin: 0 auto;
+  font-size: 0.72rem;
+  color: $muted;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.pdBreadcrumbCat {
+  color: $primary;
+  font-weight: 700;
+}
+
+.pdBreadcrumbCurrent {
+  color: $dark;
+  font-weight: 700;
+}
+
+// ─── Main Section ─────────────────────────────────────────────
+.pdMain {
+  background: $white;
+  padding: 36px 20px;
+  border-bottom: 1px solid $border;
+}
+
+.pdMainInner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 48px;
+  align-items: start;
+}
+
+// ─── Image Section ────────────────────────────────────────────
+.pdImageSection {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  position: sticky;
+  top: 20px;
+}
+
+.pdImageBox {
+  background: linear-gradient(135deg, $primary-bg, $primary-xlt, #fed7aa);
+  border-radius: $radius-lg;
+  height: 340px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 8rem;
+  position: relative;
+  overflow: hidden;
+  border: 2px solid #fed7aa;
+  animation: popIn 0.5s ease;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 70% 30%, rgba(255,255,255,0.4), transparent 60%);
+  }
+}
+
+.pdImageBoxService {
+  background: linear-gradient(135deg, $blue-bg, #dbeafe, #bfdbfe) !important;
+  border-color: #bfdbfe !important;
+}
+
+.pdDiscountRibbon {
+  position: absolute;
+  top: 16px;
+  left: -8px;
+  background: linear-gradient(135deg, $primary, $primary-lt);
+  color: $white;
+  font-size: 0.75rem;
+  font-weight: 800;
+  padding: 5px 16px 5px 12px;
+  border-radius: 0 $radius-pill $radius-pill 0;
+  box-shadow: $shadow-md;
+  letter-spacing: 0.5px;
+}
+
+.pdServiceRibbon {
+  position: absolute;
+  top: 16px;
+  right: -8px;
+  background: $blue;
+  color: $white;
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 5px 12px 5px 16px;
+  border-radius: $radius-pill 0 0 $radius-pill;
+  letter-spacing: 1px;
+}
+
+.pdBadges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pdBadge {
+  background: $bg;
+  border: 1px solid $border;
+  color: $muted;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 5px 12px;
+  border-radius: $radius-pill;
+}
+
+.pdBadgeGreen {
+  background: $green-bg;
+  border-color: #bbf7d0;
+  color: $green;
+}
+
+.pdBadgeLow {
+  background: $red-bg;
+  border-color: #fecdd3;
+  color: $red;
+}
+
+.pdBadgeBlue {
+  background: $blue-bg;
+  border-color: #bfdbfe;
+  color: $blue;
+}
+
+// ─── Info Section ─────────────────────────────────────────────
+.pdInfoSection {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.pdBrandRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.pdBrand {
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: $primary;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  background: $primary-bg;
+  padding: 3px 10px;
+  border-radius: $radius-pill;
+  border: 1px solid #fed7aa;
+}
+
+.pdSubCat {
+  font-size: 0.7rem;
+  color: $muted;
+  font-weight: 600;
+  background: $bg;
+  border: 1px solid $border;
+  padding: 3px 10px;
+  border-radius: $radius-pill;
+}
+
+.pdTitle {
+  font-family: $font-display;
+  font-size: clamp(1.4rem, 3vw, 2rem);
+  font-weight: 900;
+  color: $dark;
+  line-height: 1.25;
+}
+
+.pdRatingRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.stars {
+  color: #f59e0b;
+  font-size: 1rem;
+  letter-spacing: 1px;
+}
+
+.starsCount {
+  color: $muted;
+  font-size: 0.78rem;
+  font-weight: 700;
+  margin-left: 6px;
+}
+
+// ─── Price Box ────────────────────────────────────────────────
+.pdPriceBox {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  background: $primary-bg;
+  padding: 14px 18px;
+  border-radius: $radius-md;
+  border: 1px solid #fed7aa;
+}
+
+.pdPrice {
+  font-family: $font-display;
+  font-size: 2rem;
+  font-weight: 900;
+  color: $primary;
+}
+
+.pdMrp {
+  font-size: 1rem;
+  color: #bbb;
+  text-decoration: line-through;
+  font-weight: 600;
+}
+
+.pdSaving {
+  background: #dcfce7;
+  color: $green;
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 3px 10px;
+  border-radius: $radius-pill;
+  border: 1px solid #bbf7d0;
+}
+
+.pdPriceType {
+  font-size: 0.72rem;
+  color: $blue;
+  font-weight: 700;
+  background: $blue-bg;
+  padding: 3px 10px;
+  border-radius: $radius-pill;
+  border: 1px solid #bfdbfe;
+}
+
+.pdDescription {
+  font-size: 0.88rem;
+  color: $muted;
+  line-height: 1.7;
+}
+
+// ─── Variants ─────────────────────────────────────────────────
+.pdVariants {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.pdVariantGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pdVariantLabel {
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: $dark;
+  text-transform: capitalize;
+}
+
+.pdVariantSelected {
+  color: $primary;
+  font-weight: 900;
+}
+
+.pdVariantOptions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pdVariantBtn {
+  padding: 6px 14px;
+  border: 2px solid $border;
+  border-radius: $radius-sm;
+  background: $white;
+  font-size: 0.78rem;
+  font-weight: 700;
+  font-family: $font-body;
+  color: $dark;
+  cursor: pointer;
+  transition: $transition;
+
+  &:hover {
+    border-color: $primary;
+    color: $primary;
+    background: $primary-bg;
+  }
+}
+
+.pdVariantBtnActive {
+  border-color: $primary !important;
+  background: $primary !important;
+  color: $white !important;
+}
+
+// ─── Documents Required ───────────────────────────────────────
+.pdDocsRequired {
+  background: $blue-bg;
+  border: 1px solid #bfdbfe;
+  border-radius: $radius-md;
+  padding: 14px 16px;
+}
+
+.pdDocsTitle {
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: $blue;
+  margin-bottom: 8px;
+}
+
+.pdDocsList {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+
+  li {
+    font-size: 0.78rem;
+    color: $dark;
+    font-weight: 600;
+    padding-left: 4px;
+
+    &::before {
+      content: "✓ ";
+      color: $green;
+      font-weight: 800;
+    }
+  }
+}
+
+// ─── Quantity ─────────────────────────────────────────────────
+.pdQtyRow {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.pdQtyLabel {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: $dark;
+}
+
+.pdQtyControl {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  border: 2px solid $border;
+  border-radius: $radius-sm;
+  overflow: hidden;
+}
+
+.pdQtyBtn {
+  width: 36px;
+  height: 36px;
+  background: $bg;
+  border: none;
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: $dark;
+  cursor: pointer;
+  transition: $transition;
+
+  &:hover {
+    background: $primary-bg;
+    color: $primary;
+  }
+}
+
+.pdQtyNum {
+  width: 44px;
+  text-align: center;
+  font-weight: 800;
+  font-size: 0.95rem;
+  border-left: 2px solid $border;
+  border-right: 2px solid $border;
+  padding: 0 4px;
+  line-height: 36px;
+}
+
+// ─── Action Buttons ───────────────────────────────────────────
+.pdActions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.pdCartBtn {
+  flex: 1;
+  min-width: 180px;
+  background: linear-gradient(135deg, $primary, $primary-lt);
+  color: $white;
+  border: none;
+  padding: 14px 20px;
+  border-radius: $radius-pill;
+  font-size: 0.92rem;
+  font-weight: 800;
+  font-family: $font-body;
+  cursor: pointer;
+  transition: $transition;
+  box-shadow: $shadow-orange;
+
+  &:hover { transform: scale(1.03); }
+}
+
+.pdCartBtnSuccess {
+  background: linear-gradient(135deg, $green, #22c55e) !important;
+  animation: successPulse 0.6s ease;
+}
+
+.pdWaBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #25d366;
+  color: $white;
+  padding: 14px 20px;
+  border-radius: $radius-pill;
+  font-size: 0.88rem;
+  font-weight: 800;
+  font-family: $font-body;
+  text-decoration: none;
+  transition: $transition;
+  white-space: nowrap;
+
+  &:hover {
+    transform: scale(1.03);
+    box-shadow: 0 8px 24px rgba(37,211,102,0.4);
+  }
+}
+
+.pdWishlistBtn {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 2px solid $border;
+  background: $white;
+  font-size: 1.3rem;
+  cursor: pointer;
+  transition: $spring;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover { transform: scale(1.15); border-color: #fca5a5; }
+}
+
+.pdWishlistBtnActive {
+  border-color: #fca5a5;
+  background: $red-bg;
+}
+
+// ─── Tags ─────────────────────────────────────────────────────
+.pdTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding-top: 4px;
+}
+
+.pdTag {
+  background: $bg;
+  color: $muted;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: $radius-pill;
+  border: 1px solid $border;
+  transition: $transition;
+  cursor: pointer;
+
+  &:hover {
+    background: $primary-bg;
+    color: $primary;
+    border-color: #fed7aa;
+  }
+}
+
+// ─── Tabs Section ─────────────────────────────────────────────
+.pdTabs {
+  padding: 32px 20px;
+  background: $bg;
+}
+
+.pdTabsInner {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.pdTabNav {
+  display: flex;
+  gap: 4px;
+  border-bottom: 2px solid $border;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.pdTabBtn {
+  padding: 10px 20px;
+  border: none;
+  background: none;
+  font-size: 0.82rem;
+  font-weight: 700;
+  font-family: $font-body;
+  color: $muted;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+  transition: $transition;
+
+  &:hover { color: $primary; }
+}
+
+.pdTabBtnActive {
+  color: $primary !important;
+  border-bottom-color: $primary !important;
+  font-weight: 800;
+}
+
+.pdTabContent {
+  background: $white;
+  border-radius: $radius-md;
+  padding: 24px;
+  border: 1px solid $border;
+  animation: fadeSlideUp 0.3s ease;
+}
+
+.pdTabPane {
+  p {
+    font-size: 0.88rem;
+    color: $muted;
+    line-height: 1.8;
+  }
+}
+
+// Details Table
+.pdDetailsTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+
+  tr {
+    border-bottom: 1px solid $border;
+
+    &:last-child { border-bottom: none; }
+  }
+
+  td {
+    padding: 10px 12px;
+
+    &:first-child {
+      font-weight: 800;
+      color: $dark;
+      background: $bg;
+      width: 40%;
+      text-transform: capitalize;
+    }
+
+    &:last-child {
+      color: $muted;
+      font-weight: 600;
+    }
+  }
+}
+
+// Tab Variants
+.pdTabVariantRow {
+  margin-bottom: 16px;
+
+  strong {
+    display: block;
+    font-size: 0.78rem;
+    color: $dark;
+    margin-bottom: 8px;
+    text-transform: capitalize;
+  }
+}
+
+.pdTabVariantList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.pdTabVariantChip {
+  background: $bg;
+  border: 1px solid $border;
+  color: $dark;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: $radius-pill;
+}
+
+// ─── Related Products ─────────────────────────────────────────
+.pdRelated {
+  padding: 32px 20px 60px;
+  background: $white;
+  border-top: 1px solid $border;
+}
+
+.pdRelatedInner {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.pdRelatedTitle {
+  font-family: $font-display;
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: $dark;
+  margin-bottom: 20px;
+}
+
+.relatedGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 14px;
+}
+
+.relatedCard {
+  background: $bg;
+  border-radius: $radius-md;
+  overflow: hidden;
+  border: 1px solid $border;
+  transition: $spring;
+  cursor: pointer;
+  position: relative;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: $shadow-md;
+    border-color: #fed7aa;
+    background: $white;
+  }
+}
+
+.relatedDiscount {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  background: $primary;
+  color: $white;
+  font-size: 0.55rem;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: $radius-pill;
+  z-index: 2;
+}
+
+.relatedImage {
+  background: linear-gradient(135deg, $primary-bg, $primary-xlt);
+  height: 110px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.8rem;
+}
+
+.relatedImageService {
+  background: linear-gradient(135deg, $blue-bg, #dbeafe) !important;
+}
+
+.relatedInfo {
+  padding: 8px 10px 12px;
+}
+
+.relatedBrand {
+  font-size: 0.55rem;
+  font-weight: 700;
+  color: $primary;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 2px;
+}
+
+.relatedName {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: $dark;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-bottom: 5px;
+}
+
+.relatedPrice {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: $primary;
+}
+
+// ─── Responsive ──────────────────────────────────────────────
+@media (max-width: 860px) {
+  .pdMainInner {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+
+  .pdImageSection {
+    position: static;
+  }
+
+  .pdImageBox {
+    height: 260px;
+    font-size: 6rem;
+  }
+}
+
+@media (max-width: 500px) {
+  .pdMain { padding: 24px 16px; }
+  .pdTabs { padding: 20px 16px; }
+
+  .pdActions {
+    flex-direction: column;
+
+    .pdCartBtn { width: 100%; }
+    .pdWaBtn   { width: 100%; justify-content: center; }
+    .pdWishlistBtn { align-self: flex-start; }
+  }
+
+  .relatedGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

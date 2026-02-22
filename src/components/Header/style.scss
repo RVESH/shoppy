@@ -1,0 +1,292 @@
+// src/styles/components/_Header.scss
+
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999;
+  height: 80px;
+  background: rgba(255, 255, 255, 0.97);
+  backdrop-filter: blur(25px);
+  border-bottom: 1px solid rgba(30, 58, 138, 0.12);
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
+  &.scrolled {
+    height: 70px;
+    background: rgba(255, 255, 255, 0.98);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  }
+
+  .header-container {
+    max-width: 1440px;
+    margin: 0 auto;
+    height: 100%;
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    gap: 3rem;
+  }
+}
+
+// Logo - Premium Gradient
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-decoration: none;
+  font-size: 1.875rem;
+  font-weight: 800;
+  z-index: 2;
+  
+  .logo-icon {
+    font-size: 2.5rem;
+    animation: logoFloat 3s ease-in-out infinite;
+  }
+  
+  .logo-text {
+    background: linear-gradient(135deg, #1E40AF 0%, #3B82F6 50%, #F59E0B 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+}
+
+// Desktop Navigation
+.nav-desktop {
+  display: flex;
+  gap: 3rem;
+  flex: 1;
+  max-width: 600px;
+}
+
+.nav-link {
+  position: relative;
+  padding: 0.75rem 0;
+  color: #64748B;
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-decoration: none;
+  letter-spacing: 0.025em;
+  transition: all 0.3s ease;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #F59E0B, #EF4444);
+    border-radius: 2px;
+    transition: all 0.3s ease;
+    transform: translateX(-50%);
+  }
+  
+  &:hover, &.active {
+    color: #1E40AF;
+    transform: translateY(-2px);
+    
+    &::after {
+      width: 80%;
+    }
+  }
+}
+
+// Search Box - Premium Glass Effect
+.search-box {
+  flex: 1;
+  max-width: 480px;
+  position: relative;
+  height: 48px;
+}
+
+.search-input {
+  width: 100%;
+  height: 100%;
+  padding: 0 3rem 0 1.5rem;
+  border: 2px solid rgba(226, 232, 240, 0.6);
+  border-radius: 50px;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  outline: none;
+  
+  &::placeholder {
+    color: #94A3B8;
+  }
+  
+  &:focus {
+    border-color: #1E40AF;
+    background: rgba(255, 255, 255, 1);
+    box-shadow: 0 0 0 4px rgba(30, 64, 175, 0.15);
+    transform: translateY(-1px);
+  }
+}
+
+.search-button {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(30, 64, 175, 0.1);
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  color: #1E40AF;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    background: #1E40AF;
+    color: white;
+    transform: translateY(-50%) scale(1.05);
+  }
+}
+
+// Header Actions
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.whatsapp-cta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.875rem 2rem;
+  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+  color: white;
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-decoration: none;
+  border-radius: 50px;
+  box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  
+  &:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 15px 35px rgba(16, 185, 129, 0.5);
+  }
+}
+
+// Mobile Toggle Button
+.mobile-toggle {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: none;
+  padding: 0.625rem;
+  cursor: pointer;
+  border-radius: 8px;
+  
+  span {
+    width: 24px;
+    height: 3px;
+    background: #1E40AF;
+    border-radius: 2px;
+    transition: all 0.3s ease;
+  }
+  
+  &.open span:nth-child(1) { 
+    transform: rotate(45deg) translate(5px, 5px); 
+  }
+  &.open span:nth-child(2) { 
+    opacity: 0; 
+  }
+  &.open span:nth-child(3) { 
+    transform: rotate(-45deg) translate(7px, -6px); 
+  }
+}
+
+// Mobile Menu
+.mobile-menu {
+  position: fixed;
+  top: 80px;
+  left: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(25px);
+  border-top: 1px solid rgba(226, 232, 240, 0.5);
+  padding: 2rem 2.5rem;
+  transform: translateY(-100%);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  
+  &.open {
+    transform: translateY(0);
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+.mobile-link {
+  display: block;
+  padding: 1.25rem 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1E40AF;
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    padding-left: 1.5rem;
+    border-color: #F59E0B;
+  }
+}
+
+.mobile-whatsapp {
+  display: block;
+  margin-top: 2rem;
+  padding: 1.5rem 2rem;
+  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+  color: white;
+  text-align: center;
+  font-weight: 700;
+  font-size: 1.125rem;
+  border-radius: 16px;
+  text-decoration: none;
+  box-shadow: 0 12px 30px rgba(16, 185, 129, 0.4);
+  
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 20px 40px rgba(16, 185, 129, 0.5);
+  }
+}
+
+// Animations
+@keyframes logoFloat {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
+// Responsive Design
+@media (max-width: 1200px) {
+  .header-container { gap: 2rem; }
+  .nav-desktop { gap: 2rem; }
+}
+
+@media (max-width: 1024px) {
+  .nav-desktop,
+  .search-box { display: none; }
+  .mobile-toggle { display: flex; }
+  .header-container { justify-content: space-between; }
+}
+
+@media (max-width: 640px) {
+  .header-container { padding: 0 1.25rem; }
+  .whatsapp-cta { 
+    padding: 0.75rem 1.5rem; 
+    font-size: 0.9rem; 
+  }
+}
+
+// App.scss mein import karna mat bhoolna:
+// @import 'components/_Header';

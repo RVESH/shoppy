@@ -1,0 +1,316 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Baloo+2:wght@700;800;900&display=swap');
+
+// ─── Variables ───────────────────────────────────────────────
+$primary:     #ea580c;
+$primary-lt:  #f97316;
+$primary-xlt: #ffedd5;
+$primary-bg:  #fff7ed;
+$dark:        #1c1917;
+$muted:       #78716c;
+$white:       #ffffff;
+$bg:          #fafaf9;
+$border:      #e7e5e4;
+$green:       #16a34a;
+$green-bg:    #f0fdf4;
+$red:         #dc2626;
+$red-bg:      #fff1f2;
+$blue:        #2563eb;
+$blue-bg:     #eff6ff;
+$radius-sm:   8px;
+$radius-md:   14px;
+$radius-lg:   18px;
+$radius-pill: 50px;
+$shadow-sm:   0 2px 8px rgba(0,0,0,0.06);
+$shadow-hover:0 16px 40px rgba(234,88,12,0.18);
+$font-body:   'Nunito', 'Segoe UI', sans-serif;
+$font-display:'Baloo 2', cursive;
+$spring:      all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+$transition:  all 0.25s ease;
+
+// ─── Animations ──────────────────────────────────────────────
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+// ─── Product Card ─────────────────────────────────────────────
+.productCard {
+  background: $white;
+  border-radius: $radius-lg;
+  overflow: hidden;
+  box-shadow: $shadow-sm;
+  border: 2px solid $border;
+  transition: $spring;
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  font-family: $font-body;
+
+  &:hover {
+    transform: translateY(-7px);
+    box-shadow: $shadow-hover;
+    border-color: #fed7aa;
+
+    .pcImageBox {
+      background: linear-gradient(135deg, $primary-xlt, #fed7aa);
+    }
+
+    .pcImageBoxService {
+      background: linear-gradient(135deg, #dbeafe, #bfdbfe) !important;
+    }
+
+    .pcImageEmoji {
+      transform: scale(1.15);
+    }
+
+    .pcHoverCta {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+// ─── Badges ──────────────────────────────────────────────────
+.pcBadges {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  z-index: 3;
+}
+
+.pcDiscountBadge {
+  background: linear-gradient(135deg, $primary, $primary-lt);
+  color: $white;
+  font-size: 0.6rem;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: $radius-pill;
+  letter-spacing: 0.5px;
+  display: inline-block;
+}
+
+.pcServiceBadge {
+  background: $blue;
+  color: $white;
+  font-size: 0.55rem;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: $radius-pill;
+  letter-spacing: 1px;
+  display: inline-block;
+}
+
+.pcLowStockBadge {
+  background: $red-bg;
+  color: $red;
+  border: 1px solid #fecaca;
+  font-size: 0.55rem;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: $radius-pill;
+  display: inline-block;
+}
+
+// ─── Wishlist Button ──────────────────────────────────────────
+.pcWishlistBtn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 3;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: $white;
+  box-shadow: $shadow-sm;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: $spring;
+  opacity: 0;
+
+  .productCard:hover & {
+    opacity: 1;
+  }
+
+  &:hover {
+    transform: scale(1.2);
+  }
+}
+
+.pcWishlistBtnActive {
+  opacity: 1 !important;
+  background: $red-bg;
+  border: 1px solid #fecaca;
+}
+
+// ─── Image Box ────────────────────────────────────────────────
+.pcImageBox {
+  background: linear-gradient(135deg, $primary-bg, $primary-xlt);
+  height: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: $transition;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 70% 25%, rgba(255,255,255,0.35), transparent 60%);
+  }
+}
+
+.pcImageBoxService {
+  background: linear-gradient(135deg, $blue-bg, #dbeafe) !important;
+}
+
+.pcImageEmoji {
+  font-size: 3.8rem;
+  transition: $spring;
+  position: relative;
+  z-index: 1;
+}
+
+// ─── Info ─────────────────────────────────────────────────────
+.pcInfo {
+  padding: 13px 14px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  flex: 1;
+}
+
+.pcBrandRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.pcBrand {
+  font-size: 0.58rem;
+  font-weight: 800;
+  color: $primary;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.pcSubCat {
+  font-size: 0.56rem;
+  color: #c4bfba;
+  font-weight: 600;
+  background: $bg;
+  border: 1px solid $border;
+  padding: 1px 6px;
+  border-radius: $radius-pill;
+}
+
+.pcName {
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: $dark;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+// Stars
+.pcStars {
+  color: #f59e0b;
+  font-size: 0.72rem;
+  letter-spacing: 0.5px;
+}
+
+.pcStarsNum {
+  color: #bbb;
+  font-size: 0.64rem;
+  margin-left: 3px;
+}
+
+// Pricing
+.pcPricing {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-wrap: wrap;
+  margin-top: 2px;
+}
+
+.pcPrice {
+  font-family: $font-display;
+  font-size: 1.05rem;
+  font-weight: 900;
+  color: $dark;
+}
+
+.pcMrp {
+  font-size: 0.72rem;
+  color: #bbb;
+  text-decoration: line-through;
+  font-weight: 600;
+}
+
+.pcOnwards {
+  font-size: 0.6rem;
+  color: $blue;
+  font-weight: 700;
+  background: $blue-bg;
+  padding: 1px 6px;
+  border-radius: $radius-pill;
+  border: 1px solid #bfdbfe;
+}
+
+// Footer row
+.pcFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 4px;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.pcStock {
+  font-size: 0.62rem;
+  font-weight: 700;
+}
+
+.pcStockIn  { color: $green; }
+.pcStockLow { color: $red; }
+
+.pcProcessing {
+  font-size: 0.6rem;
+  color: $muted;
+  font-weight: 600;
+}
+
+.pcDelivery {
+  font-size: 0.6rem;
+  color: $muted;
+  font-weight: 600;
+}
+
+// ─── Hover CTA ────────────────────────────────────────────────
+.pcHoverCta {
+  background: linear-gradient(135deg, $primary, $primary-lt);
+  color: $white;
+  text-align: center;
+  padding: 9px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: $transition;
+}
