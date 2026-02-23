@@ -1,5 +1,5 @@
-import { useState, useMemo } from "react";
-import { allProducts, categories } from "../../data";
+import { useState, useMemo,useEffect  } from "react";
+import { fetchProducts } from "../../api/api.js";
 import "./style.scss";
 
 // ─── Star Rating ─────────────────────────────────────────────
@@ -10,7 +10,14 @@ const Stars = ({ rating }) => (
     <span className="starsCount">({rating})</span>
   </span>
 );
-
+const categories = [
+  { id: 1, name: "Women Essentials",  slug: "women-essentials",         icon: "👗" },
+  { id: 2, name: "Mobile Accessories",slug: "mobile-accessories",        icon: "📱" },
+  { id: 3, name: "Grocery & FMCG",    slug: "grocery-fmcg",              icon: "🛒" },
+  { id: 4, name: "Services",          slug: "service-hub",               icon: "🛠️" },
+  { id: 5, name: "Household",         slug: "household-essentials",      icon: "🏠" },
+  { id: 6, name: "Tailoring",         slug: "tailoring-accessories",     icon: "🧵" },
+];
 // ─── Product Card ─────────────────────────────────────────────
 const ProductCard = ({ product }) => (
   <div className="productCard">
@@ -55,40 +62,49 @@ const ProductCard = ({ product }) => (
 
 // ─── Main Products Page ───────────────────────────────────────
 export default function Products() {
+  const [allProducts, setAllProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [activeCategory, setActiveCategory] = useState("all");
   const [searchQuery, setSearchQuery]       = useState("");
   const [sortBy, setSortBy]                 = useState("default");
   const [showServices, setShowServices]     = useState(true);
   const [showProducts, setShowProducts]     = useState(true);
 
+    useEffect(() => {
+    async function loadProducts() {
+      try {
+        setLoading(true);
+
+        const data = await fetchProducts({
+          category: activeCategory,
+          search: searchQuery,
+          sort: sortBy,
+        });
+
+        setAllProducts(data);
+      } catch (err) {
+        console.error(err);
+        setError("Products load nahi ho paaye");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadProducts();
+  }, [activeCategory, searchQuery, sortBy]);
   const filtered = useMemo(() => {
     let list = [...allProducts];
 
     if (!showServices) list = list.filter((p) => !p.isService);
     if (!showProducts) list = list.filter((p) => p.isService);
 
-    if (activeCategory !== "all")
-      list = list.filter((p) => p.category === activeCategory);
 
-    if (searchQuery.trim()) {
-      const q = searchQuery.toLowerCase();
-      list = list.filter(
-        (p) =>
-          p.name.toLowerCase().includes(q) ||
-          p.brand.toLowerCase().includes(q) ||
-          p.tags.some((t) => t.toLowerCase().includes(q)) ||
-          p.subCategory.toLowerCase().includes(q)
-      );
-    }
-
-    if (sortBy === "price-asc")  list.sort((a, b) => a.price - b.price);
-    if (sortBy === "price-desc") list.sort((a, b) => b.price - a.price);
-    if (sortBy === "rating")     list.sort((a, b) => b.rating - a.rating);
-    if (sortBy === "discount")   list.sort((a, b) => b.discountPercent - a.discountPercent);
-
+    
     return list;
-  }, [activeCategory, searchQuery, sortBy, showServices, showProducts]);
-
+  },  [allProducts, showServices, showProducts]);
+    if (loading) return <div>Loading...</div>;
+    if (error) return <div>{error}</div>;
   return (
     <div className="productsPage">
 

@@ -1,14 +1,6 @@
 import { useState, useEffect } from "react";
-import { allProducts, categories } from "../../data";
+import { fetchProducts, fetchCategories } from "../../api/api.js";
 import styles from "./index.module.scss";
-
-// ─── Utility ────────────────────────────────────────────────
-const featuredProducts = allProducts
-  .filter((p) => !p.isService)
-  .sort((a, b) => b.rating - a.rating)
-  .slice(0, 8);
-
-const topServices = allProducts.filter((p) => p.isService).slice(0, 4);
 
 // ─── Star Rating ─────────────────────────────────────────────
 const Stars = ({ rating }) => (
@@ -84,9 +76,40 @@ const WaSvg = ({ size = 22 }) => (
 export default function Home() {
   const [heroVisible, setHeroVisible] = useState(false);
 
+  // ✅ State mein rakho — bahar nahi!
+  const [allProducts, setAllProducts]   = useState([]);
+  const [categories, setCategories]     = useState([]);
+  const [loading, setLoading]           = useState(true);
+
+  // ✅ API se fetch karo
   useEffect(() => {
-    setTimeout(() => setHeroVisible(true), 100);
+    async function loadData() {
+      try {
+        const [prods, cats] = await Promise.all([
+          fetchProducts(),
+          fetchCategories(),
+        ]);
+        setAllProducts(prods);
+        setCategories(cats);
+      } catch (err) {
+        console.error("Data load error:", err);
+      } finally {
+        setLoading(false);
+        setTimeout(() => setHeroVisible(true), 100);
+      }
+    }
+    loadData();
   }, []);
+
+  // ✅ State se compute karo — bahar nahi!
+  const featuredProducts = allProducts
+    .filter((p) => !p.isService)
+    .sort((a, b) => b.rating - a.rating)
+    .slice(0, 8);
+
+  const topServices = allProducts
+    .filter((p) => p.isService)
+    .slice(0, 4);
 
   return (
     <div className={styles.page}>
@@ -186,11 +209,15 @@ export default function Home() {
             title="Kya Dhundh Rahe Ho? 🔍"
             sub="Apni zaroorat ke hisaab se category chuniye"
           />
-          <div className={styles.categoryGrid}>
-            {categories.map((cat, i) => (
-              <CategoryCard key={cat.id} cat={cat} index={i} />
-            ))}
-          </div>
+          {loading ? (
+            <div className={styles.loadingRow}>Loading categories...</div>
+          ) : (
+            <div className={styles.categoryGrid}>
+              {categories.map((cat, i) => (
+                <CategoryCard key={cat.id} cat={cat} index={i} />
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
@@ -202,11 +229,15 @@ export default function Home() {
             title="Top Picks Tumhare Liye ⭐"
             sub="Sabse zyada pasand kiye gaye products"
           />
-          <div className={styles.productGrid}>
-            {featuredProducts.map((p) => (
-              <ProductCard key={p.id} product={p} />
-            ))}
-          </div>
+          {loading ? (
+            <div className={styles.loadingRow}>Loading products...</div>
+          ) : (
+            <div className={styles.productGrid}>
+              {featuredProducts.map((p) => (
+                <ProductCard key={p.id} product={p} />
+              ))}
+            </div>
+          )}
           <div className={styles.centerBtn}>
             <button className={styles.btnOutlineDark}>Sab Products Dekho →</button>
           </div>
@@ -221,11 +252,15 @@ export default function Home() {
             title="Digital Seva Hub 🖨️"
             sub="PAN card se resume tak — sab kuch ek hi jagah"
           />
-          <div className={styles.serviceGrid}>
-            {topServices.map((s) => (
-              <ServiceCard key={s.id} service={s} />
-            ))}
-          </div>
+          {loading ? (
+            <div className={styles.loadingRow}>Loading services...</div>
+          ) : (
+            <div className={styles.serviceGrid}>
+              {topServices.map((s) => (
+                <ServiceCard key={s.id} service={s} />
+              ))}
+            </div>
+          )}
           <div className={styles.centerBtn}>
             <button className={styles.btnPrimary}>Sab Services Dekho →</button>
           </div>

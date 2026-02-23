@@ -1,8 +1,16 @@
-import { useState } from "react";
-import { allProducts, categories } from "../../data";
+import { useState, useEffect } from "react";
+import { fetchProducts, fetchCategories } from "../../api/api.js";
 import "./style.scss";
 
-// ─── Product Mini Card ────────────────────────────────────────
+const colorMap = {
+  "women-essentials":      { bg: "#fff7ed", accent: "#ea580c", light: "#ffedd5", badge: "#fed7aa" },
+  "grocery-fmcg":          { bg: "#f0fdf4", accent: "#16a34a", light: "#dcfce7", badge: "#bbf7d0" },
+  "household-essentials":  { bg: "#eff6ff", accent: "#2563eb", light: "#dbeafe", badge: "#bfdbfe" },
+  "mobile-accessories":    { bg: "#fdf4ff", accent: "#9333ea", light: "#f3e8ff", badge: "#e9d5ff" },
+  "service-hub":           { bg: "#fff1f2", accent: "#e11d48", light: "#ffe4e6", badge: "#fecdd3" },
+  "tailoring-accessories": { bg: "#f0fdfa", accent: "#0d9488", light: "#ccfbf1", badge: "#99f6e4" },
+};
+
 const MiniCard = ({ product }) => (
   <div className="miniCard">
     {product.discountPercent > 0 && (
@@ -24,24 +32,12 @@ const MiniCard = ({ product }) => (
   </div>
 );
 
-// ─── Category Section ─────────────────────────────────────────
-const colorMap = {
-  "women-essentials":   { bg: "#fff7ed", accent: "#ea580c", light: "#ffedd5", badge: "#fed7aa" },
-  "grocery-fmcg":       { bg: "#f0fdf4", accent: "#16a34a", light: "#dcfce7", badge: "#bbf7d0" },
-  "household-essentials":{ bg: "#eff6ff", accent: "#2563eb", light: "#dbeafe", badge: "#bfdbfe" },
-  "mobile-accessories": { bg: "#fdf4ff", accent: "#9333ea", light: "#f3e8ff", badge: "#e9d5ff" },
-  "service-hub":        { bg: "#fff1f2", accent: "#e11d48", light: "#ffe4e6", badge: "#fecdd3" },
-  "tailoring-accessories":{ bg: "#f0fdfa", accent: "#0d9488", light: "#ccfbf1", badge: "#99f6e4" },
-};
-
 const CategorySection = ({ cat, products, isActive, onToggle }) => {
   const colors = colorMap[cat.slug] || colorMap["women-essentials"];
   const subCats = [...new Set(products.map((p) => p.subCategory))];
 
   return (
     <div className="catSection" style={{ "--accent": colors.accent, "--bg": colors.bg, "--light": colors.light, "--badge": colors.badge }}>
-
-      {/* Category Header */}
       <div className="catSectionHeader" onClick={onToggle}>
         <div className="catSectionLeft">
           <div className="catSectionIcon">{cat.icon}</div>
@@ -64,7 +60,6 @@ const CategorySection = ({ cat, products, isActive, onToggle }) => {
         </div>
       </div>
 
-      {/* Products Grid - shown when expanded */}
       {isActive && (
         <div className="catSectionBody">
           {subCats.map((sub) => {
@@ -86,26 +81,42 @@ const CategorySection = ({ cat, products, isActive, onToggle }) => {
           })}
         </div>
       )}
-
     </div>
   );
 };
 
-// ─── Main Categories Page ─────────────────────────────────────
 export default function Categories() {
-  const [openCats, setOpenCats] = useState(
-    Object.fromEntries(categories.map((c) => [c.slug, true]))
-  );
-  const [search, setSearch] = useState("");
+  // ✅ CHANGE 1: data/index.js import hataya — ab API se aayega
+  const [allProducts, setAllProducts] = useState([]);
+  const [categories, setCategories]   = useState([]);
+  const [loading, setLoading]         = useState(true);
+  const [openCats, setOpenCats]       = useState({});
+  const [search, setSearch]           = useState("");
 
-  const toggleCat = (slug) => {
-    setOpenCats((prev) => ({ ...prev, [slug]: !prev[slug] }));
-  };
+  // ✅ CHANGE 2: useEffect add kiya — PHP API se data fetch karo
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const [prods, cats] = await Promise.all([
+          fetchProducts(),
+          fetchCategories(),
+        ]);
+        setAllProducts(prods);
+        setCategories(cats);
+        setOpenCats(Object.fromEntries(cats.map((c) => [c.slug, true])));
+      } catch (err) {
+        console.error("Load error:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadData();
+  }, []);
 
-  const expandAll  = () => setOpenCats(Object.fromEntries(categories.map((c) => [c.slug, true])));
-  const collapseAll= () => setOpenCats(Object.fromEntries(categories.map((c) => [c.slug, false])));
+  const toggleCat   = (slug) => setOpenCats((prev) => ({ ...prev, [slug]: !prev[slug] }));
+  const expandAll   = () => setOpenCats(Object.fromEntries(categories.map((c) => [c.slug, true])));
+  const collapseAll = () => setOpenCats(Object.fromEntries(categories.map((c) => [c.slug, false])));
 
-  // Filter products per category based on search
   const getProducts = (slug) => {
     let list = allProducts.filter((p) => p.category === slug);
     if (search.trim()) {
@@ -126,7 +137,6 @@ export default function Categories() {
   return (
     <div className="categoriesPage">
 
-      {/* ── PAGE HEADER ──────────────────────────────── */}
       <div className="catPageHeader">
         <div className="catPageHeaderInner">
           <div className="breadcrumb">🏠 Home &rsaquo; Categories</div>
@@ -134,8 +144,6 @@ export default function Categories() {
           <p className="catPageSubtitle">
             {categories.length} categories • {allProducts.length} total items
           </p>
-
-          {/* Search */}
           <div className="catSearchWrap">
             <span className="catSearchIcon">🔍</span>
             <input
@@ -155,7 +163,6 @@ export default function Categories() {
         </div>
       </div>
 
-      {/* ── QUICK JUMP PILLS ─────────────────────────── */}
       <div className="quickJump">
         <div className="quickJumpInner">
           <span className="quickJumpLabel">Jump to:</span>
@@ -167,7 +174,6 @@ export default function Categories() {
         </div>
       </div>
 
-      {/* ── EXPAND / COLLAPSE ALL ────────────────────── */}
       <div className="catControls">
         <div className="catControlsInner">
           <span className="catControlsInfo">
@@ -180,32 +186,40 @@ export default function Categories() {
         </div>
       </div>
 
-      {/* ── CATEGORIES LIST ──────────────────────────── */}
+      {/* ✅ CHANGE 3: Loading state add kiya */}
       <div className="catList">
-        {categories.map((cat) => {
-          const products = getProducts(cat.slug);
-          if (products.length === 0 && search) return null;
-          return (
-            <div key={cat.id} id={cat.slug}>
-              <CategorySection
-                cat={cat}
-                products={products}
-                isActive={openCats[cat.slug]}
-                onToggle={() => toggleCat(cat.slug)}
-              />
-            </div>
-          );
-        })}
-
-        {totalVisible === 0 && search && (
+        {loading ? (
           <div className="catEmptyState">
-            <div className="catEmptyEmoji">🔍</div>
-            <h3>Koi item nahi mila!</h3>
-            <p>"{search}" ke liye kuch nahi mila</p>
-            <button className="catResetBtn" onClick={() => setSearch("")}>
-              Search Clear Karo
-            </button>
+            <div className="catEmptyEmoji">⏳</div>
+            <h3>Load ho raha hai...</h3>
           </div>
+        ) : (
+          <>
+            {categories.map((cat) => {
+              const products = getProducts(cat.slug);
+              if (products.length === 0 && search) return null;
+              return (
+                <div key={cat.id} id={cat.slug}>
+                  <CategorySection
+                    cat={cat}
+                    products={products}
+                    isActive={openCats[cat.slug]}
+                    onToggle={() => toggleCat(cat.slug)}
+                  />
+                </div>
+              );
+            })}
+            {totalVisible === 0 && search && (
+              <div className="catEmptyState">
+                <div className="catEmptyEmoji">🔍</div>
+                <h3>Koi item nahi mila!</h3>
+                <p>"{search}" ke liye kuch nahi mila</p>
+                <button className="catResetBtn" onClick={() => setSearch("")}>
+                  Search Clear Karo
+                </button>
+              </div>
+            )}
+          </>
         )}
       </div>
 
