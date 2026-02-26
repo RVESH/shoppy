@@ -1,7 +1,8 @@
 // ─── API Base URL ─────────────────────────────────────────────
 // Development mein apna localhost daalo
 // Production mein apna PHP server ka URL daalo
-const BASE_URL = "https://corsproxy.io/?https://shoppy.page.gd/shoppy_backend/api";// ─── Sab Products Fetch ───────────────────────────────────────
+const BASE_URL = "https://shoppy.page.gd/shoppy_backend/api";
+// ─── Sab Products Fetch ───────────────────────────────────────
 export async function fetchProducts({ category, search, sort } = {}) {
   const params = new URLSearchParams();
   if (category && category !== "all") params.append("category", category);

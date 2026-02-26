@@ -15,6 +15,8 @@ return (
         <Route path="/categories" element={<pages.Categories />} />
         <Route path="/product/:id" element={<pages.ProductDetail />} />
         <Route path="/services" element={<pages.Services />} />
+        <Route path="/contact" element={<pages.Contact />} />
+        <Route path="admin" element={<pages.Admin />} />
     </Routes>
     <Footer />
     </HashRouter>

@@ -1,0 +1,880 @@
+// ============================================================
+// SHoppy Admin Panel — style.scss
+// ============================================================
+
+// Variables
+$primary:       #ea580c;
+$primary-light: #f97316;
+$primary-xlight:#ffedd5;
+$dark:          #1c1917;
+$muted:         #78716c;
+$border:        #e7e5e4;
+$bg:            #fafaf9;
+$white:         #ffffff;
+$green:         #16a34a;
+$green-light:   #dcfce7;
+$blue:          #2563eb;
+$red:           #dc2626;
+$red-light:     #fee2e2;
+$amber:         #f59e0b;
+$amber-light:   #fef3c7;
+$sidebar-bg:    #1c1917;
+$sidebar-w:     240px;
+
+$font-body:    'Nunito', sans-serif;
+$font-display: 'Baloo 2', cursive;
+
+$radius-sm:  8px;
+$radius-md:  12px;
+$radius-lg:  16px;
+$radius-xl:  20px;
+$radius-pill:50px;
+
+$spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+$ease:   cubic-bezier(0.4, 0, 0.2, 1);
+
+// ============================================================
+// RESET & BASE
+// ============================================================
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+.admin-app {
+  font-family: $font-body;
+  background: $bg;
+  min-height: 100vh;
+  color: $dark;
+  display: flex;
+  margin-top: 80px;
+}
+
+// ============================================================
+// SIDEBAR
+// ============================================================
+.admin-sidebar {
+  width: $sidebar-w;
+  background: $sidebar-bg;
+  min-height: 100vh;
+  position: fixed;
+  top: 70px;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+  box-shadow: 4px 0 20px rgba(0,0,0,0.15);
+
+  &__logo {
+    padding: 28px 24px 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+
+  &__logo-text {
+    display: block;
+    font-family: $font-display;
+    font-size: 26px;
+    font-weight: 900;
+    color: $primary-light;
+    letter-spacing: -0.5px;
+  }
+
+  &__logo-sub {
+    font-size: 11px;
+    color: $muted;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+  }
+
+  &__nav {
+    padding: 16px 12px;
+    flex: 1;
+  }
+
+  &__footer {
+    padding: 16px 20px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+  }
+}
+
+// ============================================================
+// NAV ITEMS
+// ============================================================
+.admin-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 14px;
+  border-radius: $radius-md;
+  cursor: pointer;
+  margin-bottom: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #a8a29e;
+  border-left: 3px solid transparent;
+  transition: all 0.2s $ease;
+  user-select: none;
+  margin-top: 60px;;
+  &:hover {
+    background: rgba(255,255,255,0.06);
+    color: $white;
+  }
+
+  &--active {
+    font-weight: 700;
+    color: $white;
+    background: rgba(234, 88, 12, 0.2);
+    border-left-color: $primary;
+  }
+
+  &--add {
+    margin-top: 8px;
+    color: $primary-light;
+
+    &:hover {
+      background: rgba(234, 88, 12, 0.15);
+      color: $primary-light;
+    }
+  }
+}
+
+.admin-nav-icon { font-size: 18px; }
+
+// ============================================================
+// MAIN CONTENT
+// ============================================================
+.admin-main {
+  margin-left: $sidebar-w;
+  padding: 32px 36px;
+  min-height: 100vh;
+  flex: 1;
+
+  @media (max-width: 768px) {
+    margin-left: 0;
+    padding: 16px;
+  }
+}
+
+// ============================================================
+// TOP BAR
+// ============================================================
+.admin-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin:70px 0 28px 0;
+  gap: 16px;
+
+  &__actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+}
+
+.admin-page-title {
+  font-family: $font-display;
+  font-size: 26px;
+  font-weight: 900;
+  color: $dark;
+}
+
+.admin-page-sub {
+  font-size: 13px;
+  color: $muted;
+  margin-top: 2px;
+}
+
+// ============================================================
+// BUTTONS
+// ============================================================
+.admin-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 11px 22px;
+  border-radius: $radius-pill;
+  font-family: $font-body;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  border: none;
+  outline: none;
+  transition: all 0.2s $ease;
+  text-decoration: none;
+  white-space: nowrap;
+
+  &--primary {
+    background: linear-gradient(135deg, $primary, $primary-light);
+    color: $white;
+    box-shadow: 0 4px 14px rgba(234, 88, 12, 0.35);
+
+    &:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(234,88,12,0.45); }
+    &:active { transform: translateY(0); }
+    &:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+  }
+
+  &--danger {
+    background: linear-gradient(135deg, $red, #ef4444);
+    color: $white;
+    box-shadow: 0 4px 14px rgba(220,38,38,0.3);
+
+    &:hover { transform: translateY(-2px); }
+    &:active { transform: translateY(0); }
+  }
+
+  &--ghost {
+    background: transparent;
+    color: $primary;
+    border: 2px solid $primary;
+
+    &:hover { background: $primary-xlight; }
+  }
+
+  &--plain {
+    background: #f4f4f3;
+    color: $dark;
+    border: none;
+
+    &:hover { background: $border; }
+  }
+
+  &--success {
+    background: linear-gradient(135deg, $green, #22c55e);
+    color: $white;
+  }
+
+  &--sm {
+    padding: 8px 16px;
+    font-size: 13px;
+  }
+
+  &--full {
+    width: 100%;
+    justify-content: center;
+  }
+
+  &--logout {
+    background: transparent;
+    color: #a8a29e;
+    border: none;
+    width: 100%;
+    justify-content: flex-start;
+    font-size: 13px;
+    padding: 8px 6px;
+
+    &:hover { color: $white; }
+  }
+}
+
+// ============================================================
+// CARDS
+// ============================================================
+.admin-card {
+  background: $white;
+  border-radius: $radius-lg;
+  border: 1px solid $border;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  overflow: hidden;
+
+  &--padded {
+    padding: 24px 28px;
+  }
+}
+
+.admin-card-title {
+  font-family: $font-display;
+  font-size: 16px;
+  font-weight: 800;
+  margin-bottom: 18px;
+  color: $dark;
+}
+
+// ============================================================
+// STATS
+// ============================================================
+.admin-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+  margin-bottom: 28px;
+
+  @media (max-width: 1024px) { grid-template-columns: repeat(2, 1fr); }
+  @media (max-width: 600px)  { grid-template-columns: 1fr; }
+}
+
+.admin-stat-card {
+  background: $white;
+  border-radius: $radius-lg;
+  border: 1px solid $border;
+  padding: 20px 22px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+  transition: transform 0.2s $spring;
+
+  &:hover { transform: translateY(-4px); }
+
+  &--orange { border-left: 4px solid $primary; .admin-stat-num { color: $primary; } }
+  &--blue   { border-left: 4px solid $blue;    .admin-stat-num { color: $blue;    } }
+  &--amber  { border-left: 4px solid $amber;   .admin-stat-num { color: $amber;   } }
+  &--red    { border-left: 4px solid $red;     .admin-stat-num { color: $red;     } }
+}
+
+.admin-stat-num {
+  font-family: $font-display;
+  font-size: 36px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.admin-stat-label {
+  font-size: 13px;
+  color: $muted;
+  margin-top: 6px;
+  font-weight: 600;
+}
+
+// ============================================================
+// CATEGORY BREAKDOWN
+// ============================================================
+.admin-cat-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+
+  @media (max-width: 768px) { grid-template-columns: repeat(2, 1fr); }
+}
+
+.admin-cat-item {
+  background: $bg;
+  border-radius: $radius-md;
+  padding: 14px 18px;
+  border: 1px solid $border;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: all 0.2s $spring;
+
+  &:hover { transform: translateY(-3px); box-shadow: 0 4px 14px rgba(0,0,0,0.08); }
+}
+
+.admin-cat-icon { font-size: 28px; }
+
+.admin-cat-count {
+  font-family: $font-display;
+  font-size: 22px;
+  font-weight: 900;
+  color: $dark;
+  line-height: 1;
+}
+
+.admin-cat-name {
+  font-size: 12px;
+  color: $muted;
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+// ============================================================
+// FILTER BAR
+// ============================================================
+.admin-filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  border-bottom: 1px solid #f4f4f3;
+  flex-wrap: wrap;
+  background: $bg;
+}
+
+.admin-search-wrap {
+  position: relative;
+  flex: 1;
+  min-width: 200px;
+}
+
+.admin-search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 15px;
+  pointer-events: none;
+}
+
+.admin-search-input {
+  width: 100%;
+  padding: 9px 14px 9px 36px;
+  border-radius: $radius-pill;
+  border: 1.5px solid $border;
+  font-size: 14px;
+  font-family: $font-body;
+  outline: none;
+  background: $white;
+  transition: border-color 0.2s;
+
+  &:focus { border-color: $primary; }
+}
+
+.admin-result-count {
+  padding: 10px 20px;
+  font-size: 13px;
+  color: $muted;
+  font-weight: 600;
+  border-bottom: 1px solid #f4f4f3;
+  background: $white;
+}
+
+// ============================================================
+// TABLE
+// ============================================================
+.admin-table-wrap {
+  overflow-x: auto;
+
+  &::-webkit-scrollbar { height: 6px; }
+  &::-webkit-scrollbar-track { background: #f4f4f3; }
+  &::-webkit-scrollbar-thumb { background: #d4d0cc; border-radius: 3px; }
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  background: $white;
+}
+
+.admin-th {
+  padding: 14px 16px;
+  text-align: left;
+  font-weight: 700;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: $muted;
+  border-bottom: 2px solid #f4f4f3;
+  background: $bg;
+  white-space: nowrap;
+}
+
+.admin-td {
+  padding: 13px 16px;
+  border-bottom: 1px solid #f4f4f3;
+  vertical-align: middle;
+
+  &--id {
+    font-family: monospace;
+    font-size: 12px;
+    color: $muted;
+  }
+
+  &--price {
+    font-weight: 800;
+    color: $primary;
+  }
+
+  &--mrp {
+    color: $muted;
+    text-decoration: line-through;
+    font-size: 13px;
+  }
+
+  &--stock { font-weight: 700; }
+
+  &--empty {
+    text-align: center;
+    padding: 48px;
+    color: $muted;
+    font-size: 16px;
+  }
+}
+
+.admin-tr {
+  transition: background 0.15s;
+
+  &:hover { background: #fff7ed; }
+  &:last-child .admin-td { border-bottom: none; }
+}
+
+.admin-product-img {
+  width: 48px;
+  height: 48px;
+  border-radius: $radius-sm;
+  object-fit: cover;
+  border: 2px solid $border;
+  display: block;
+}
+
+.admin-product-name {
+  font-weight: 700;
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-product-brand {
+  font-size: 11px;
+  color: $muted;
+  margin-top: 2px;
+}
+
+.admin-cat-emoji {
+  font-size: 16px;
+  margin-right: 4px;
+}
+
+.admin-stock-num { font-weight: 700; }
+
+.admin-action-btns {
+  display: flex;
+  gap: 6px;
+}
+
+// ============================================================
+// BADGES
+// ============================================================
+.admin-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: $radius-pill;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+
+  &--green  { background: $green-light;  color: darken($green, 5%);  }
+  &--orange { background: $primary-xlight; color: darken($primary, 5%); }
+  &--red    { background: $red-light;    color: darken($red, 5%);    }
+  &--blue   { background: #dbeafe;       color: darken($blue, 5%);   }
+}
+
+// ============================================================
+// OVERLAY & MODALS
+// ============================================================
+.admin-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(4px);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: fadeIn 0.2s ease;
+}
+
+.admin-modal {
+  background: $white;
+  border-radius: $radius-xl;
+  width: 100%;
+  max-width: 700px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+  animation: slideUp 0.3s $spring;
+
+  &::-webkit-scrollbar { width: 6px; }
+  &::-webkit-scrollbar-track { background: #f4f4f3; }
+  &::-webkit-scrollbar-thumb { background: #d4d0cc; border-radius: 3px; }
+
+  &__header {
+    padding: 24px 28px 18px;
+    border-bottom: 1px solid #f4f4f3;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    background: $white;
+    z-index: 1;
+    border-radius: $radius-xl $radius-xl 0 0;
+  }
+
+  &__title {
+    font-family: $font-display;
+    font-size: 20px;
+    font-weight: 900;
+  }
+
+  &__sub {
+    font-size: 13px;
+    color: $muted;
+    margin-top: 2px;
+  }
+
+  &__close {
+    padding: 6px 12px !important;
+    font-size: 18px;
+  }
+
+  &__body {
+    padding: 24px 28px;
+  }
+
+  &__footer {
+    padding: 18px 28px;
+    border-top: 1px solid #f4f4f3;
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    position: sticky;
+    bottom: 0;
+    background: $white;
+    border-radius: 0 0 $radius-xl $radius-xl;
+  }
+}
+
+// ============================================================
+// CONFIRM MODAL
+// ============================================================
+.admin-confirm-card {
+  background: $white;
+  border-radius: $radius-xl;
+  padding: 40px 44px;
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+  animation: slideUp 0.3s $spring;
+}
+
+.admin-confirm-icon  { font-size: 52px; margin-bottom: 12px; }
+.admin-confirm-title { font-size: 20px; font-weight: 800; margin-bottom: 8px; font-family: $font-display; }
+.admin-confirm-msg   { color: $muted; font-size: 14px; margin-bottom: 28px; }
+.admin-confirm-btns  { display: flex; gap: 12px; justify-content: center; }
+
+// ============================================================
+// FORM ELEMENTS
+// ============================================================
+.admin-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px 20px;
+
+  @media (max-width: 540px) { grid-template-columns: 1fr; }
+}
+
+.admin-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.admin-mt-12 { margin-top: 12px; }
+
+.admin-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #44403c;
+}
+
+%input-base {
+  padding: 10px 14px;
+  border-radius: $radius-md;
+  border: 1.5px solid $border;
+  font-size: 14px;
+  font-family: $font-body;
+  outline: none;
+  color: $dark;
+  background: $bg;
+  width: 100%;
+  transition: border-color 0.2s, box-shadow 0.2s;
+
+  &:focus {
+    border-color: $primary;
+    box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.1);
+  }
+
+  &::placeholder { color: #a8a29e; }
+}
+
+.admin-input {
+  @extend %input-base;
+
+  &--center  { text-align: center; letter-spacing: 4px; font-size: 16px; }
+  &--disabled { opacity: 0.6; cursor: not-allowed; &:focus { border-color: $border; box-shadow: none; } }
+  &--readonly { background: $green-light; color: darken($green, 5%); font-weight: 700; cursor: default; &:focus { border-color: $border; box-shadow: none; } }
+}
+
+.admin-textarea {
+  @extend %input-base;
+  resize: vertical;
+  min-height: 90px;
+}
+
+.admin-select {
+  @extend %input-base;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2378716c' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 36px;
+
+  &--auto { width: auto; min-width: 150px; }
+}
+
+// ============================================================
+// IMAGE PREVIEW
+// ============================================================
+.admin-img-preview {
+  width: 100%;
+  height: 160px;
+  object-fit: contain;
+  border-radius: $radius-md;
+  border: 2px dashed $border;
+  padding: 8px;
+  background: $bg;
+  display: block;
+  margin-bottom: 10px;
+  transition: border-color 0.2s;
+
+  &:hover { border-color: $primary; }
+}
+
+// ============================================================
+// SECTION TITLE (inside modal)
+// ============================================================
+.admin-section-title {
+  font-size: 12px;
+  font-weight: 800;
+  color: $muted;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 14px 0 10px;
+  border-top: 1px solid #f4f4f3;
+  margin-top: 8px;
+
+  &:first-of-type {
+    border-top: none;
+    padding-top: 0;
+  }
+}
+
+// ============================================================
+// RADIO GROUP
+// ============================================================
+.admin-radio-group {
+  display: flex;
+  gap: 16px;
+  margin-top: 6px;
+}
+
+.admin-radio-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+
+  input[type="radio"] {
+    accent-color: $primary;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+  }
+}
+
+// ============================================================
+// LOGIN PAGE
+// ============================================================
+.admin-login-wrap {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #fff7ed 0%, $bg 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.admin-login-card {
+  background: $white;
+  border-radius: 24px;
+  padding: 52px 48px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.12);
+  width: 100%;
+  max-width: 420px;
+  text-align: center;
+  animation: slideUp 0.4s $spring;
+}
+
+.admin-login-icon  { font-size: 60px; margin-bottom: 14px; }
+.admin-login-title { font-family: $font-display; font-size: 32px; font-weight: 900; color: $dark; margin-bottom: 6px; }
+.admin-login-sub   { color: $muted; font-size: 14px; margin-bottom: 32px; }
+.admin-login-err   { color: $red; font-size: 13px; font-weight: 600; margin-bottom: 12px; }
+
+.admin-login-hint {
+  margin-top: 22px;
+  font-size: 12px;
+  color: #a8a29e;
+
+  code {
+    background: #f4f4f3;
+    padding: 2px 8px;
+    border-radius: $radius-sm;
+    font-size: 12px;
+  }
+}
+
+// ============================================================
+// TOAST
+// ============================================================
+.admin-toast {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  padding: 14px 22px;
+  border-radius: $radius-md;
+  font-weight: 700;
+  font-size: 14px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  animation: slideIn 0.3s $spring;
+  color: $white;
+  max-width: 320px;
+  font-family: $font-body;
+
+  &--success { background: $green; }
+  &--error   { background: $red; }
+  &--info    { background: $dark; }
+}
+
+// ============================================================
+// MISC
+// ============================================================
+.admin-loading {
+  text-align: center;
+  padding: 80px;
+  color: $muted;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.admin-recent-wrap {
+  margin-top: 28px;
+}
+
+// ============================================================
+// SCROLLBAR
+// ============================================================
+::-webkit-scrollbar       { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: #f4f4f3; }
+::-webkit-scrollbar-thumb { background: #d4d0cc; border-radius: 3px; }
+
+// ============================================================
+// ANIMATIONS
+// ============================================================
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+@keyframes slideIn {
+  from { transform: translateX(20px); opacity: 0; }
+  to   { transform: translateX(0);    opacity: 1; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
