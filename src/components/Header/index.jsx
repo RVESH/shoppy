@@ -20,7 +20,7 @@ const Header = () => {
         {/* Logo */}
         <Link to="/" className="logo">
           <span className="logo-icon">🛍️</span>
-          <span className="logo-text">Shoppy</span>
+          <span className="logo-text">SL Cart</span>
         </Link>
 
         {/* Desktop Navigation */}

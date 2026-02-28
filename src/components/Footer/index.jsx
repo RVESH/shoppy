@@ -52,7 +52,7 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="footer-bottom">
           <div className="copyright">
-            © 2026 Shoppy. Made in Patna with ❤️
+            © 2026 SL Cart. Made in Patna with ❤️
           </div>
           <div className="payment-methods">
             💳 Cards • 📱 UPI • 💰 Cash Payment

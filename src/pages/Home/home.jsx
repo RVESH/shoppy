@@ -130,7 +130,7 @@ export default function Home() {
             <h1 className={styles.heroTitle}>
               Apna{" "}
               <span className={styles.heroHighlight}>
-                SHoppy
+                SL Cart
                 <svg className={styles.underlineSvg} viewBox="0 0 200 12" fill="none">
                   <path d="M2 8 Q50 2 100 6 Q150 10 198 4" stroke="#f97316" strokeWidth="3" strokeLinecap="round" fill="none" />
                 </svg>

@@ -31,7 +31,7 @@ export default function Contact() {
     const text = encodeURIComponent(
       `Namaste! Main ${form.name} hun.\nPhone: ${form.phone}\n\n${form.message}`
     );
-    window.open(`https://wa.me/919999999999?text=${text}`, "_blank");
+    window.open(`https://wa.me/916206869543?text=${text}`, "_blank");
     setSubmitted(true);
   };
 
@@ -47,7 +47,7 @@ export default function Contact() {
       <div className="ctPageHeader">
         <div className="ctPageHeaderInner">
           <div className="breadcrumb">🏠 Home &rsaquo; Contact</div>
-          <h1 className="ctPageTitle">Humse Baat Karo 💬</h1>
+          <h1 className="ctPageTitle">Humse Baat Karein 💬</h1>
           <p className="ctPageSubtitle">
             Sawaal ho, order karna ho ya koi bhi kaam — hum yahan hain!
           </p>
@@ -62,7 +62,7 @@ export default function Contact() {
           {/* Store Info Card */}
           <div className="ctStoreCard">
             <div className="ctStoreEmoji">🏪</div>
-            <h2 className="ctStoreName">SHoppy</h2>
+            <h2 className="ctStoreName">SL Cart</h2>
             <p className="ctStoreTagline">Apna Local Store — Sab Kuch Ek Jagah!</p>
           </div>
 
@@ -74,7 +74,7 @@ export default function Contact() {
               <div className="ctDetailText">
                 <div className="ctDetailLabel">WhatsApp</div>
                 <div className="ctDetailValue">+91 99999 99999</div>
-                <div className="ctDetailHint">Turat reply milega!</div>
+                <div className="ctDetailHint">Turant reply payen!</div>
               </div>
               <div className="ctDetailArrow">→</div>
             </a>
@@ -92,8 +92,8 @@ export default function Contact() {
               <div className="ctDetailIcon">📍</div>
               <div className="ctDetailText">
                 <div className="ctDetailLabel">Address</div>
-                <div className="ctDetailValue">Apna Mohalla, Main Road</div>
-                <div className="ctDetailHint">Near Bus Stand, Aapka Sheher</div>
+                <div className="ctDetailValue">Middle School Gali, AmbedkarNagar </div>
+                <div className="ctDetailHint">sangatpar Bakhtiyarpur (Patna)</div>
               </div>
             </div>
 
@@ -101,8 +101,8 @@ export default function Contact() {
               <div className="ctDetailIcon">🕐</div>
               <div className="ctDetailText">
                 <div className="ctDetailLabel">Shop Timings</div>
-                <div className="ctDetailValue">9:00 AM – 8:00 PM</div>
-                <div className="ctDetailHint">Monday to Saturday</div>
+                <div className="ctDetailValue">6:00 AM – 8:00 PM</div>
+                <div className="ctDetailHint">Monday to Sunday</div>
               </div>
             </div>
 
@@ -110,7 +110,7 @@ export default function Contact() {
               <div className="ctDetailIcon">📧</div>
               <div className="ctDetailText">
                 <div className="ctDetailLabel">Email</div>
-                <div className="ctDetailValue">shoppy@gmail.com</div>
+                <div className="ctDetailValue">slcart26@gmail.com</div>
                 <div className="ctDetailHint">Reply within 24 hours</div>
               </div>
             </div>
@@ -144,9 +144,9 @@ export default function Contact() {
 
           {!submitted ? (
             <div className="ctFormCard">
-              <h2 className="ctFormTitle">Message Bhejo 📩</h2>
+              <h2 className="ctFormTitle">Message Dalein 📩</h2>
               <p className="ctFormSubtitle">
-                Form bharo — WhatsApp pe seedha message chala jaayega!
+                Form bhare — WhatsApp pe seedha message chala jaayega!
               </p>
 
               <div className="ctFormFields">
@@ -208,7 +208,7 @@ export default function Contact() {
                 className="ctSuccessReset"
                 onClick={() => { setSubmitted(false); setForm({ name: "", phone: "", message: "" }); }}
               >
-                Naya Message Bhejo
+                Naya Message Bheje
               </button>
             </div>
           )}
@@ -223,15 +223,16 @@ export default function Contact() {
                 rel="noreferrer"
                 className="ctMapLink"
               >
-                Google Maps pe Dekho →
+                Google Maps pe Dekhein →
               </a>
             </div>
             <div className="ctMapPlaceholder">
               <div className="ctMapPin">📍</div>
               <div className="ctMapText">
                 <strong>SHoppy</strong>
-                <span>Main Road, Near Bus Stand</span>
-                <span>Aapka Sheher, India</span>
+                <span>
+                  Middle school gali, ambedkarnagar</span>
+                <span>sangatpar bakhtiyarpur Patna, Bihar</span>
               </div>
             </div>
           </div>
@@ -243,11 +244,11 @@ export default function Contact() {
       <div className="ctWaStrip">
         <div className="ctWaStripInner">
           <div className="ctWaStripText">
-            <div className="ctWaStripTitle">Seedha WhatsApp Karo! ⚡</div>
+            <div className="ctWaStripTitle">Seedha WhatsApp Karein! ⚡</div>
             <div className="ctWaStripSub">Sabse fast tarika — turat reply milega</div>
           </div>
           <a
-            href="https://wa.me/919999999999"
+            href="https://wa.me/916206969543"
             target="_blank"
             rel="noreferrer"
             className="ctWaStripBtn"
@@ -260,7 +261,7 @@ export default function Contact() {
 
       {/* ── FLOATING WA BUTTON ───────────────────────── */}
       <a
-        href="https://wa.me/919999999999"
+        href="https://wa.me/916206969543"
         target="_blank"
         rel="noreferrer"
         className="floatingWa"
@@ -272,3 +273,12 @@ export default function Contact() {
     </div>
   );
 }
+
+
+
+
+
+
+
+
+
