@@ -22,14 +22,7 @@ export default function Admin() {
   const [confirm, setConfirm]       = useState(null);
   const [toast, setToast]           = useState(null);
 
-  // Session check
-  useEffect(() => {
-    checkSession().then(ok => {
-      setLoggedIn(ok);
-      setChecking(false);
-      if (ok) loadProducts();
-    });
-  }, [loadProducts]);
+
 
   const loadProducts = useCallback(async () => {
     setLoading(true);
@@ -43,6 +36,15 @@ export default function Admin() {
     setLoading(false);
   }, []);
 
+    // Session check
+  useEffect(() => {
+    checkSession().then(ok => {
+      setLoggedIn(ok);
+      setChecking(false);
+      if (ok) loadProducts();
+    });
+  }, [loadProducts]);
+  
   async function handleLogin(username, password) {
     await adminLogin(username, password);
     setLoggedIn(true);
