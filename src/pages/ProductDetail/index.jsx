@@ -33,7 +33,7 @@ export default function ProductDetail({ productId: propId }) {
   // In real app this comes from React Router: useParams()
   // For now use prop or fallback to first product
   const [currentId, setCurrentId] = useState(propId || "w_001");
-  const [selectedVariantKey, setSelectedVariantKey] = useState(null);
+  // const [selectedVariantKey, setSelectedVariantKey] = useState(null);
   const [selectedVariantVal, setSelectedVariantVal] = useState({});
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState("description");
