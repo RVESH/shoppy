@@ -29,7 +29,7 @@ export default function Admin() {
       setChecking(false);
       if (ok) loadProducts();
     });
-  }, []);
+  }, [loadProducts]);
 
   const loadProducts = useCallback(async () => {
     setLoading(true);
