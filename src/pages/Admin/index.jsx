@@ -43,8 +43,8 @@ export default function Admin() {
       setChecking(false);
       if (ok) loadProducts();
     });
-  }, [loadProducts]);
-  
+  }, []);
+
   async function handleLogin(username, password) {
     await adminLogin(username, password);
     setLoggedIn(true);
