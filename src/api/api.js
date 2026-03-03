@@ -2,9 +2,9 @@
 // SHoppy — api.js
 // ============================================================
 
-//const BASE_URL = "https://shoppy.page.gd/shoppy_backend/api";
+const BASE_URL = "https://shoppy.page.gd/shoppy_backend/api";
 //const BASE_URL = "/shoppy_backend/api"; // ← yeh karo
-const BASE_URL = "https://corsproxy.io/?https://shoppy.page.gd/shoppy_backend/api";
+// const BASE_URL = "https://corsproxy.io/?https://shoppy.page.gd/shoppy_backend/api";
 // ════════════════════════════════════════════════════════════
 // PUBLIC API — Products & Categories
 // ════════════════════════════════════════════════════════════
