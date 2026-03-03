@@ -56,7 +56,7 @@ export async function fetchCategories() {
 export async function adminLogin(username, password) {
   const res  = await fetch(`${BASE_URL}/admin_login.php`, {
     method:      "POST",
-    // credentials: "include",
+    // 
     headers:     { "Content-Type": "application/json" },
     body:        JSON.stringify({ username, password }),
   });
@@ -68,7 +68,7 @@ export async function adminLogin(username, password) {
 // ─── Session Check (page reload pe) ──────────────────────────
 export async function checkAdminSession() {
   const res  = await fetch(`${BASE_URL}/admin_login.php`, {
-    credentials: "include",
+    
   });
   const data = await res.json();
   return data.loggedIn === true;
@@ -78,14 +78,14 @@ export async function checkAdminSession() {
 export async function adminLogout() {
   await fetch(`${BASE_URL}/admin_logout.php`, {
     method:      "POST",
-    // credentials: "include",
+    // 
   });
 }
 
 // ─── Admin: Sab Products ──────────────────────────────────────
 export async function adminFetchProducts() {
   const res  = await fetch(`${BASE_URL}/admin.php`, {
-    credentials: "include",
+    
   });
   if (res.status === 401) throw new Error("UNAUTHORIZED");
   const data = await res.json();
@@ -97,7 +97,7 @@ export async function adminFetchProducts() {
 export async function addProduct(product) {
   const res  = await fetch(`${BASE_URL}/admin.php`, {
     method:      "POST",
-    // credentials: "include",
+    // 
     headers:     { "Content-Type": "application/json" },
     body:        JSON.stringify(product),
   });
@@ -111,7 +111,7 @@ export async function addProduct(product) {
 export async function updateProduct(product) {
   const res  = await fetch(`${BASE_URL}/admin.php`, {
     method:      "PUT",
-    // credentials: "include",
+    // 
     headers:     { "Content-Type": "application/json" },
     body:        JSON.stringify(product),
   });
@@ -125,7 +125,7 @@ export async function updateProduct(product) {
 export async function deleteProduct(id) {
   const res  = await fetch(`${BASE_URL}/admin.php?id=${id}`, {
     method:      "DELETE",
-    // credentials: "include",
+    // 
   });
   if (res.status === 401) throw new Error("UNAUTHORIZED");
   const data = await res.json();
