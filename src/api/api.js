@@ -1,76 +1,91 @@
-// ─── SHoppy api.js ───────────────────────────────────────────
-const BASE_URL = "https://shoppy.page.gd/shoppy_backend/api";
+// ============================================================
+// SHoppy — api.js
+// ============================================================
 
-// ════════════════════════════════════════════════
-// PUBLIC API
-// ════════════════════════════════════════════════
+//const BASE_URL = "https://shoppy.page.gd/shoppy_backend/api";
+//const BASE_URL = "/shoppy_backend/api"; // ← yeh karo
+const BASE_URL = "https://corsproxy.io/?https://shoppy.page.gd/shoppy_backend/api";
+// ════════════════════════════════════════════════════════════
+// PUBLIC API — Products & Categories
+// ════════════════════════════════════════════════════════════
 
+// ─── Sab Products Fetch ───────────────────────────────────────
 export async function fetchProducts({ category, search, sort } = {}) {
   const params = new URLSearchParams();
+
   if (category && category !== "all") params.append("category", category);
   if (search) params.append("search", search);
-  if (sort && sort !== "default") params.append("sort", sort);
+  if (sort) params.append("sort", sort);
+
   const query = params.toString();
-  const url = query ? `${BASE_URL}/products.php?${query}` : `${BASE_URL}/products.php`;
-  const res  = await fetch(url);
+  const url = query
+    ? `${BASE_URL}/products.php?${query}`
+    : `${BASE_URL}/products.php`;
+
+const res = await fetch(url);
+
   const data = await res.json();
   if (!data.success) throw new Error(data.message);
+
   return data.data;
 }
 
+// ─── Single Product ───────────────────────────────────────────
 export async function fetchProductById(id) {
-  const res  = await fetch(`${BASE_URL}/products.php?id=${id}`);
+  const res = await fetch(`${BASE_URL}/products.php?id=${id}`,);
+
   const data = await res.json();
   if (!data.success) throw new Error(data.message);
   return data.data;
 }
-
+// ─── Categories ───────────────────────────────────────────────
 export async function fetchCategories() {
-  const res  = await fetch(`${BASE_URL}/categories.php`);
+  const res = await fetch(`${BASE_URL}/categories.php`);
+
   const data = await res.json();
   if (!data.success) throw new Error(data.message);
+
   return data.data;
 }
+// ════════════════════════════════════════════════════════════
+// ADMIN API — Session based (key kabhi URL mein nahi)
+// credentials: "include" → session cookie automatically jaati hai
+// ════════════════════════════════════════════════════════════
 
-// ════════════════════════════════════════════════
-// ADMIN API — Token based (localStorage)
-// ════════════════════════════════════════════════
-
+// ─── Login ────────────────────────────────────────────────────
 export async function adminLogin(username, password) {
   const res  = await fetch(`${BASE_URL}/admin_login.php`, {
-    method:  "POST",
-    headers: { "Content-Type": "application/json" },
-    body:    JSON.stringify({ username, password }),
+    method:      "POST",
+    credentials: "include",
+    headers:     { "Content-Type": "application/json" },
+    body:        JSON.stringify({ username, password }),
   });
   const data = await res.json();
   if (!data.success) throw new Error(data.message);
-  if (data.token) localStorage.setItem("adminToken", data.token);
   return data;
 }
 
+// ─── Session Check (page reload pe) ──────────────────────────
 export async function checkAdminSession() {
-  try {
-    const token = localStorage.getItem("adminToken");
-    if (!token) return false;
-    const res  = await fetch(`${BASE_URL}/admin_login.php`, {
-      headers: { "X-Admin-Token": token },
-    });
-    const data = await res.json();
-    return data.loggedIn === true;
-  } catch {
-    return false;
-  }
+  const res  = await fetch(`${BASE_URL}/admin_login.php`, {
+    credentials: "include",
+  });
+  const data = await res.json();
+  return data.loggedIn === true;
 }
 
+// ─── Logout ───────────────────────────────────────────────────
 export async function adminLogout() {
-  localStorage.removeItem("adminToken");
-  await fetch(`${BASE_URL}/admin_logout.php`, { method: "POST" });
+  await fetch(`${BASE_URL}/admin_logout.php`, {
+    method:      "POST",
+    credentials: "include",
+  });
 }
 
+// ─── Admin: Sab Products ──────────────────────────────────────
 export async function adminFetchProducts() {
-  const token = localStorage.getItem("adminToken");
-  const res   = await fetch(`${BASE_URL}/admin.php`, {
-    headers: { "X-Admin-Token": token },
+  const res  = await fetch(`${BASE_URL}/admin.php`, {
+    credentials: "include",
   });
   if (res.status === 401) throw new Error("UNAUTHORIZED");
   const data = await res.json();
@@ -78,12 +93,13 @@ export async function adminFetchProducts() {
   return data.data;
 }
 
+// ─── Admin: Product Add ───────────────────────────────────────
 export async function addProduct(product) {
-  const token = localStorage.getItem("adminToken");
-  const res   = await fetch(`${BASE_URL}/admin.php`, {
-    method:  "POST",
-    headers: { "Content-Type": "application/json", "X-Admin-Token": token },
-    body:    JSON.stringify(product),
+  const res  = await fetch(`${BASE_URL}/admin.php`, {
+    method:      "POST",
+    credentials: "include",
+    headers:     { "Content-Type": "application/json" },
+    body:        JSON.stringify(product),
   });
   if (res.status === 401) throw new Error("UNAUTHORIZED");
   const data = await res.json();
@@ -91,12 +107,13 @@ export async function addProduct(product) {
   return data;
 }
 
+// ─── Admin: Product Update ────────────────────────────────────
 export async function updateProduct(product) {
-  const token = localStorage.getItem("adminToken");
-  const res   = await fetch(`${BASE_URL}/admin.php`, {
-    method:  "PUT",
-    headers: { "Content-Type": "application/json", "X-Admin-Token": token },
-    body:    JSON.stringify(product),
+  const res  = await fetch(`${BASE_URL}/admin.php`, {
+    method:      "PUT",
+    credentials: "include",
+    headers:     { "Content-Type": "application/json" },
+    body:        JSON.stringify(product),
   });
   if (res.status === 401) throw new Error("UNAUTHORIZED");
   const data = await res.json();
@@ -104,11 +121,11 @@ export async function updateProduct(product) {
   return data;
 }
 
+// ─── Admin: Product Delete ────────────────────────────────────
 export async function deleteProduct(id) {
-  const token = localStorage.getItem("adminToken");
-  const res   = await fetch(`${BASE_URL}/admin.php?id=${id}`, {
-    method:  "DELETE",
-    headers: { "X-Admin-Token": token },
+  const res  = await fetch(`${BASE_URL}/admin.php?id=${id}`, {
+    method:      "DELETE",
+    credentials: "include",
   });
   if (res.status === 401) throw new Error("UNAUTHORIZED");
   const data = await res.json();
