@@ -1,17 +1,16 @@
 .pm-overlay { position: fixed; 
-   margin-top: 30px;
+   margin-top: 55px;
    inset: 0;
    background: rgba(0,0,0,0.78); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 0px; }
 .pm-modal {
-  background: #1e293b; border: 1px solid #334155; border-radius: 20px;
-  width: 100%; max-width: 680px; max-height: 90vh; overflow-y: auto; animation: pmUp 0.25s ease;
+  background: #1e293b; border: 1px solid #334155; animation: pmUp 0.25s ease;  width: 100%; max-wir-radius: 20px;width: 680px; max-height: 85vh; overflow-y: auto; scrollbar-width: 20px;
   &::-webkit-scrollbar { width: 5px; }
-  &::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+  &::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px;height: 20px; }
 }
 .pm-head {
   display: flex; align-items: center; justify-content: space-between;
   padding: 22px 26px; border-bottom: 1px solid #334155;
-  position: sticky; top: 0; background: #1e293b; z-index: 1;
+  position: relative; top: 0; background: #1e293b; z-index: 1;
   h2 { color: #f8fafc; font-size: 17px; font-weight: 700; margin: 0; }
 }
 .pm-close { background: #334155; border: none; color: #94a3b8; width: 30px; height: 30px; border-radius: 8px; cursor: pointer; font-size: 13px; &:hover { background: #475569; color: #f8fafc; } }
