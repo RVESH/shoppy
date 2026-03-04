@@ -4,9 +4,8 @@
 
 //const BASE_URL = "https://shoppy.page.gd/shoppy_backend/api";
 //const BASE_URL = "/shoppy_backend/api"; // ← yeh karo
-const BASE_URL = "https://corsproxy.io/?https://shoppy.page.gd/shoppy_backend/api";
-// ════════════════════════════════════════════════════════════
-// PUBLIC API — Products & Categories
+// const BASE_URL = "https://shoppy-api.rishabh-gaurav-verma.workers.dev/api"// PUBLIC API — Products & Categories
+const BASE_URL = "https://shoppy-api.rishabh-gaurav-verma.workers.dev";
 // ════════════════════════════════════════════════════════════
 
 // ─── Sab Products Fetch ───────────────────────────────────────
