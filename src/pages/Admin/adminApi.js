@@ -1,28 +1,12 @@
-const ADMIN_API = "https://corsproxy.io/?https://shoppy.page.gd/shoppy_backend/api";
+const ADMIN_API = "https://shoppy-api.rishabh-gaurav-verma.workers.dev/api";
 
-// Token localStorage mein store hoga
-function getToken() {
-  return localStorage.getItem("shoppy_admin_token") || "";
-}
+function getToken()      { return localStorage.getItem("shoppy_admin_token") || ""; }
+function setToken(t)     { localStorage.setItem("shoppy_admin_token", t); }
+function clearToken()    { localStorage.removeItem("shoppy_admin_token"); }
+function authHeaders()   { return { "Content-Type": "application/json", "X-Admin-Token": getToken() }; }
 
-function setToken(token) {
-  localStorage.setItem("shoppy_admin_token", token);
-}
-
-function clearToken() {
-  localStorage.removeItem("shoppy_admin_token");
-}
-
-function authHeaders() {
-  return {
-    "Content-Type": "application/json",
-    "X-Admin-Token": getToken(),
-  };
-}
-
-// ── Login ─────────────────────────────────────────────────────
 export async function adminLogin(username, password) {
-  const res = await fetch(`${ADMIN_API}/admin_login.php`, {
+  const res  = await fetch(`${ADMIN_API}/admin-login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ username, password }),
@@ -33,12 +17,11 @@ export async function adminLogin(username, password) {
   return data;
 }
 
-// ── Session Check ─────────────────────────────────────────────
 export async function checkSession() {
   const token = getToken();
   if (!token) return false;
   try {
-    const res  = await fetch(`${ADMIN_API}/admin_login.php`, {
+    const res  = await fetch(`${ADMIN_API}/admin-login`, {
       headers: { "X-Admin-Token": token },
     });
     const data = await res.json();
@@ -46,28 +29,19 @@ export async function checkSession() {
   } catch { return false; }
 }
 
-// ── Logout ────────────────────────────────────────────────────
-export async function adminLogout() {
-  clearToken();
-}
+export async function adminLogout() { clearToken(); }
 
-// ── Fetch All Products ────────────────────────────────────────
 export async function fetchAllProducts() {
-  const res = await fetch(`${ADMIN_API}/admin.php`, {
-    headers: authHeaders(),
-  });
+  const res  = await fetch(`${ADMIN_API}/admin`, { headers: authHeaders() });
   if (res.status === 401) throw new Error("UNAUTHORIZED");
   const data = await res.json();
   if (!data.success) throw new Error(data.message);
   return data.data;
 }
 
-// ── Add Product ───────────────────────────────────────────────
 export async function addProduct(product) {
-  const res = await fetch(`${ADMIN_API}/admin.php`, {
-    method: "POST",
-    headers: authHeaders(),
-    body: JSON.stringify(product),
+  const res  = await fetch(`${ADMIN_API}/admin`, {
+    method: "POST", headers: authHeaders(), body: JSON.stringify(product),
   });
   if (res.status === 401) throw new Error("UNAUTHORIZED");
   const data = await res.json();
@@ -75,12 +49,9 @@ export async function addProduct(product) {
   return data;
 }
 
-// ── Update Product ────────────────────────────────────────────
 export async function updateProduct(product) {
-  const res = await fetch(`${ADMIN_API}/admin.php`, {
-    method: "PUT",
-    headers: authHeaders(),
-    body: JSON.stringify(product),
+  const res  = await fetch(`${ADMIN_API}/admin`, {
+    method: "PUT", headers: authHeaders(), body: JSON.stringify(product),
   });
   if (res.status === 401) throw new Error("UNAUTHORIZED");
   const data = await res.json();
@@ -88,11 +59,9 @@ export async function updateProduct(product) {
   return data;
 }
 
-// ── Delete Product ────────────────────────────────────────────
 export async function deleteProduct(id) {
-  const res = await fetch(`${ADMIN_API}/admin.php?id=${encodeURIComponent(id)}`, {
-    method: "DELETE",
-    headers: authHeaders(),
+  const res  = await fetch(`${ADMIN_API}/admin?id=${encodeURIComponent(id)}`, {
+    method: "DELETE", headers: authHeaders(),
   });
   if (res.status === 401) throw new Error("UNAUTHORIZED");
   const data = await res.json();

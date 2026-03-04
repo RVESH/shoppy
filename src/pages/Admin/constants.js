@@ -1,4 +1,4 @@
-export const ADMIN_API = "https://corsproxy.io/?https://shoppy.page.gd/shoppy_backend/api";
+export const ADMIN_API = "https://shoppy-api.rishabh-gaurav-verma.workers.dev/api";
 
 export const CATEGORIES = [
   { slug: "women-essentials",      name: "Women Essentials",   icon: "👗" },
