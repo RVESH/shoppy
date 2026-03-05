@@ -1,0 +1,105 @@
+$primary:     #ea580c;
+$primary-lt:  #f97316;
+$primary-xlt: #ffedd5;
+$primary-bg:  #fff7ed;
+$dark:        #1c1917;
+$muted:       #78716c;
+$white:       #ffffff;
+$border:      #e7e5e4;
+$radius-sm:   8px;
+$radius-pill: 50px;
+$font-body:   'Nunito', 'Segoe UI', sans-serif;
+$transition:  all 0.2s ease;
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 32px 16px 16px;
+  flex-wrap: wrap;
+}
+
+// ── Prev / Next buttons ───────────────────────────────────────
+.pgBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 18px;
+  background: $white;
+  border: 1.5px solid $border;
+  border-radius: $radius-pill;
+  font-size: 0.82rem;
+  font-weight: 700;
+  font-family: $font-body;
+  color: $dark;
+  cursor: pointer;
+  transition: $transition;
+
+  &:hover:not(:disabled) {
+    background: $primary-bg;
+    border-color: $primary;
+    color: $primary;
+  }
+
+  &:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+
+  svg { flex-shrink: 0; }
+}
+
+// ── Page numbers ──────────────────────────────────────────────
+.pgNumbers {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.pgNum {
+  min-width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: $white;
+  border: 1.5px solid $border;
+  border-radius: $radius-sm;
+  font-size: 0.85rem;
+  font-weight: 700;
+  font-family: $font-body;
+  color: $dark;
+  cursor: pointer;
+  transition: $transition;
+
+  &:hover {
+    background: $primary-bg;
+    border-color: $primary;
+    color: $primary;
+  }
+
+  &--active {
+    background: $primary !important;
+    border-color: $primary !important;
+    color: $white !important;
+    box-shadow: 0 4px 12px rgba(234,88,12,0.35);
+    transform: scale(1.08);
+  }
+}
+
+.pgDots {
+  min-width: 32px;
+  text-align: center;
+  color: $muted;
+  font-size: 0.75rem;
+  letter-spacing: 1px;
+  user-select: none;
+}
+
+// ── Mobile ────────────────────────────────────────────────────
+@media (max-width: 480px) {
+  .pgBtn span { display: none; } // text hide, sirf arrow dikhao
+  .pgBtn { padding: 9px 12px; }
+  .pgNum { min-width: 34px; height: 34px; font-size: 0.8rem; }
+}

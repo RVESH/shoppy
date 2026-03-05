@@ -1,8 +1,12 @@
-import { useState, useMemo,useEffect  } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { fetchProducts } from "../../api/api.js";
+import ProductView from "../../components/ProductView";
+import Pagination from "../../components/Pagination";   // ← import
 import "./style.scss";
 
-// ─── Star Rating ─────────────────────────────────────────────
+const ITEMS_PER_PAGE = 20; // ek page pe kitne products
+
+// ─── Star Rating ──────────────────────────────────────────────
 const Stars = ({ rating }) => (
   <span className="stars">
     {"★".repeat(Math.floor(rating))}
@@ -10,25 +14,28 @@ const Stars = ({ rating }) => (
     <span className="starsCount">({rating})</span>
   </span>
 );
+
 const categories = [
-  { id: 1, name: "Women Essentials",  slug: "women-essentials",         icon: "👗" },
-  { id: 2, name: "Mobile Accessories",slug: "mobile-accessories",        icon: "📱" },
-  { id: 3, name: "Grocery & FMCG",    slug: "grocery-fmcg",              icon: "🛒" },
-  { id: 4, name: "Services",          slug: "service-hub",               icon: "🛠️" },
-  { id: 5, name: "Household",         slug: "household-essentials",      icon: "🏠" },
-  { id: 6, name: "Tailoring",         slug: "tailoring-accessories",     icon: "🧵" },
+  { id: 1, name: "Women Essentials",   slug: "women-essentials",     icon: "👗" },
+  { id: 2, name: "Mobile Accessories", slug: "mobile-accessories",    icon: "📱" },
+  { id: 3, name: "Grocery & FMCG",     slug: "grocery-fmcg",          icon: "🛒" },
+  { id: 4, name: "Services",           slug: "service-hub",           icon: "🛠️" },
+  { id: 5, name: "Household",          slug: "household-essentials",  icon: "🏠" },
+  { id: 6, name: "Tailoring",          slug: "tailoring-accessories", icon: "🧵" },
 ];
+
 // ─── Product Card ─────────────────────────────────────────────
-const ProductCard = ({ product }) => (
-  <div className="productCard">
+const ProductCard = ({ product, onClick }) => (
+  <div className="productCard" onClick={() => onClick && onClick(product)}>
     {product.discountPercent > 0 && (
       <div className="discountBadge">{product.discountPercent}% OFF</div>
     )}
-    {product.isService && (
-      <div className="serviceBadge">SERVICE</div>
-    )}
+    {product.isService && <div className="serviceBadge">SERVICE</div>}
     <div className={`productImageBox ${product.isService ? "serviceImageBox" : ""}`}>
-      {product.isService ? "🖨️" : "🛍️"}
+      {product.image
+        ? <img src={product.image} alt={product.name} />
+        : product.isService ? "🖨️" : "🛍️"
+      }
     </div>
     <div className="productInfo">
       <div className="productBrand">{product.brand}</div>
@@ -51,62 +58,173 @@ const ProductCard = ({ product }) => (
           <span className={product.stock > 20 ? "inStock" : "lowStock"}>
             {product.stock > 20 ? "✓ In Stock" : `Only ${product.stock} left`}
           </span>
-          {product.deliveryAvailable && (
-            <span className="delivery">🚚 Delivery</span>
-          )}
+          {product.deliveryAvailable && <span className="delivery">🚚 Delivery</span>}
         </div>
       )}
     </div>
   </div>
 );
 
+// ─── Filter Panel ─────────────────────────────────────────────
+const FilterPanel = ({
+  allProducts, activeCategory, setActiveCategory,
+  searchQuery, setSearchQuery, sortBy, setSortBy,
+  showServices, setShowServices, showProducts, setShowProducts,
+}) => (
+  <div className="filterPanel">
+    <div className="sideCard">
+      <div className="sideCardTitle">🔍 Search</div>
+      <div className="searchBox">
+        <input type="text" placeholder="Product ya brand dhundo..."
+          value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
+          className="searchInput" />
+        {searchQuery && (
+          <button className="searchClear" onClick={() => setSearchQuery("")}>✕</button>
+        )}
+      </div>
+    </div>
+
+    <div className="sideCard">
+      <div className="sideCardTitle">📦 Type</div>
+      <label className="toggleRow">
+        <input type="checkbox" checked={showProducts}
+          onChange={(e) => setShowProducts(e.target.checked)} className="checkbox" />
+        <span>Physical Products</span>
+      </label>
+      <label className="toggleRow">
+        <input type="checkbox" checked={showServices}
+          onChange={(e) => setShowServices(e.target.checked)} className="checkbox" />
+        <span>Services</span>
+      </label>
+    </div>
+
+    <div className="sideCard">
+      <div className="sideCardTitle">🗂️ Categories</div>
+      <button className={`catBtn ${activeCategory === "all" ? "catBtnActive" : ""}`}
+        onClick={() => setActiveCategory("all")}>
+        <span>All Items</span>
+        <span className="catCount">{allProducts.length}</span>
+      </button>
+      {categories.map((cat) => {
+        const count = allProducts.filter((p) => p.category === cat.slug).length;
+        return (
+          <button key={cat.id}
+            className={`catBtn ${activeCategory === cat.slug ? "catBtnActive" : ""}`}
+            onClick={() => setActiveCategory(cat.slug)}>
+            <span>{cat.icon} {cat.name}</span>
+            <span className="catCount">{count}</span>
+          </button>
+        );
+      })}
+    </div>
+
+    <div className="sideCard">
+      <div className="sideCardTitle">↕️ Sort By</div>
+      {[
+        { val: "default",    label: "Default" },
+        { val: "rating",     label: "⭐ Top Rated" },
+        { val: "price-asc",  label: "💰 Low to High" },
+        { val: "price-desc", label: "💰 High to Low" },
+        { val: "discount",   label: "🏷️ Max Discount" },
+      ].map((opt) => (
+        <button key={opt.val}
+          className={`sortBtn ${sortBy === opt.val ? "sortBtnActive" : ""}`}
+          onClick={() => setSortBy(opt.val)}>
+          {opt.label}
+        </button>
+      ))}
+    </div>
+  </div>
+);
+
 // ─── Main Products Page ───────────────────────────────────────
 export default function Products() {
-  const [allProducts, setAllProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [allProducts, setAllProducts]       = useState([]);
+  const [loading, setLoading]               = useState(true);
+  const [error, setError]                   = useState(null);
   const [activeCategory, setActiveCategory] = useState("all");
   const [searchQuery, setSearchQuery]       = useState("");
   const [sortBy, setSortBy]                 = useState("default");
   const [showServices, setShowServices]     = useState(true);
   const [showProducts, setShowProducts]     = useState(true);
+  const [popupProduct, setPopupProduct]     = useState(null);
+  const [drawerOpen, setDrawerOpen]         = useState(false);
+  const [currentPage, setCurrentPage]       = useState(1);  // ← pagination
 
-    useEffect(() => {
-    async function loadProducts() {
+  const filterProps = {
+    allProducts, activeCategory, setActiveCategory,
+    searchQuery, setSearchQuery, sortBy, setSortBy,
+    showServices, setShowServices, showProducts, setShowProducts,
+  };
+
+  // ── Load products from API ─────────────────────────────────
+  useEffect(() => {
+    async function load() {
       try {
         setLoading(true);
-
         const data = await fetchProducts({
           category: activeCategory,
           search: searchQuery,
           sort: sortBy,
         });
-
         setAllProducts(data);
       } catch (err) {
-        console.error(err);
         setError("Products load nahi ho paaye");
       } finally {
         setLoading(false);
       }
     }
-
-    loadProducts();
+    load();
   }, [activeCategory, searchQuery, sortBy]);
+
+  // ── Filter change hone pe page 1 pe jaao ──────────────────
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [activeCategory, searchQuery, sortBy, showServices, showProducts]);
+
+  // ── Close drawer when category/sort changes ────────────────
+  useEffect(() => { setDrawerOpen(false); }, [activeCategory, sortBy]);
+
+  // ── Client-side type filter ────────────────────────────────
   const filtered = useMemo(() => {
     let list = [...allProducts];
-
     if (!showServices) list = list.filter((p) => !p.isService);
     if (!showProducts) list = list.filter((p) => p.isService);
-
-
-    
     return list;
-  },  [allProducts, showServices, showProducts]);
-    if (loading) return <div>Loading...</div>;
-    if (error) return <div>{error}</div>;
+  }, [allProducts, showServices, showProducts]);
+
+  // ── Pagination calculation ─────────────────────────────────
+  const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
+  const paginated  = filtered.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
+
+  // ── Page change handler ────────────────────────────────────
+  function handlePageChange(page) {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  // ── Active filter count (for badge) ───────────────────────
+  const activeFilterCount = [
+    activeCategory !== "all",
+    searchQuery !== "",
+    sortBy !== "default",
+    !showServices,
+    !showProducts,
+  ].filter(Boolean).length;
+
+  function resetAll() {
+    setSearchQuery(""); setActiveCategory("all");
+    setSortBy("default"); setShowProducts(true); setShowServices(true);
+  }
+
+  if (loading) return <div className="pageLoading">⏳ Loading products...</div>;
+  if (error)   return <div className="pageError">❌ {error}</div>;
+
   return (
-    <div className="productsPage">
+    <div className="page">
 
       {/* ── PAGE HEADER ──────────────────────────────── */}
       <div className="pageHeader">
@@ -119,151 +237,110 @@ export default function Products() {
         </div>
       </div>
 
-      <div className="productsLayout">
+      {/* ── LAYOUT ───────────────────────────────────── */}
+      <div className="layout">
 
-        {/* ── SIDEBAR ──────────────────────────────────── */}
+        {/* Desktop Sidebar */}
         <aside className="sidebar">
-
-          {/* Search */}
-          <div className="sideCard">
-            <div className="sideCardTitle">🔍 Search</div>
-            <div className="searchBox">
-              <input
-                type="text"
-                placeholder="Product ya brand dhundo..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="searchInput"
-              />
-              {searchQuery && (
-                <button className="searchClear" onClick={() => setSearchQuery("")}>✕</button>
-              )}
-            </div>
-          </div>
-
-          {/* Type Toggle */}
-          <div className="sideCard">
-            <div className="sideCardTitle">📦 Type</div>
-            <label className="toggleRow">
-              <input
-                type="checkbox"
-                checked={showProducts}
-                onChange={(e) => setShowProducts(e.target.checked)}
-                className="checkbox"
-              />
-              <span>Physical Products</span>
-            </label>
-            <label className="toggleRow">
-              <input
-                type="checkbox"
-                checked={showServices}
-                onChange={(e) => setShowServices(e.target.checked)}
-                className="checkbox"
-              />
-              <span>Services</span>
-            </label>
-          </div>
-
-          {/* Categories */}
-          <div className="sideCard">
-            <div className="sideCardTitle">🗂️ Categories</div>
-            <button
-              className={`catBtn ${activeCategory === "all" ? "catBtnActive" : ""}`}
-              onClick={() => setActiveCategory("all")}
-            >
-              <span>All Items</span>
-              <span className="catCount">{allProducts.length}</span>
-            </button>
-            {categories.map((cat) => {
-              const count = allProducts.filter((p) => p.category === cat.slug).length;
-              return (
-                <button
-                  key={cat.id}
-                  className={`catBtn ${activeCategory === cat.slug ? "catBtnActive" : ""}`}
-                  onClick={() => setActiveCategory(cat.slug)}
-                >
-                  <span>{cat.icon} {cat.name}</span>
-                  <span className="catCount">{count}</span>
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Sort */}
-          <div className="sideCard">
-            <div className="sideCardTitle">↕️ Sort By</div>
-            {[
-              { val: "default",    label: "Default" },
-              { val: "rating",     label: "⭐ Top Rated" },
-              { val: "price-asc",  label: "💰 Price: Low to High" },
-              { val: "price-desc", label: "💰 Price: High to Low" },
-              { val: "discount",   label: "🏷️ Max Discount" },
-            ].map((opt) => (
-              <button
-                key={opt.val}
-                className={`sortBtn ${sortBy === opt.val ? "sortBtnActive" : ""}`}
-                onClick={() => setSortBy(opt.val)}
-              >
-                {opt.label}
-              </button>
-            ))}
-          </div>
-
+          <FilterPanel {...filterProps} />
         </aside>
 
-        {/* ── PRODUCT GRID ─────────────────────────────── */}
-        <main className="productsMain">
+        {/* Main Content */}
+        <main className="main">
 
           {/* Toolbar */}
           <div className="toolbar">
             <span className="resultCount">
               <strong>{filtered.length}</strong> products mile
+              {totalPages > 1 && (
+                <span className="pageInfo"> · Page {currentPage}/{totalPages}</span>
+              )}
             </span>
-            <div className="activeFilters">
-              {activeCategory !== "all" && (
-                <span className="filterTag">
-                  {categories.find((c) => c.slug === activeCategory)?.name}
-                  <button onClick={() => setActiveCategory("all")}>✕</button>
-                </span>
-              )}
-              {searchQuery && (
-                <span className="filterTag">
-                  "{searchQuery}"
-                  <button onClick={() => setSearchQuery("")}>✕</button>
-                </span>
-              )}
+
+            <div className="toolbarRight">
+              <div className="activeFilters">
+                {activeCategory !== "all" && (
+                  <span className="filterTag">
+                    {categories.find((c) => c.slug === activeCategory)?.name}
+                    <button onClick={() => setActiveCategory("all")}>✕</button>
+                  </span>
+                )}
+                {searchQuery && (
+                  <span className="filterTag">
+                    "{searchQuery}"
+                    <button onClick={() => setSearchQuery("")}>✕</button>
+                  </span>
+                )}
+              </div>
+
+              {/* Mobile filter button */}
+              <button className="filterToggleBtn" onClick={() => setDrawerOpen(true)}>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <line x1="4" y1="6" x2="20" y2="6"/>
+                  <line x1="8" y1="12" x2="20" y2="12"/>
+                  <line x1="12" y1="18" x2="20" y2="18"/>
+                </svg>
+                Filters
+                {activeFilterCount > 0 && (
+                  <span className="filterBadge">{activeFilterCount}</span>
+                )}
+              </button>
             </div>
           </div>
 
-          {/* Grid */}
-          {filtered.length > 0 ? (
-            <div className="productGrid">
-              {filtered.map((p) => (
-                <ProductCard key={p.id} product={p} />
-              ))}
-            </div>
+          {/* Product Grid — paginated list */}
+          {paginated.length > 0 ? (
+            <>
+              <div className="productGrid">
+                {paginated.map((p) => (
+                  <ProductCard key={p.id} product={p}
+                    onClick={(product) => setPopupProduct(product)} />
+                ))}
+              </div>
+
+              {/* Pagination */}
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+              />
+            </>
           ) : (
             <div className="emptyState">
               <div className="emptyEmoji">🔍</div>
               <h3>Koi product nahi mila!</h3>
               <p>Search ya filter change karo</p>
-              <button
-                className="resetBtn"
-                onClick={() => {
-                  setSearchQuery("");
-                  setActiveCategory("all");
-                  setSortBy("default");
-                  setShowProducts(true);
-                  setShowServices(true);
-                }}
-              >
-                Reset Filters
-              </button>
+              <button className="resetBtn" onClick={resetAll}>Reset Filters</button>
             </div>
           )}
 
         </main>
       </div>
+
+      {/* ── MOBILE FILTER DRAWER ─────────────────────── */}
+      {drawerOpen && (
+        <div className="drawerOverlay" onClick={() => setDrawerOpen(false)} />
+      )}
+      <div className={`filterDrawer ${drawerOpen ? "filterDrawer--open" : ""}`}>
+        <div className="drawerHead">
+          <span className="drawerTitle">🎯 Filters</span>
+          <div className="drawerHeadRight">
+            {activeFilterCount > 0 && (
+              <button className="drawerResetBtn" onClick={resetAll}>Reset</button>
+            )}
+            <button className="drawerClose" onClick={() => setDrawerOpen(false)}>✕</button>
+          </div>
+        </div>
+        <div className="drawerBody">
+          <FilterPanel {...filterProps} />
+        </div>
+      </div>
+
+      {/* ── PRODUCT POPUP — sab ke baad ──────────────── */}
+      {popupProduct && (
+        <ProductView product={popupProduct} onClose={() => setPopupProduct(null)} />
+      )}
+
     </div>
   );
 }
