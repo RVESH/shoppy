@@ -1,0 +1,299 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Baloo+2:wght@700;800;900&display=swap');
+
+// ── Variables ─────────────────────────────────────────────────
+$or:      #ea580c;
+$or-lt:   #f97316;
+$or-bg:   #fff7ed;
+$or-bdr:  #fed7aa;
+$green:   #16a34a;
+$red:     #dc2626;
+$blue:    #2563eb;
+$text:    #111827;
+$muted:   #6b7280;
+$border:  #e5e7eb;
+$white:   #ffffff;
+$font:    'Nunito', sans-serif;
+$display: 'Baloo 2', cursive;
+
+@keyframes pvFadeIn  { from { opacity: 0; }                        to { opacity: 1; } }
+@keyframes pvSlideUp { from { opacity: 0; transform: translateY(32px) scale(0.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
+@keyframes pvPop     { 0% { transform: scale(0.9); } 60% { transform: scale(1.04); } 100% { transform: scale(1); } }
+
+// ── Overlay ───────────────────────────────────────────────────
+.pvOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  backdrop-filter: blur(4px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  animation: pvFadeIn 0.2s ease;
+}
+
+// ── Modal ─────────────────────────────────────────────────────
+.pvModal {
+  background: $white;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 900px;
+  max-height: 90vh;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 32px 80px rgba(0,0,0,0.25);
+  animation: pvSlideUp 0.3s cubic-bezier(0.34,1.2,0.64,1);
+  font-family: $font;
+  display: flex;
+  flex-direction: column;
+}
+
+.pvClose {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 10;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0,0,0,0.08);
+  color: $text;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  transition: all 0.2s;
+  &:hover { background: rgba(0,0,0,0.15); transform: scale(1.1); }
+}
+
+// ── Body ──────────────────────────────────────────────────────
+.pvBody {
+  display: grid;
+  grid-template-columns: 400px 1fr;
+  overflow-y: auto;
+  max-height: 90vh;
+
+  @media(max-width: 720px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+// ── LEFT — Image Panel ────────────────────────────────────────
+.pvLeft {
+  background: linear-gradient(160deg, $or-bg 0%, #ffedd5 50%, #fef3e2 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 24px 20px;
+  gap: 16px;
+  position: sticky;
+  top: 0;
+  align-self: start;
+
+  @media(max-width: 720px) {
+    position: static;
+    padding: 24px 16px 16px;
+  }
+}
+
+.pvImageWrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  background: $white;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(234,88,12,0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pvImage {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 16px;
+  animation: pvPop 0.4s ease;
+}
+
+.pvDiscBadge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: linear-gradient(135deg, $or, $or-lt);
+  color: $white;
+  font-size: 0.7rem;
+  font-weight: 900;
+  padding: 4px 12px;
+  border-radius: 20px;
+  letter-spacing: 0.5px;
+}
+
+.pvServiceBadge {
+  position: absolute;
+  top: 12px;
+  right: 48px;
+  background: $blue;
+  color: $white;
+  font-size: 0.6rem;
+  font-weight: 900;
+  padding: 4px 10px;
+  border-radius: 20px;
+  letter-spacing: 1px;
+}
+
+.pvLowBadge {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  background: #fef2f2;
+  color: $red;
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 20px;
+  border: 1px solid #fecaca;
+}
+
+.pvHeart {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: none;
+  background: $white;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  transition: all 0.2s;
+  &:hover { transform: scale(1.2); }
+}
+.pvHeartActive { background: #fff1f2; }
+
+.pvDeliveryRow {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.pvDeliveryChip { background: #f0fdf4; color: $green; font-size: 0.7rem; font-weight: 800; padding: 4px 10px; border-radius: 20px; border: 1px solid #bbf7d0; }
+.pvStockChip    { background: #f0fdf4; color: $green; font-size: 0.7rem; font-weight: 800; padding: 4px 10px; border-radius: 20px; border: 1px solid #bbf7d0; }
+.pvTimeChip     { background: #eff6ff; color: $blue;  font-size: 0.7rem; font-weight: 800; padding: 4px 10px; border-radius: 20px; border: 1px solid #bfdbfe; }
+
+// ── RIGHT — Info Panel ────────────────────────────────────────
+.pvRight {
+  padding: 28px 28px 28px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  overflow-y: auto;
+
+  @media(max-width: 720px) {
+    padding: 20px 16px;
+  }
+}
+
+.pvMeta { display: flex; align-items: center; gap: 6px; }
+.pvBrand { font-size: 0.72rem; font-weight: 900; color: $or; text-transform: uppercase; letter-spacing: 1px; background: $or-bg; padding: 3px 10px; border-radius: 20px; border: 1px solid $or-bdr; }
+.pvDot   { color: $muted; font-size: 0.8rem; }
+.pvSubCat { font-size: 0.72rem; color: $muted; font-weight: 600; }
+
+.pvName { font-family: $display; font-size: 1.5rem; font-weight: 900; color: $text; line-height: 1.2; margin: 0; }
+
+.pvStars { display: flex; align-items: center; gap: 3px; }
+.pvStarOn   { color: #f59e0b; font-size: 0.95rem; }
+.pvStarHalf { color: #f59e0b; font-size: 0.95rem; opacity: 0.6; }
+.pvStarOff  { color: #d1d5db; font-size: 0.95rem; }
+.pvStarsVal   { font-size: 0.82rem; font-weight: 900; color: $or; margin-left: 4px; }
+.pvStarsCount { font-size: 0.72rem; color: $muted; text-decoration: underline; cursor: pointer; }
+
+.pvDivider { height: 1px; background: $border; }
+
+.pvPricing { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.pvPrice   { font-family: $display; font-size: 2.2rem; font-weight: 900; color: $text; line-height: 1; }
+.pvOnwards { font-size: 0.78rem; color: $muted; font-weight: 600; }
+.pvPricingRight { display: flex; flex-direction: column; gap: 2px; }
+.pvMrp     { font-size: 0.85rem; color: #bbb; text-decoration: line-through; font-weight: 600; }
+.pvSaving  { font-size: 0.72rem; font-weight: 900; color: $green; background: #f0fdf4; padding: 2px 8px; border-radius: 10px; display: inline-block; }
+
+.pvDesc { font-size: 0.84rem; color: $muted; line-height: 1.7; margin: 0; }
+
+// Variants
+.pvVariantGroup { display: flex; flex-direction: column; gap: 8px; }
+.pvVariantLabel { font-size: 0.78rem; font-weight: 800; color: $text; }
+.pvVariantVal   { color: $or; }
+.pvVariantHint  { color: $muted; font-weight: 600; }
+.pvVariantOptions { display: flex; flex-wrap: wrap; gap: 7px; }
+.pvVariantBtn {
+  padding: 6px 14px; border: 2px solid $border; border-radius: 8px; background: $white;
+  font-size: 0.78rem; font-weight: 700; font-family: $font; cursor: pointer; transition: all 0.15s;
+  &:hover { border-color: $or; color: $or; }
+}
+.pvVariantBtnOn { border-color: $or !important; background: $or !important; color: $white !important; }
+
+// Qty
+.pvQtyRow { display: flex; align-items: center; gap: 12px; }
+.pvQtyLabel { font-size: 0.8rem; font-weight: 800; color: $text; }
+.pvQtyControl { display: flex; align-items: center; border: 2px solid $border; border-radius: 8px; overflow: hidden; }
+.pvQtyBtn { width: 34px; height: 34px; border: none; background: #f9fafb; cursor: pointer; font-size: 1.1rem; font-weight: 900; color: $text; font-family: $font; transition: all 0.15s; &:hover { background: $or-bg; color: $or; } }
+.pvQtyNum { width: 40px; text-align: center; font-weight: 900; font-size: 0.9rem; border-left: 2px solid $border; border-right: 2px solid $border; line-height: 34px; }
+
+// Docs
+.pvDocsBox { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 10px; padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; }
+.pvDocsTitle { font-size: 0.78rem; font-weight: 900; color: $blue; }
+.pvDocsList { display: flex; flex-wrap: wrap; gap: 6px; }
+.pvDocChip { background: $white; border: 1px solid #bfdbfe; color: $blue; font-size: 0.7rem; font-weight: 700; padding: 3px 9px; border-radius: 6px; }
+
+// CTA
+.pvCta { display: flex; gap: 10px; flex-wrap: wrap; }
+.pvBookBtn {
+  flex: 1; min-width: 140px; background: linear-gradient(135deg, $or, $or-lt); color: $white;
+  border: none; padding: 13px 20px; border-radius: 50px; font-size: 0.9rem; font-weight: 900;
+  font-family: $font; cursor: pointer; transition: all 0.2s; box-shadow: 0 6px 20px rgba(234,88,12,0.3);
+  &:hover { transform: scale(1.03); box-shadow: 0 8px 28px rgba(234,88,12,0.4); }
+}
+.pvBookBtnDone { background: linear-gradient(135deg, $green, #22c55e) !important; box-shadow: 0 6px 20px rgba(22,163,74,0.3) !important; }
+
+.pvWaBtn {
+  flex: 1; min-width: 140px; display: flex; align-items: center; justify-content: center; gap: 8px;
+  background: #25d366; color: $white; padding: 13px 16px; border-radius: 50px; font-size: 0.85rem;
+  font-weight: 900; font-family: $font; text-decoration: none; transition: all 0.2s;
+  &:hover { background: #1ebe5d; transform: scale(1.03); box-shadow: 0 8px 24px rgba(37,211,102,0.35); }
+}
+
+// Tags
+.pvTags { display: flex; flex-wrap: wrap; gap: 5px; }
+.pvTag { background: #f9fafb; color: $muted; font-size: 0.65rem; font-weight: 700; padding: 3px 9px; border-radius: 20px; border: 1px solid $border; cursor: pointer; transition: all 0.15s; &:hover { background: $or-bg; color: $or; border-color: $or-bdr; } }
+
+// Tabs
+.pvTabs { border: 1px solid $border; border-radius: 12px; overflow: hidden; }
+.pvTabNav { display: flex; border-bottom: 1px solid $border; }
+.pvTabBtn { flex: 1; padding: 10px 8px; border: none; background: none; cursor: pointer; font-size: 0.72rem; font-weight: 800; font-family: $font; color: $muted; border-bottom: 2px solid transparent; transition: all 0.15s; &:hover { color: $or; } }
+.pvTabOn { color: $or !important; border-bottom-color: $or !important; background: $or-bg; }
+.pvTabBody { padding: 16px; min-height: 80px; }
+.pvTabText { font-size: 0.82rem; color: $muted; line-height: 1.75; }
+
+.pvSpecTable { width: 100%; border-collapse: collapse; font-size: 0.8rem;
+  tr { border-bottom: 1px solid $border; &:last-child { border: none; } }
+  td { padding: 8px 10px; &:first-child { font-weight: 800; color: $text; width: 40%; background: #f9fafb; } &:last-child { color: $muted; } }
+}
+
+.pvTabVarList { display: flex; flex-direction: column; gap: 12px; }
+.pvTabVarRow { display: flex; flex-direction: column; gap: 6px; strong { font-size: 0.78rem; color: $text; text-transform: capitalize; } }
+.pvTabVarChip { background: #f9fafb; border: 1px solid $border; font-size: 0.72rem; font-weight: 700; padding: 3px 10px; border-radius: 20px; margin-right: 5px; display: inline-block; }
+
+.pvTabDocList { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 6px;
+  li { font-size: 0.8rem; font-weight: 700; color: $text; &::before { content: "✓ "; color: $green; } }
+}

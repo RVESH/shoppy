@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { fetchProducts, fetchCategories } from "../../api/api.js";
 import styles from "./index.module.scss";
+import ProductView from "../../components/ProductView";
 
 // ─── Star Rating ─────────────────────────────────────────────
 const Stars = ({ rating }) => (
@@ -12,8 +13,8 @@ const Stars = ({ rating }) => (
 );
 
 // ─── Product Card ─────────────────────────────────────────────
-const ProductCard = ({ product }) => (
-  <div className={styles.productCard}>
+const ProductCard = ({ product, onClick }) => (
+  <div className={styles.productCard} onClick={() => onClick && onClick(product)}>
     {product.discountPercent > 0 && (
       <div className={styles.discountBadge}>{product.discountPercent}% OFF</div>
     )}
@@ -44,8 +45,8 @@ const CategoryCard = ({ cat, index }) => (
 );
 
 // ─── Service Card ─────────────────────────────────────────────
-const ServiceCard = ({ service }) => (
-  <div className={styles.serviceCard}>
+const ServiceCard = ({ service, onClick }) => (
+  <div className={styles.serviceCard} onClick={() => onClick && onClick(service)}>
     <div className={styles.serviceIconBox}>🖨️</div>
     <div className={styles.serviceName}>{service.name}</div>
     <div className={styles.serviceDesc}>{service.description}</div>
@@ -74,14 +75,16 @@ const WaSvg = ({ size = 22 }) => (
 
 // ─── Main Home Page ───────────────────────────────────────────
 export default function Home() {
-  const [heroVisible, setHeroVisible] = useState(false);
-
-  // ✅ State mein rakho — bahar nahi!
+  const [heroVisible, setHeroVisible]   = useState(false);
   const [allProducts, setAllProducts]   = useState([]);
   const [categories, setCategories]     = useState([]);
   const [loading, setLoading]           = useState(true);
+  const [popupProduct, setPopupProduct] = useState(null);
+  const [wishlist, setWishlist]         = useState([]);
 
-  // ✅ API se fetch karo
+  const toggleWishlist = (id) =>
+    setWishlist(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
+
   useEffect(() => {
     async function loadData() {
       try {
@@ -101,7 +104,6 @@ export default function Home() {
     loadData();
   }, []);
 
-  // ✅ State se compute karo — bahar nahi!
   const featuredProducts = allProducts
     .filter((p) => !p.isService)
     .sort((a, b) => b.rating - a.rating)
@@ -114,6 +116,16 @@ export default function Home() {
   return (
     <div className={styles.page}>
 
+      {/* ── PRODUCT POPUP ────────────────────────────── */}
+      {popupProduct && (
+        <ProductView
+          product={popupProduct}
+          onClose={() => setPopupProduct(null)}
+          onWishlist={toggleWishlist}
+          isWishlisted={wishlist.includes(popupProduct?.id)}
+        />
+      )}
+
       {/* ── HERO ─────────────────────────────────────── */}
       <section className={styles.hero}>
         <div className={styles.heroBgCircles}>
@@ -123,10 +135,8 @@ export default function Home() {
         </div>
 
         <div className={`${styles.heroInner} ${heroVisible ? styles.heroVisible : ""}`}>
-          {/* Left */}
           <div className={styles.heroLeft}>
             <div className={styles.heroBadge}>🏪 Local Store + Online Shop</div>
-
             <h1 className={styles.heroTitle}>
               Apna{" "}
               <span className={styles.heroHighlight}>
@@ -137,17 +147,14 @@ export default function Home() {
               </span>
               <br />Sabka Dukan! 🛒
             </h1>
-
             <p className={styles.heroSubtext}>
               Groceries se lekar tailoring tak — sab ek hi jagah! Physical store
               aur online dono available. Apne ghar baithe order karo ya seedha aao!
             </p>
-
             <div className={styles.heroBtns}>
               <button className={styles.btnPrimary}>🛍️ Products Dekho</button>
               <button className={styles.btnOutline}>📞 Contact Karo</button>
             </div>
-
             <div className={styles.heroStats}>
               {[
                 { num: "75+", label: "Products" },
@@ -162,7 +169,6 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Right - Orbit */}
           <div className={styles.heroRight}>
             <div className={styles.orbitWrapper}>
               <div className={styles.orbitCore}>🛒</div>
@@ -171,11 +177,7 @@ export default function Home() {
                 const x = 145 * Math.cos(angle);
                 const y = 145 * Math.sin(angle);
                 return (
-                  <div
-                    key={i}
-                    className={styles.orbitBadge}
-                    style={{ "--tx": `${x}px`, "--ty": `${y}px` }}
-                  >
+                  <div key={i} className={styles.orbitBadge} style={{ "--tx": `${x}px`, "--ty": `${y}px` }}>
                     {icon}
                   </div>
                 );
@@ -204,11 +206,7 @@ export default function Home() {
       {/* ── CATEGORIES ───────────────────────────────── */}
       <section className={styles.section}>
         <div className={styles.container}>
-          <SectionHeader
-            label="Browse Categories"
-            title="Kya Dhundh Rahe Ho? 🔍"
-            sub="Apni zaroorat ke hisaab se category chuniye"
-          />
+          <SectionHeader label="Browse Categories" title="Kya Dhundh Rahe Ho? 🔍" sub="Apni zaroorat ke hisaab se category chuniye" />
           {loading ? (
             <div className={styles.loadingRow}>Loading categories...</div>
           ) : (
@@ -224,17 +222,17 @@ export default function Home() {
       {/* ── FEATURED PRODUCTS ────────────────────────── */}
       <section className={`${styles.section} ${styles.bgWhite}`}>
         <div className={styles.container}>
-          <SectionHeader
-            label="Featured Products"
-            title="Top Picks Tumhare Liye ⭐"
-            sub="Sabse zyada pasand kiye gaye products"
-          />
+          <SectionHeader label="Featured Products" title="Top Picks Tumhare Liye ⭐" sub="Sabse zyada pasand kiye gaye products" />
           {loading ? (
             <div className={styles.loadingRow}>Loading products...</div>
           ) : (
             <div className={styles.productGrid}>
               {featuredProducts.map((p) => (
-                <ProductCard key={p.id} product={p} />
+                <ProductCard
+                  key={p.id}
+                  product={p}
+                  onClick={(product) => setPopupProduct(product)}
+                />
               ))}
             </div>
           )}
@@ -247,17 +245,17 @@ export default function Home() {
       {/* ── SERVICES ─────────────────────────────────── */}
       <section className={styles.section}>
         <div className={styles.container}>
-          <SectionHeader
-            label="Our Services"
-            title="Digital Seva Hub 🖨️"
-            sub="PAN card se resume tak — sab kuch ek hi jagah"
-          />
+          <SectionHeader label="Our Services" title="Digital Seva Hub 🖨️" sub="PAN card se resume tak — sab kuch ek hi jagah" />
           {loading ? (
             <div className={styles.loadingRow}>Loading services...</div>
           ) : (
             <div className={styles.serviceGrid}>
               {topServices.map((s) => (
-                <ServiceCard key={s.id} service={s} />
+                <ServiceCard
+                  key={s.id}
+                  service={s}
+                  onClick={(service) => setPopupProduct(service)}
+                />
               ))}
             </div>
           )}
@@ -276,12 +274,7 @@ export default function Home() {
             Koi bhi sawaal ho, order karna ho, ya koi service chahiye — hum
             WhatsApp pe available hain. Turat reply guarantee!
           </p>
-          <a
-            href="https://wa.me/919999999999"
-            target="_blank"
-            rel="noreferrer"
-            className={styles.ctaWaBtn}
-          >
+          <a href="https://wa.me/919999999999" target="_blank" rel="noreferrer" className={styles.ctaWaBtn}>
             <WaSvg size={22} />
             WhatsApp pe Message Karo
           </a>
@@ -289,12 +282,7 @@ export default function Home() {
       </section>
 
       {/* ── FLOATING WA BUTTON ───────────────────────── */}
-      <a
-        href="https://wa.me/919999999999"
-        target="_blank"
-        rel="noreferrer"
-        className={styles.floatingWa}
-      >
+      <a href="https://wa.me/919999999999" target="_blank" rel="noreferrer" className={styles.floatingWa}>
         <div className={styles.floatingPulse} />
         <WaSvg size={30} />
       </a>
