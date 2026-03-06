@@ -66,7 +66,7 @@ const ServiceCard = ({ service }) => {
         </>
       )}
       <div className="scActions">
-        <a href="https://wa.me/919999999999" target="_blank" rel="noreferrer" className="scWaBtn">
+        <a href="https://wa.me/919798855030" target="_blank" rel="noreferrer" className="scWaBtn">
           <WaSvg size={16} /> Book on WhatsApp
         </a>
         <div className="scWalkIn">🏪 Walk-in Available</div>
@@ -205,7 +205,7 @@ export default function Services() {
           <p className="srvCtaSubtitle">
             List mein nahi hai? Koi baat nahi — WhatsApp pe poochho!
           </p>
-          <a href="https://wa.me/919999999999" target="_blank" rel="noreferrer" className="srvCtaWaBtn">
+          <a href="https://wa.me/919798855030" target="_blank" rel="noreferrer" className="srvCtaWaBtn">
             <WaSvg size={20} /> WhatsApp pe Poochho
           </a>
         </div>

@@ -1,578 +1,242 @@
 @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Baloo+2:wght@700;800;900&display=swap');
 
-// ── Variables ─────────────────────────────────────────────────
-$or:      #ea580c;
-$or-lt:   #f97316;
-$or-bg:   #fff7ed;
-$or-bdr:  #fed7aa;
-$green:   #16a34a;
-$red:     #dc2626;
-$blue:    #2563eb;
-$text:    #111827;
-$muted:   #6b7280;
-$border:  #e5e7eb;
-$white:   #ffffff;
-$font:    'Nunito', sans-serif;
-$display: 'Baloo 2', cursive;
+$or:     #ea580c;
+$or-lt:  #f97316;
+$or-bg:  #fff7ed;
+$or-bdr: #fed7aa;
+$green:  #16a34a;
+$red:    #dc2626;
+$blue:   #2563eb;
+$text:   #111827;
+$muted:  #6b7280;
+$border: #e5e7eb;
+$white:  #ffffff;
+$font:   'Nunito', sans-serif;
+$display:'Baloo 2', cursive;
 
-@keyframes pvFadeIn  { from { opacity: 0; }                        to { opacity: 1; } }
-@keyframes pvSlideUp { from { opacity: 0; transform: translateY(24px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
-@keyframes pvPop     { 0% { transform: scale(0.95); } 60% { transform: scale(1.02); } 100% { transform: scale(1); } }
+@keyframes pvFadeIn    { from{opacity:0} to{opacity:1} }
+@keyframes pvSlideUp   { from{opacity:0;transform:translateY(24px) scale(0.98)} to{opacity:1;transform:translateY(0) scale(1)} }
+@keyframes pvMobileUp  { from{transform:translateY(100%)} to{transform:translateY(0)} }
+@keyframes pvPop       { 0%{transform:scale(0.95)} 60%{transform:scale(1.02)} 100%{transform:scale(1)} }
 
-// ── Overlay ───────────────────────────────────────────────────
 .pvOverlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.5);
-  backdrop-filter: blur(6px);
-  z-index: 9999;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  animation: pvFadeIn 0.18s ease;
+  position:fixed; inset:0; background:rgba(0,0,0,0.5);
+  backdrop-filter:blur(6px); z-index:9999;
+  display:flex; align-items:center; justify-content:center;
+  padding:20px; animation:pvFadeIn 0.18s ease;
 }
 
-// ── Modal ─────────────────────────────────────────────────────
 .pvModal {
-  background: $white;
-  border-radius: 20px;
-  width: 100%;
-  max-width: 860px;
-  max-height: 88vh;
-  overflow: hidden;
-  position: relative;
-  box-shadow:
-    0 4px 6px rgba(0,0,0,0.04),
-    0 20px 60px rgba(0,0,0,0.18),
-    0 0 0 1px rgba(0,0,0,0.04);
-  animation: pvSlideUp 0.28s cubic-bezier(0.34,1.15,0.64,1);
-  font-family: $font;
-  display: flex;
-  flex-direction: column;
+  background:$white; border-radius:20px; width:100%; max-width:860px;
+  max-height:88vh; overflow:hidden; position:relative;
+  box-shadow:0 4px 6px rgba(0,0,0,0.04),0 20px 60px rgba(0,0,0,0.18);
+  animation:pvSlideUp 0.28s cubic-bezier(0.34,1.15,0.64,1);
+  font-family:$font; display:flex; flex-direction:column;
 }
 
 .pvClose {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  z-index: 10;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  border: none;
-  background: rgba(0,0,0,0.07);
-  color: $text;
-  font-size: 0.85rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 800;
-  transition: background 0.15s, transform 0.15s;
-  &:hover { background: rgba(0,0,0,0.14); transform: scale(1.1); }
+  position:absolute; top:12px; right:12px; z-index:10;
+  width:32px; height:32px; border-radius:50%; border:none;
+  background:rgba(0,0,0,0.07); color:$text; font-size:0.85rem;
+  cursor:pointer; font-weight:800; display:flex; align-items:center; justify-content:center;
+  transition:background 0.15s, transform 0.15s;
+  &:hover { background:rgba(0,0,0,0.14); transform:scale(1.1); }
 }
 
-// ── Body ──────────────────────────────────────────────────────
 .pvBody {
-  display: grid;
-  grid-template-columns: 340px 1fr;
-  overflow: hidden;
-  height: 100%;
-  max-height: 88vh;
-
-  @media(max-width: 700px) {
-    grid-template-columns: 1fr;
-    overflow-y: auto;
-    max-height: 88vh;
-  }
+  display:grid; grid-template-columns:320px 1fr;
+  overflow:hidden; height:100%; max-height:88vh;
+  @media(max-width:700px) { grid-template-columns:1fr; overflow-y:auto; max-height:92vh; }
 }
 
-// ── LEFT — Image Panel ────────────────────────────────────────
+// LEFT
 .pvLeft {
-  background: linear-gradient(170deg, #fff7ed 0%, #ffedd5 60%, #fef3e2 100%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 28px 20px 20px;
-  gap: 14px;
-  overflow-y: auto;
-
-  // Sticky only on desktop
-  @media(min-width: 701px) {
-    position: sticky;
-    top: 0;
-    align-self: start;
-    height: 100%;
-    max-height: 88vh;
-    overflow-y: auto;
-  }
-
-  @media(max-width: 700px) {
-    padding: 20px 16px 14px;
-    justify-content: flex-start;
-  }
+  background:linear-gradient(170deg,#fff7ed 0%,#ffedd5 60%,#fef3e2 100%);
+  display:flex; flex-direction:column; align-items:center;
+  justify-content:center; padding:28px 20px 20px; gap:14px; overflow-y:auto;
+  @media(min-width:701px) { position:sticky; top:0; align-self:start; height:100%; max-height:88vh; }
+  @media(max-width:700px) { padding:20px 16px 14px; justify-content:flex-start; }
 }
 
 .pvImageWrap {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 1 / 1;
-  background: $white;
-  border-radius: 14px;
-  overflow: hidden;
-  box-shadow:
-    0 2px 8px rgba(234,88,12,0.06),
-    0 8px 24px rgba(234,88,12,0.1);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  @media(max-width: 700px) {
-    max-width: 260px;
-    margin: 0 auto;
-  }
+  position:relative; width:100%; aspect-ratio:1/1; background:$white;
+  border-radius:14px; overflow:hidden;
+  box-shadow:0 2px 8px rgba(234,88,12,0.06),0 8px 24px rgba(234,88,12,0.1);
+  display:flex; align-items:center; justify-content:center;
+  @media(max-width:700px) { max-width:240px; margin:0 auto; }
 }
 
-.pvImage {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  padding: 20px;
-  animation: pvPop 0.35s ease;
-}
+.pvImage { width:100%; height:100%; object-fit:contain; padding:20px; animation:pvPop 0.35s ease; }
 
-// Badges — consistent sizing
 .pvDiscBadge,
 .pvServiceBadge,
 .pvLowBadge {
-  position: absolute;
-  font-size: 0.65rem;
-  font-weight: 900;
-  padding: 4px 10px;
-  border-radius: 20px;
-  letter-spacing: 0.4px;
-  line-height: 1.4;
+  position:absolute; font-size:0.65rem; font-weight:900;
+  padding:4px 10px; border-radius:20px; letter-spacing:0.4px;
 }
-
-.pvDiscBadge {
-  top: 10px;
-  left: 10px;
-  background: linear-gradient(135deg, $or, $or-lt);
-  color: $white;
-}
-
-.pvServiceBadge {
-  top: 10px;
-  right: 46px;
-  background: $blue;
-  color: $white;
-  letter-spacing: 0.8px;
-}
-
-.pvLowBadge {
-  bottom: 10px;
-  left: 10px;
-  background: #fef2f2;
-  color: $red;
-  border: 1px solid #fecaca;
-}
+.pvDiscBadge    { top:10px; left:10px; background:linear-gradient(135deg,$or,$or-lt); color:$white; }
+.pvServiceBadge { top:10px; right:46px; background:$blue; color:$white; }
+.pvLowBadge     { bottom:10px; left:10px; background:#fef2f2; color:$red; border:1px solid #fecaca; }
 
 .pvHeart {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  border: none;
-  background: $white;
-  font-size: 0.9rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  transition: transform 0.2s;
-  &:hover { transform: scale(1.2); }
+  position:absolute; top:8px; right:8px; width:32px; height:32px;
+  border-radius:50%; border:none; background:$white; font-size:0.9rem;
+  cursor:pointer; display:flex; align-items:center; justify-content:center;
+  box-shadow:0 2px 8px rgba(0,0,0,0.1); transition:transform 0.2s;
+  &:hover { transform:scale(1.2); }
 }
-.pvHeartActive { background: #fff1f2; }
+.pvHeartActive { background:#fff1f2; }
 
-.pvDeliveryRow {
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-  justify-content: center;
-  width: 100%;
-}
+.pvDeliveryRow { display:flex; gap:6px; flex-wrap:wrap; justify-content:center; width:100%; }
+%chip { font-size:0.68rem; font-weight:800; padding:4px 10px; border-radius:20px; white-space:nowrap; }
+.pvDeliveryChip { @extend %chip; background:#f0fdf4; color:$green; border:1px solid #bbf7d0; }
+.pvStockChip    { @extend %chip; background:#f0fdf4; color:$green; border:1px solid #bbf7d0; }
+.pvTimeChip     { @extend %chip; background:#eff6ff; color:$blue;  border:1px solid #bfdbfe; }
 
-// Chip base
-%chip-base {
-  font-size: 0.68rem;
-  font-weight: 800;
-  padding: 4px 10px;
-  border-radius: 20px;
-  line-height: 1.4;
-  white-space: nowrap;
-}
-
-.pvDeliveryChip { @extend %chip-base; background: #f0fdf4; color: $green; border: 1px solid #bbf7d0; }
-.pvStockChip    { @extend %chip-base; background: #f0fdf4; color: $green; border: 1px solid #bbf7d0; }
-.pvTimeChip     { @extend %chip-base; background: #eff6ff; color: $blue;  border: 1px solid #bfdbfe; }
-
-// ── RIGHT — Info Panel ────────────────────────────────────────
+// RIGHT
 .pvRight {
-  padding: 24px 24px 24px 22px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  overflow-y: auto;
-
-  @media(max-width: 700px) {
-    padding: 18px 16px 24px;
-  }
+  padding:24px 24px 24px 22px; display:flex; flex-direction:column;
+  gap:12px; overflow-y:auto;
+  @media(max-width:700px) { padding:16px; }
 }
 
-// Meta row
-.pvMeta { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
-
+.pvMeta { display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
 .pvBrand {
-  font-size: 0.68rem;
-  font-weight: 900;
-  color: $or;
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-  background: $or-bg;
-  padding: 3px 9px;
-  border-radius: 20px;
-  border: 1px solid $or-bdr;
-  line-height: 1.5;
+  font-size:0.68rem; font-weight:900; color:$or; text-transform:uppercase;
+  letter-spacing:0.8px; background:$or-bg; padding:3px 9px;
+  border-radius:20px; border:1px solid $or-bdr;
+}
+.pvDot    { color:$muted; font-size:0.75rem; }
+.pvSubCat { font-size:0.72rem; color:$muted; font-weight:600; }
+.pvName   {
+  font-family:$display; font-size:1.35rem; font-weight:900;
+  color:$text; line-height:1.25; margin:0;
+  @media(max-width:480px){ font-size:1.2rem; }
 }
 
-.pvDot   { color: $muted; font-size: 0.75rem; }
-.pvSubCat { font-size: 0.72rem; color: $muted; font-weight: 600; }
+.pvStars { display:flex; align-items:center; gap:3px; flex-wrap:wrap; }
+.pvStarOn   { color:#f59e0b; font-size:0.85rem; }
+.pvStarHalf { color:#f59e0b; font-size:0.85rem; opacity:0.6; }
+.pvStarOff  { color:#d1d5db; font-size:0.85rem; }
+.pvStarsVal   { font-size:0.78rem; font-weight:900; color:$or; margin-left:4px; }
+.pvStarsCount { font-size:0.68rem; color:$muted; }
 
-// Name — tighter line-height
-.pvName {
-  font-family: $display;
-  font-size: 1.35rem;
-  font-weight: 900;
-  color: $text;
-  line-height: 1.25;
-  margin: 0;
+.pvDivider { height:1px; background:$border; margin:2px 0; }
 
-  @media(max-width: 480px) {
-    font-size: 1.2rem;
-  }
-}
+.pvPricing { display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; }
+.pvPrice { font-family:$display; font-size:1.8rem; font-weight:900; color:$text; line-height:1; }
+.pvOnwards { font-size:0.75rem; color:$muted; font-weight:600; }
+.pvPricingRight { display:flex; flex-direction:column; gap:2px; align-self:flex-end; padding-bottom:4px; }
+.pvMrp    { font-size:0.82rem; color:#bbb; text-decoration:line-through; font-weight:600; }
+.pvSaving { font-size:0.7rem; font-weight:900; color:$green; background:#f0fdf4; padding:2px 7px; border-radius:10px; border:1px solid #bbf7d0; }
 
-// Stars
-.pvStars { display: flex; align-items: center; gap: 3px; flex-wrap: wrap; }
-.pvStarOn   { color: #f59e0b; font-size: 0.85rem; }
-.pvStarHalf { color: #f59e0b; font-size: 0.85rem; opacity: 0.6; }
-.pvStarOff  { color: #d1d5db; font-size: 0.85rem; }
-.pvStarsVal   { font-size: 0.78rem; font-weight: 900; color: $or; margin-left: 4px; }
-.pvStarsCount { font-size: 0.68rem; color: $muted; text-decoration: underline; cursor: pointer; }
+.pvDesc { font-size:0.82rem; color:$muted; line-height:1.65; margin:0; }
 
-.pvDivider { height: 1px; background: $border; margin: 2px 0; }
-
-// Pricing — balanced scale
-.pvPricing {
-  display: flex;
-  align-items: baseline;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.pvPrice {
-  font-family: $display;
-  font-size: 1.8rem;   // reduced from 2.2rem — more proportional vs name
-  font-weight: 900;
-  color: $text;
-  line-height: 1;
-}
-
-.pvOnwards { font-size: 0.75rem; color: $muted; font-weight: 600; align-self: flex-end; padding-bottom: 3px; }
-
-.pvPricingRight {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  align-self: flex-end;
-  padding-bottom: 4px;
-}
-
-.pvMrp    { font-size: 0.82rem; color: #bbb; text-decoration: line-through; font-weight: 600; }
-.pvSaving {
-  font-size: 0.7rem;
-  font-weight: 900;
-  color: $green;
-  background: #f0fdf4;
-  padding: 2px 7px;
-  border-radius: 10px;
-  display: inline-block;
-  border: 1px solid #bbf7d0;
-}
-
-.pvDesc {
-  font-size: 0.82rem;
-  color: $muted;
-  line-height: 1.65;
-  margin: 0;
-}
-
-// ── Variants ──────────────────────────────────────────────────
-.pvVariantGroup { display: flex; flex-direction: column; gap: 7px; }
-
-.pvVariantLabel { font-size: 0.75rem; font-weight: 800; color: $text; }
-.pvVariantVal   { color: $or; }
-.pvVariantHint  { color: $muted; font-weight: 600; }
-
-.pvVariantOptions { display: flex; flex-wrap: wrap; gap: 6px; }
-
+.pvVariantGroup { display:flex; flex-direction:column; gap:7px; }
+.pvVariantLabel { font-size:0.75rem; font-weight:800; color:$text; }
+.pvVariantVal   { color:$or; }
+.pvVariantHint  { color:$muted; font-weight:600; }
+.pvVariantOptions { display:flex; flex-wrap:wrap; gap:6px; }
 .pvVariantBtn {
-  padding: 5px 13px;
-  border: 1.5px solid $border;
-  border-radius: 8px;
-  background: $white;
-  font-size: 0.75rem;
-  font-weight: 700;
-  font-family: $font;
-  cursor: pointer;
-  transition: border-color 0.15s, color 0.15s, background 0.15s;
-  line-height: 1.5;
-  &:hover { border-color: $or; color: $or; }
+  padding:5px 13px; border:1.5px solid $border; border-radius:8px;
+  background:$white; font-size:0.75rem; font-weight:700; font-family:$font;
+  cursor:pointer; transition:all 0.15s;
+  &:hover { border-color:$or; color:$or; }
 }
-.pvVariantBtnOn {
-  border-color: $or !important;
-  background: $or !important;
-  color: $white !important;
-}
+.pvVariantBtnOn { border-color:$or !important; background:$or !important; color:$white !important; }
 
-// ── Qty ───────────────────────────────────────────────────────
-.pvQtyRow { display: flex; align-items: center; gap: 10px; }
-.pvQtyLabel { font-size: 0.78rem; font-weight: 800; color: $text; }
+.pvQtyRow { display:flex; align-items:center; gap:10px; }
+.pvQtyLabel { font-size:0.78rem; font-weight:800; color:$text; }
 .pvQtyControl {
-  display: flex;
-  align-items: center;
-  border: 1.5px solid $border;
-  border-radius: 8px;
-  overflow: hidden;
+  display:flex; align-items:center;
+  border:1.5px solid $border; border-radius:8px; overflow:hidden;
 }
 .pvQtyBtn {
-  width: 32px;
-  height: 32px;
-  border: none;
-  background: #f9fafb;
-  cursor: pointer;
-  font-size: 1rem;
-  font-weight: 900;
-  color: $text;
-  font-family: $font;
-  transition: background 0.15s, color 0.15s;
-  &:hover { background: $or-bg; color: $or; }
+  width:32px; height:32px; border:none; background:#f9fafb;
+  cursor:pointer; font-size:1rem; font-weight:900; color:$text; font-family:$font;
+  transition:background 0.15s, color 0.15s;
+  &:hover { background:$or-bg; color:$or; }
 }
-.pvQtyNum {
-  width: 38px;
-  text-align: center;
-  font-weight: 900;
-  font-size: 0.88rem;
-  border-left: 1.5px solid $border;
-  border-right: 1.5px solid $border;
-  line-height: 32px;
-}
+.pvQtyNum { width:38px; text-align:center; font-weight:900; font-size:0.88rem; border-left:1.5px solid $border; border-right:1.5px solid $border; line-height:32px; }
 
-// ── Docs Box ──────────────────────────────────────────────────
-.pvDocsBox {
-  background: #eff6ff;
-  border: 1px solid #bfdbfe;
-  border-radius: 10px;
-  padding: 10px 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 7px;
-}
-.pvDocsTitle { font-size: 0.75rem; font-weight: 900; color: $blue; }
-.pvDocsList { display: flex; flex-wrap: wrap; gap: 5px; }
-.pvDocChip {
-  background: $white;
-  border: 1px solid #bfdbfe;
-  color: $blue;
-  font-size: 0.68rem;
-  font-weight: 700;
-  padding: 3px 8px;
-  border-radius: 6px;
-}
+.pvDocsBox { background:#eff6ff; border:1px solid #bfdbfe; border-radius:10px; padding:10px 12px; display:flex; flex-direction:column; gap:7px; }
+.pvDocsTitle { font-size:0.75rem; font-weight:900; color:$blue; }
+.pvDocsList { display:flex; flex-wrap:wrap; gap:5px; }
+.pvDocChip { background:$white; border:1px solid #bfdbfe; color:$blue; font-size:0.68rem; font-weight:700; padding:3px 8px; border-radius:6px; }
 
-// ── CTA ───────────────────────────────────────────────────────
+// CTA
 .pvCta {
-  display: flex;
-  gap: 8px;
-
-  @media(max-width: 480px) {
-    flex-direction: column;
-  }
+  display:flex; gap:8px;
+  @media(max-width:480px) { flex-direction:column; }
 }
-
 .pvBookBtn {
-  flex: 1;
-  min-width: 0;
-  background: linear-gradient(135deg, $or, $or-lt);
-  color: $white;
-  border: none;
-  padding: 12px 18px;
-  border-radius: 50px;
-  font-size: 0.875rem;
-  font-weight: 900;
-  font-family: $font;
-  cursor: pointer;
-  transition: transform 0.18s, box-shadow 0.18s;
-  box-shadow: 0 4px 16px rgba(234,88,12,0.28);
-  white-space: nowrap;
-
-  &:hover { transform: translateY(-1px) scale(1.02); box-shadow: 0 6px 22px rgba(234,88,12,0.38); }
-  &:active { transform: scale(0.98); }
+  flex:1; min-width:0; background:linear-gradient(135deg,$or,$or-lt);
+  color:$white; border:none; padding:12px 18px; border-radius:50px;
+  font-size:0.875rem; font-weight:900; font-family:$font; cursor:pointer;
+  box-shadow:0 4px 16px rgba(234,88,12,0.28); transition:all 0.2s;
+  &:hover:not(:disabled) { transform:translateY(-1px); box-shadow:0 6px 22px rgba(234,88,12,0.38); }
+  &:disabled { opacity:0.45; cursor:not-allowed; }
 }
-.pvBookBtnDone {
-  background: linear-gradient(135deg, $green, #22c55e) !important;
-  box-shadow: 0 4px 16px rgba(22,163,74,0.28) !important;
+.pvBookBtnDone    { background:linear-gradient(135deg,$green,#22c55e) !important; box-shadow:0 4px 16px rgba(22,163,74,0.28) !important; }
+.pvBookBtnService { background:linear-gradient(135deg,$blue,#3b82f6) !important; box-shadow:0 4px 16px rgba(37,99,235,0.28) !important; }
+
+.pvInCartRow {
+  flex:1; display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+  background:#f0fdf4; border:1.5px solid #bbf7d0; border-radius:50px; padding:6px 14px;
+}
+.pvInCartLabel { font-size:0.82rem; font-weight:800; color:$green; flex:1; }
+.pvRemoveBtn {
+  font-size:0.72rem; font-weight:700; color:$red;
+  background:#fef2f2; border:1px solid #fecaca;
+  border-radius:20px; padding:3px 10px; cursor:pointer; font-family:$font;
+  transition:background 0.15s;
+  &:hover { background:#fee2e2; }
 }
 
 .pvWaBtn {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 7px;
-  background: #25d366;
-  color: $white;
-  padding: 12px 14px;
-  border-radius: 50px;
-  font-size: 0.82rem;
-  font-weight: 900;
-  font-family: $font;
-  text-decoration: none;
-  transition: background 0.18s, transform 0.18s, box-shadow 0.18s;
-  box-shadow: 0 4px 16px rgba(37,211,102,0.25);
-  white-space: nowrap;
-
-  &:hover { background: #1ebe5d; transform: translateY(-1px) scale(1.02); box-shadow: 0 6px 22px rgba(37,211,102,0.35); }
+  flex:1; min-width:0; display:flex; align-items:center; justify-content:center; gap:7px;
+  background:#25d366; color:$white; padding:12px 14px; border-radius:50px;
+  font-size:0.82rem; font-weight:900; font-family:$font; text-decoration:none;
+  box-shadow:0 4px 16px rgba(37,211,102,0.25); transition:all 0.18s;
+  &:hover { background:#1ebe5d; transform:translateY(-1px); }
 }
 
-// ── Tags ──────────────────────────────────────────────────────
-.pvTags { display: flex; flex-wrap: wrap; gap: 5px; }
+.pvTags { display:flex; flex-wrap:wrap; gap:5px; }
 .pvTag {
-  background: #f9fafb;
-  color: $muted;
-  font-size: 0.63rem;
-  font-weight: 700;
-  padding: 3px 8px;
-  border-radius: 20px;
-  border: 1px solid $border;
-  cursor: pointer;
-  transition: background 0.15s, color 0.15s, border-color 0.15s;
-  &:hover { background: $or-bg; color: $or; border-color: $or-bdr; }
+  background:#f9fafb; color:$muted; font-size:0.63rem; font-weight:700;
+  padding:3px 8px; border-radius:20px; border:1px solid $border; cursor:pointer;
+  transition:all 0.15s;
+  &:hover { background:$or-bg; color:$or; border-color:$or-bdr; }
 }
 
-// ── Tabs ──────────────────────────────────────────────────────
-.pvTabs {
-  border: 1px solid $border;
-  border-radius: 12px;
-  overflow: hidden;
-  margin-top: 2px;
-}
-
-.pvTabNav {
-  display: flex;
-  border-bottom: 1px solid $border;
-  background: #fafafa;
-}
-
+.pvTabs { border:1px solid $border; border-radius:12px; overflow:hidden; margin-top:2px; }
+.pvTabNav { display:flex; border-bottom:1px solid $border; background:#fafafa; }
 .pvTabBtn {
-  flex: 1;
-  padding: 9px 6px;
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  font-size: 0.7rem;
-  font-weight: 800;
-  font-family: $font;
-  color: $muted;
-  border-bottom: 2px solid transparent;
-  transition: color 0.15s, border-color 0.15s, background 0.15s;
-  &:hover { color: $or; }
+  flex:1; padding:9px 6px; border:none; background:transparent;
+  cursor:pointer; font-size:0.7rem; font-weight:800; font-family:$font;
+  color:$muted; border-bottom:2px solid transparent; transition:all 0.15s;
+  &:hover { color:$or; }
 }
-.pvTabOn {
-  color: $or !important;
-  border-bottom-color: $or !important;
-  background: $or-bg !important;
-}
-
-.pvTabBody {
-  padding: 14px;
-  min-height: 72px;
-}
-
-.pvTabText {
-  font-size: 0.8rem;
-  color: $muted;
-  line-height: 1.75;
-  margin: 0;
-}
+.pvTabOn  { color:$or !important; border-bottom-color:$or !important; background:$or-bg !important; }
+.pvTabBody { padding:14px; min-height:72px; }
+.pvTabText { font-size:0.8rem; color:$muted; line-height:1.75; margin:0; }
 
 .pvSpecTable {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.78rem;
-
-  tr {
-    border-bottom: 1px solid $border;
-    &:last-child { border: none; }
-  }
-  td {
-    padding: 7px 10px;
-    &:first-child {
-      font-weight: 800;
-      color: $text;
-      width: 40%;
-      background: #f9fafb;
-    }
-    &:last-child { color: $muted; }
-  }
+  width:100%; border-collapse:collapse; font-size:0.78rem;
+  tr { border-bottom:1px solid $border; &:last-child { border:none; } }
+  td { padding:7px 10px; &:first-child { font-weight:800; color:$text; width:40%; background:#f9fafb; } &:last-child { color:$muted; } }
 }
 
-.pvTabVarList { display: flex; flex-direction: column; gap: 10px; }
-.pvTabVarRow {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  strong { font-size: 0.75rem; color: $text; text-transform: capitalize; }
-}
-.pvTabVarChip {
-  background: #f9fafb;
-  border: 1px solid $border;
-  font-size: 0.7rem;
-  font-weight: 700;
-  padding: 3px 9px;
-  border-radius: 20px;
-  margin-right: 4px;
-  display: inline-block;
-}
+.pvTabVarList { display:flex; flex-direction:column; gap:10px; }
+.pvTabVarRow  { display:flex; flex-direction:column; gap:5px; strong { font-size:0.75rem; color:$text; } }
+.pvTabVarChip { background:#f9fafb; border:1px solid $border; font-size:0.7rem; font-weight:700; padding:3px 9px; border-radius:20px; margin-right:4px; display:inline-block; }
 
 .pvTabDocList {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
+  list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:6px;
+  li { font-size:0.78rem; font-weight:700; color:$text; &::before { content:"✓ "; color:$green; } }
+}
 
-  li {
-    font-size: 0.78rem;
-    font-weight: 700;
-    color: $text;
-    &::before { content: "✓ "; color: $green; }
-  }
+@media(max-width:700px) {
+  .pvOverlay { padding:0; align-items:flex-end; }
+  .pvModal { border-radius:20px 20px 0 0; max-height:92vh; animation:pvMobileUp 0.3s cubic-bezier(0.32,0.72,0,1); }
 }

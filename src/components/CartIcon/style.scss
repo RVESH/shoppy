@@ -1,0 +1,43 @@
+// src/components/CartIcon/style.scss
+.cartIcon {
+  position: relative;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #1c1917;
+  padding: 7px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  transition: background 0.15s, color 0.15s;
+  flex-shrink: 0;  // nav mein shrink na ho
+
+  &:hover {
+    background: #fff7ed;
+    color: #ea580c;
+  }
+
+  svg { display: block; }
+}
+
+.cartIconBadge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  background: #ea580c;
+  color: white;
+  font-size: 0.52rem;
+  font-weight: 900;
+  min-width: 16px;
+  height: 16px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 3px;
+  border: 2px solid white;
+  font-family: 'Nunito', sans-serif;
+  pointer-events: none;
+  line-height: 1;
+}

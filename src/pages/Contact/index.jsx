@@ -69,11 +69,11 @@ export default function Contact() {
           {/* Contact Details */}
           <div className="ctDetailsList">
 
-            <a href="https://wa.me/919999999999" target="_blank" rel="noreferrer" className="ctDetailItem ctDetailWa">
+            <a href="https://wa.me/919798855030" target="_blank" rel="noreferrer" className="ctDetailItem ctDetailWa">
               <div className="ctDetailIcon ctDetailIconWa"><WaSvg size={22} /></div>
               <div className="ctDetailText">
                 <div className="ctDetailLabel">WhatsApp</div>
-                <div className="ctDetailValue">+91 99999 99999</div>
+                <div className="ctDetailValue">+91 97988 55030</div>
                 <div className="ctDetailHint">Turant reply payen!</div>
               </div>
               <div className="ctDetailArrow">→</div>

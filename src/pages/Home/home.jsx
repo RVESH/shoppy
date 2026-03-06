@@ -274,7 +274,7 @@ export default function Home() {
             Koi bhi sawaal ho, order karna ho, ya koi service chahiye — hum
             WhatsApp pe available hain. Turat reply guarantee!
           </p>
-          <a href="https://wa.me/919999999999" target="_blank" rel="noreferrer" className={styles.ctaWaBtn}>
+          <a href="https://wa.me/919798855030" target="_blank" rel="noreferrer" className={styles.ctaWaBtn}>
             <WaSvg size={22} />
             WhatsApp pe Message Karo
           </a>
@@ -282,7 +282,7 @@ export default function Home() {
       </section>
 
       {/* ── FLOATING WA BUTTON ───────────────────────── */}
-      <a href="https://wa.me/919999999999" target="_blank" rel="noreferrer" className={styles.floatingWa}>
+      <a href="https://wa.me/919798855030" target="_blank" rel="noreferrer" className={styles.floatingWa}>
         <div className={styles.floatingPulse} />
         <WaSvg size={30} />
       </a>
