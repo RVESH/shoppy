@@ -1,6 +1,6 @@
 // src/components/Cart/index.jsx
 // Fix: Order button pe cart pehle band ho, phir modal khule
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback  } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../CartContext";
 import OrderModal from "../OrderModal";
@@ -89,10 +89,11 @@ export default function Cart() {
     return () => { document.body.style.overflow = ""; };
   }, [isOpen, showOrder]);
 
-  function handleClose() {
-    setClosing(true);
-    setTimeout(() => { setClosing(false); setIsOpen(false); }, 280);
-  }
+
+  const handleClose = useCallback(() => {
+  setClosing(true);
+  setTimeout(() => { setClosing(false); setIsOpen(false); }, 280);
+}, [setIsOpen]);
 
   // ✅ FIX: Cart band karo → animation khatam ho → PHIR modal khulo
   function handleOrderClick() {

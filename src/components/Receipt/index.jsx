@@ -7,7 +7,7 @@ const WHATSAPP = "919999999999"; // ← apna number daalo
 export default function Receipt({ order, onClose }) {
   if (!order) return null;
 
-  const { orderId, customer, items, totalPrice, totalMrp, totalSaved, createdAt } = order;
+  const { orderId, customer, items, totalPrice, totalSaved, createdAt } = order;
 
   const date = new Date(createdAt).toLocaleString("en-IN", {
     day: "2-digit", month: "short", year: "numeric",
