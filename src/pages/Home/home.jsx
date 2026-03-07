@@ -269,14 +269,14 @@ export default function Home() {
       <section className={styles.ctaSection}>
         <div className={styles.ctaInner}>
           <div className={styles.ctaEmoji}>💬</div>
-          <h2 className={styles.ctaTitle}>Seedha WhatsApp Karo!</h2>
+          <h2 className={styles.ctaTitle}>Seedha WhatsApp Karein!</h2>
           <p className={styles.ctaSub}>
             Koi bhi sawaal ho, order karna ho, ya koi service chahiye — hum
             WhatsApp pe available hain. Turat reply guarantee!
           </p>
           <a href="https://wa.me/916206869543" target="_blank" rel="noreferrer" className={styles.ctaWaBtn}>
             <WaSvg size={22} />
-            WhatsApp pe Message Karo
+            WhatsApp pe Message Karein!
           </a>
         </div>
       </section>

@@ -1,7 +1,11 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Baloo+2:wght@700;800;900&display=swap');
+
 $or:     #ea580c;
 $or-lt:  #f97316;
 $or-bg:  #fff7ed;
+$or-bdr: #fed7aa;
 $green:  #16a34a;
+$red:    #dc2626;
 $text:   #111827;
 $muted:  #6b7280;
 $border: #e5e7eb;
@@ -9,107 +13,186 @@ $white:  #ffffff;
 $font:   'Nunito', sans-serif;
 $display:'Baloo 2', cursive;
 
-@keyframes omSlideUp  { from{transform:translateY(40px);opacity:0} to{transform:translateY(0);opacity:1} }
-@keyframes omMobileUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
-@keyframes spin       { to{transform:rotate(360deg)} }
-@keyframes omPop      { 0%{transform:scale(0.8);opacity:0} 60%{transform:scale(1.05)} 100%{transform:scale(1);opacity:1} }
+@keyframes omFadeIn  { from{opacity:0} to{opacity:1} }
+@keyframes omSlideUp { from{opacity:0;transform:translateY(30px) scale(0.97)} to{opacity:1;transform:translateY(0) scale(1)} }
+@keyframes spin      { to{transform:rotate(360deg)} }
 
+// Backdrop
 .omBackdrop {
-  position:fixed; inset:0; background:rgba(0,0,0,0.5);
-  backdrop-filter:blur(4px); z-index:9000;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(4px);
+  z-index: 9000;
+  animation: omFadeIn 0.2s ease;
 }
 
+// Modal
 .omModal {
-  position:fixed; top:50%; left:50%;
-  transform:translate(-50%,-50%);
-  width:100%; max-width:480px; max-height:90vh;
-  background:$white; border-radius:20px; z-index:9001;
-  display:flex; flex-direction:column;
-  box-shadow:0 20px 60px rgba(0,0,0,0.2);
-  animation:omSlideUp 0.3s cubic-bezier(0.34,1.1,0.64,1);
-  font-family:$font;
+  position: fixed;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 9001;
+  width: min(500px, 95vw);
+  max-height: 90vh;
+  background: $white;
+  border-radius: 20px;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.2);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+  animation: omSlideUp 0.28s cubic-bezier(0.34,1.1,0.64,1);
+  font-family: $font;
 
-  @media(max-width:520px) {
-    top:auto; left:0; right:0; bottom:0;
-    transform:none; border-radius:20px 20px 0 0;
-    max-height:95vh;
-    animation:omMobileUp 0.3s cubic-bezier(0.32,0.72,0,1);
+  @media(max-width:480px) {
+    top: auto; bottom: 0; left: 0; right: 0;
+    transform: none;
+    width: 100%;
+    max-height: 92vh;
+    border-radius: 20px 20px 0 0;
   }
 }
 
+// Header
 .omHeader {
-  display:flex; align-items:center; justify-content:space-between;
-  padding:18px 20px; border-bottom:1px solid $border; flex-shrink:0;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 18px 14px; border-bottom: 1px solid $border; flex-shrink: 0;
+  background: $or-bg;
+  gap: 10px;
 }
-.omTitle { font-family:$display; font-size:1.1rem; font-weight:900; color:$text; }
+.omHeaderLeft  { display:flex; align-items:center; gap:10px; min-width:0; }
+.omHeaderIcon  { font-size:1.4rem; flex-shrink:0; }
+.omTitle       { font-family:$display; font-size:1rem; font-weight:900; color:$text; }
+.omSubtitle    { font-size:0.72rem; color:$or; font-weight:700; margin-top:1px; }
 .omClose {
-  width:30px; height:30px; border-radius:50%; border:none;
-  background:#f3f4f6; color:$muted; cursor:pointer; font-size:0.8rem;
-  display:flex; align-items:center; justify-content:center; transition:background 0.15s;
-  &:hover { background:#e5e7eb; }
+  width:32px; height:32px; border-radius:50%; border:none;
+  background:#f3f4f6; color:$muted; font-size:0.75rem; font-weight:900;
+  cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  transition:all 0.15s;
+  &:hover { background:#fee2e2; color:$red; transform:rotate(90deg); }
 }
 
+// Body
 .omBody {
-  flex:1; overflow-y:auto; padding:16px 20px;
-  display:flex; flex-direction:column; gap:16px;
-  &::-webkit-scrollbar { width:4px; }
-  &::-webkit-scrollbar-thumb { background:$border; border-radius:4px; }
+  flex:1; overflow-y:auto; padding:16px 18px;
+  display:flex; flex-direction:column; gap:14px;
+  -webkit-overflow-scrolling:touch;
+  &::-webkit-scrollbar { width:3px; }
+  &::-webkit-scrollbar-thumb { background:$border; border-radius:3px; }
+  @media(max-width:360px) { padding:12px 14px; }
 }
 
+// Summary box
 .omSummary {
-  background:$or-bg; border:1px solid #fed7aa;
-  border-radius:12px; padding:12px 14px;
-  display:flex; flex-direction:column; gap:6px;
+  background: $or-bg;
+  border: 1px solid $or-bdr;
+  border-radius: 14px;
+  padding: 12px 14px;
+  display: flex; flex-direction: column; gap: 6px;
 }
-.omSummaryTitle { font-weight:800; font-size:0.88rem; color:$or; }
-.omSummaryItem  { display:flex; justify-content:space-between; font-size:0.8rem; color:$text; font-weight:600; }
-.omSavings      { font-size:0.78rem; font-weight:800; color:$green; text-align:center; background:#f0fdf4; padding:5px 10px; border-radius:8px; border:1px solid #bbf7d0; }
+.omSummaryHead {
+  font-size:0.78rem; font-weight:900; color:$or; margin-bottom:2px;
+}
+.omSummaryList { display:flex; flex-direction:column; gap:4px; }
+.omSummaryItem {
+  display:flex; justify-content:space-between; align-items:flex-start;
+  gap:8px; font-size:0.78rem;
+}
+.omSummaryItemLeft { display:flex; align-items:flex-start; gap:6px; flex:1; min-width:0; }
+.omSummaryNum {
+  width:18px; height:18px; border-radius:50%;
+  background:$or; color:$white; font-size:0.6rem; font-weight:900;
+  display:flex; align-items:center; justify-content:center; flex-shrink:0;
+}
+.omSummaryName  { color:$text; font-weight:700; line-height:1.35; }
+.omSummaryPrice { font-weight:800; color:$text; font-family:$display; white-space:nowrap; }
 
-.omFields { display:flex; flex-direction:column; gap:12px; }
-.omField {
-  display:flex; flex-direction:column; gap:5px;
-  label { font-size:0.72rem; font-weight:800; color:$muted; text-transform:uppercase; letter-spacing:0.5px; }
-  input, textarea {
-    padding:10px 12px; border:1.5px solid $border; border-radius:10px;
-    font-size:0.88rem; font-family:$font; color:$text;
-    background:#fafafa; outline:none; transition:border-color 0.2s; resize:none;
-    &:focus { border-color:$or; background:$white; box-shadow:0 0 0 3px rgba(234,88,12,0.08); }
-    &::placeholder { color:#d1d5db; }
+.omSavings {
+  font-size:0.72rem; font-weight:800; color:$green;
+  background:#f0fdf4; padding:5px 10px; border-radius:8px;
+  border:1px solid #bbf7d0; text-align:center;
+}
+.omSummaryTotal {
+  display:flex; justify-content:space-between; align-items:center;
+  border-top:1px dashed $or-bdr; padding-top:8px; margin-top:2px;
+  font-family:$display; font-size:1rem; font-weight:900; color:$text;
+}
+
+// Fields
+.omFields  { display:flex; flex-direction:column; gap:12px; }
+.omField   { display:flex; flex-direction:column; gap:5px; }
+.omLabel   { font-size:0.75rem; font-weight:800; color:$text; text-transform:uppercase; letter-spacing:0.3px; }
+.omOptional{ font-size:0.68rem; font-weight:600; color:$muted; text-transform:none; letter-spacing:0; }
+
+.omInput {
+  width:100%; padding:11px 13px;
+  border:1.5px solid $border; border-radius:10px;
+  font-size:0.85rem; font-family:$font; color:$text;
+  background:$white; outline:none; box-sizing:border-box;
+  transition:border-color 0.18s, box-shadow 0.18s;
+  &::placeholder { color:#9ca3af; }
+  &:focus {
+    border-color:$or;
+    box-shadow:0 0 0 3px rgba(234,88,12,0.10);
+  }
+  &Err { border-color:$red !important; box-shadow:0 0 0 3px rgba(220,38,38,0.08) !important; }
+}
+textarea.omInput { resize:vertical; min-height:80px; }
+
+.omPhoneWrap {
+  display:flex; align-items:stretch;
+  border:1.5px solid $border; border-radius:10px; overflow:hidden;
+  transition:border-color 0.18s, box-shadow 0.18s;
+  &:focus-within {
+    border-color:$or;
+    box-shadow:0 0 0 3px rgba(234,88,12,0.10);
   }
 }
+.omPhonePrefix {
+  padding:11px 12px; background:#f9fafb;
+  font-size:0.82rem; font-weight:700; color:$text;
+  border-right:1.5px solid $border; white-space:nowrap;
+  display:flex; align-items:center;
+}
+.omInputPhone {
+  border:none !important; border-radius:0 !important;
+  box-shadow:none !important; flex:1;
+}
 
-.omError { background:#fef2f2; border:1px solid #fecaca; color:#dc2626; border-radius:10px; padding:10px 14px; font-size:0.82rem; font-weight:700; }
+.omErr { font-size:0.7rem; font-weight:700; color:$red; }
 
-.omFooter { display:flex; gap:10px; padding:14px 20px; border-top:1px solid $border; flex-shrink:0; }
+// Footer
+.omFooter {
+  display:flex; gap:10px; padding:14px 18px;
+  border-top:1px solid $border; flex-shrink:0;
+  background:$white;
+  @media(max-width:360px) { padding:12px 14px; }
+}
 .omCancel {
-  flex:1; padding:12px; border:1.5px solid $border; border-radius:50px;
-  background:$white; color:$muted; font-size:0.88rem; font-weight:700;
-  font-family:$font; cursor:pointer; transition:all 0.15s;
-  &:hover:not(:disabled) { border-color:#9ca3af; color:$text; }
+  flex:0 0 auto; padding:12px 18px;
+  border:1.5px solid $border; border-radius:50px;
+  background:$white; color:$muted;
+  font-size:0.84rem; font-weight:700; font-family:$font;
+  cursor:pointer; transition:all 0.15s;
+  &:hover { border-color:#9ca3af; color:$text; }
   &:disabled { opacity:0.5; cursor:not-allowed; }
+  @media(max-width:360px) { padding:11px 14px; font-size:0.78rem; }
 }
 .omSubmit {
-  flex:2; padding:12px 20px; background:#25d366; color:$white; border:none;
-  border-radius:50px; font-size:0.88rem; font-weight:900; font-family:$font;
+  flex:1; padding:13px 20px;
+  background:linear-gradient(135deg, #25d366, #22c55e);
+  color:$white; border:none; border-radius:50px;
+  font-size:0.88rem; font-weight:900; font-family:$font;
   cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;
-  box-shadow:0 4px 16px rgba(37,211,102,0.3); transition:all 0.18s;
-  &:hover:not(:disabled) { transform:translateY(-1px); box-shadow:0 6px 20px rgba(37,211,102,0.4); }
-  &:disabled { opacity:0.6; cursor:not-allowed; transform:none; }
+  box-shadow:0 4px 16px rgba(37,211,102,0.3);
+  transition:all 0.18s;
+  &:hover { transform:translateY(-1px); box-shadow:0 6px 20px rgba(37,211,102,0.4); }
+  &:active { transform:scale(0.98); }
+  &:disabled { opacity:0.7; cursor:not-allowed; transform:none; }
+  @media(max-width:360px) { font-size:0.82rem; padding:11px 16px; }
 }
 .omSpinner {
-  width:18px; height:18px; border:2px solid rgba(255,255,255,0.4);
-  border-top-color:white; border-radius:50%;
-  animation:spin 0.7s linear infinite; display:inline-block;
+  width:16px; height:16px; border-radius:50%;
+  border:2px solid rgba(255,255,255,0.35);
+  border-top-color:$white;
+  animation:spin 0.7s linear infinite;
+  display:inline-block;
 }
-
-// Success screen
-.omSuccess {
-  flex:1; display:flex; flex-direction:column;
-  align-items:center; justify-content:center;
-  gap:10px; padding:40px 20px; text-align:center;
-  animation:omPop 0.4s cubic-bezier(0.34,1.1,0.64,1);
-}
-.omSuccessIcon  { font-size:3.5rem; }
-.omSuccessTitle { font-family:$display; font-size:1.4rem; font-weight:900; color:$text; }
-.omOrderId      { font-size:1rem; font-weight:900; color:$or; background:$or-bg; padding:8px 20px; border-radius:50px; border:1.5px solid #fed7aa; letter-spacing:1px; }
-.omSuccessMsg   { font-size:0.82rem; color:$muted; font-weight:600; }

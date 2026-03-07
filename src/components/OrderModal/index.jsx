@@ -12,26 +12,28 @@ export default function OrderModal({ onClose }) {
   const { items, totalPrice, totalMrp, totalSaved, clearCart } = useCart();
   const { saveOrder } = useOrders();
 
+  const [step,    setStep]    = useState("form");   // "form" | "receipt"
   const [form,    setForm]    = useState({ name:"", phone:"", address:"", note:"" });
-  const [error,   setError]   = useState("");
+  const [errors,  setErrors]  = useState({});
   const [loading, setLoading] = useState(false);
   const [receipt, setReceipt] = useState(null);
 
   function handleChange(e) {
     setForm(f => ({ ...f, [e.target.name]: e.target.value }));
-    setError("");
+    setErrors(prev => ({ ...prev, [e.target.name]: "" }));
   }
 
   function validate() {
-    if (!form.name.trim())                 return "Naam zaroori hai";
-    if (!/^[6-9]\d{9}$/.test(form.phone)) return "Valid 10-digit mobile number daalo";
-    if (!form.address.trim())              return "Address zaroori hai";
-    return "";
+    const e = {};
+    if (!form.name.trim())                  e.name    = "Naam zaroori hai";
+    if (!/^[6-9]\d{9}$/.test(form.phone))  e.phone   = "Valid 10-digit number daalo";
+    if (!form.address.trim())               e.address = "Address zaroori hai";
+    return e;
   }
 
   function handleSubmit() {
-    const err = validate();
-    if (err) { setError(err); return; }
+    const e = validate();
+    if (Object.keys(e).length > 0) { setErrors(e); return; }
     setLoading(true);
 
     const orderData = {
@@ -48,111 +50,174 @@ export default function OrderModal({ onClose }) {
 
     const saved = saveOrder(orderData);
 
-    // ── WhatsApp message — simple aur clear format ──────────
+    // ── WhatsApp message ─────────────────────────────────────
     const itemLines = items.map(item => {
       const v = Object.entries(item.variants || {})
-        .filter(([, val]) => val)
-        .map(([k, v]) => `${k}: ${v}`)
-        .join(", ");
-      const qty  = item.quantity > 1 ? ` (×${item.quantity})` : "";
+        .filter(([, val]) => val).map(([k, v]) => `${k}: ${v}`).join(", ");
+      const qty  = item.quantity > 1 ? ` ×${item.quantity}` : "";
       const vars = v ? ` [${v}]` : "";
-      return `• ${item.name}${vars}${qty} - Rs.${(item.price * item.quantity).toLocaleString()}`;
+      return `• ${item.name}${vars}${qty} — Rs.${(item.price * item.quantity).toLocaleString()}`;
     }).join("\n");
 
-    const lines = [
+    const msg = [
       `Hi! Mujhe ye items order karne hain:`,
       ``,
       itemLines,
       ``,
       totalSaved > 0
-        ? `Total: Rs.${totalPrice.toLocaleString()} (Rs.${totalSaved.toLocaleString()} ki bachat!)`
+        ? `Total: Rs.${totalPrice.toLocaleString()} (Rs.${totalSaved.toLocaleString()} ki bachat! 🎉)`
         : `Total: Rs.${totalPrice.toLocaleString()}`,
       `Delivery: FREE 🚚`,
       ``,
-      `*Mera Details:*`,
+      `Mera Details:`,
       `Naam: ${form.name}`,
       `Phone: ${form.phone}`,
       `Address: ${form.address}`,
       form.note ? `Note: ${form.note}` : "",
       ``,
       `Order ID: ${saved.orderId}`,
-    ].filter(line => line !== undefined && line !== null && !(line === "" && lines && lines[lines.length-1] === ""))
-     .join("\n");
+    ].filter(l => l !== null && l !== undefined).join("\n");
 
     setTimeout(() => {
       setLoading(false);
       clearCart();
       setReceipt(saved);
-      window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(lines)}`, "_blank");
-    }, 800);
+      setStep("receipt");
+      window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(msg)}`, "_blank");
+    }, 700);
   }
 
-  if (receipt) return <OrderReceipt order={receipt} onClose={onClose} />;
+  // ── Receipt screen ───────────────────────────────────────────
+  if (step === "receipt" && receipt) {
+    return <OrderReceipt order={receipt} onClose={onClose} />;
+  }
 
+  // ── Form screen ──────────────────────────────────────────────
   return (
     <>
       <div className="omBackdrop" onClick={onClose} />
+
       <div className="omModal">
 
+        {/* Header */}
         <div className="omHeader">
-          <span className="omTitle">📋 Order Details</span>
-          <button className="omClose" onClick={onClose}>✕</button>
+          <div className="omHeaderLeft">
+            <span className="omHeaderIcon">📋</span>
+            <div>
+              <div className="omTitle">Order Details Bharo</div>
+              <div className="omSubtitle">{items.length} item{items.length>1?"s":""} · ₹{totalPrice.toLocaleString()}</div>
+            </div>
+          </div>
+          <button className="omClose" onClick={onClose} aria-label="Band karo">✕</button>
         </div>
 
         <div className="omBody">
 
           {/* Items Summary */}
           <div className="omSummary">
-            <div className="omSummaryTitle">
-              🛍️ {items.length} item{items.length > 1 ? "s" : ""} · ₹{totalPrice.toLocaleString()}
+            <div className="omSummaryHead">🛍️ Aapke Items</div>
+            <div className="omSummaryList">
+              {items.map((item, i) => {
+                const v = Object.entries(item.variants || {})
+                  .filter(([, val]) => val).map(([k, v]) => `${k}: ${v}`).join(", ");
+                return (
+                  <div key={i} className="omSummaryItem">
+                    <div className="omSummaryItemLeft">
+                      <span className="omSummaryNum">{i+1}</span>
+                      <span className="omSummaryName">
+                        {item.name}{v ? ` (${v})` : ""} ×{item.quantity}
+                      </span>
+                    </div>
+                    <span className="omSummaryPrice">₹{(item.price*item.quantity).toLocaleString()}</span>
+                  </div>
+                );
+              })}
             </div>
-            {items.map((item, i) => {
-              const v = Object.entries(item.variants || {})
-                .filter(([, val]) => val)
-                .map(([k, v]) => `${k}: ${v}`).join(", ");
-              return (
-                <div key={i} className="omSummaryItem">
-                  <span>{item.name}{v ? ` (${v})` : ""} ×{item.quantity}</span>
-                  <span>₹{(item.price * item.quantity).toLocaleString()}</span>
-                </div>
-              );
-            })}
             {totalSaved > 0 && (
               <div className="omSavings">🎉 ₹{totalSaved.toLocaleString()} ki bachat!</div>
             )}
+            <div className="omSummaryTotal">
+              <span>Total</span>
+              <span>₹{totalPrice.toLocaleString()}</span>
+            </div>
           </div>
 
-          {/* Form Fields */}
+          {/* Form */}
           <div className="omFields">
+
             <div className="omField">
-              <label>Aapka Naam *</label>
-              <input name="name" placeholder="Full name likhein"
-                value={form.name} onChange={handleChange} />
+              <label className="omLabel">Aapka Naam *</label>
+              <input
+                name="name"
+                placeholder="Poora naam likhein"
+                value={form.name}
+                onChange={handleChange}
+                className={errors.name ? "omInput omInputErr" : "omInput"}
+                autoComplete="name"
+              />
+              {errors.name && <span className="omErr">⚠ {errors.name}</span>}
             </div>
+
             <div className="omField">
-              <label>Phone Number *</label>
-              <input name="phone" type="tel" placeholder="10-digit mobile"
-                value={form.phone} onChange={handleChange} maxLength={10} />
+              <label className="omLabel">Phone Number *</label>
+              <div className="omPhoneWrap">
+                <span className="omPhonePrefix">🇮🇳 +91</span>
+                <input
+                  name="phone"
+                  type="tel"
+                  placeholder="10-digit mobile"
+                  value={form.phone}
+                  onChange={e => {
+                    const v = e.target.value.replace(/\D/g,"").slice(0,10);
+                    setForm(f => ({...f, phone: v}));
+                    setErrors(prev => ({...prev, phone:""}));
+                  }}
+                  className={errors.phone ? "omInput omInputPhone omInputErr" : "omInput omInputPhone"}
+                  maxLength={10}
+                />
+              </div>
+              {errors.phone && <span className="omErr">⚠ {errors.phone}</span>}
             </div>
+
             <div className="omField">
-              <label>Delivery Address *</label>
-              <textarea name="address" placeholder="Pura address likhein..."
-                rows={3} value={form.address} onChange={handleChange} />
+              <label className="omLabel">Delivery Address *</label>
+              <textarea
+                name="address"
+                placeholder="Ghar ka pura address likhein..."
+                rows={3}
+                value={form.address}
+                onChange={handleChange}
+                className={errors.address ? "omInput omInputErr" : "omInput"}
+                autoComplete="street-address"
+              />
+              {errors.address && <span className="omErr">⚠ {errors.address}</span>}
             </div>
+
             <div className="omField">
-              <label>Note (optional)</label>
-              <input name="note" placeholder="Koi special instruction..."
-                value={form.note} onChange={handleChange} />
+              <label className="omLabel">Note <span className="omOptional">(Optional)</span></label>
+              <input
+                name="note"
+                placeholder="Koi special instruction ho toh likhein..."
+                value={form.note}
+                onChange={handleChange}
+                className="omInput"
+              />
             </div>
+
           </div>
 
-          {error && <div className="omError">⚠️ {error}</div>}
         </div>
 
+        {/* Footer */}
         <div className="omFooter">
-          <button className="omCancel" onClick={onClose} disabled={loading}>Cancel</button>
+          <button className="omCancel" onClick={onClose} disabled={loading}>
+            Wapas Jao
+          </button>
           <button className="omSubmit" onClick={handleSubmit} disabled={loading}>
-            {loading ? <span className="omSpinner" /> : "📲 WhatsApp Pe Order Karo"}
+            {loading
+              ? <><span className="omSpinner" /> Bhej rahe hain...</>
+              : <><span>📲</span> WhatsApp Pe Order Karo</>
+            }
           </button>
         </div>
 
