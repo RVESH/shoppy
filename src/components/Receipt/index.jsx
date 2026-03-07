@@ -2,7 +2,7 @@
 // Order ke baad dikhne wali receipt — print + WhatsApp
 import "./style.scss";
 
-const WHATSAPP = "919999999999"; // ← apna number daalo
+const WHATSAPP = "916206869543"; // ← apna number daalo
 
 export default function Receipt({ order, onClose }) {
   if (!order) return null;

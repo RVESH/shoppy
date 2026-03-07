@@ -279,7 +279,6 @@ export default function Header() {
             <span className="hdr-dlink-emoji">💻</span> Services
           </Link>
 
-
           <Link to="/contact"  className={`hdr-dlink ${active('/contact')  ? 'hdr-dlink--on' : ''}`}>
             <span className="hdr-dlink-emoji">📞</span> Contact
           </Link>
@@ -288,7 +287,7 @@ export default function Header() {
 
         {/* WhatsApp CTA */}
         <a
-          href="https://wa.me/919999999999"
+          href="https://wa.me/916206869543"
           target="_blank" rel="noopener noreferrer"
           className="hdr-drawer-wa"
         >

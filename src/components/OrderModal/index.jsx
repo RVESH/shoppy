@@ -5,7 +5,7 @@ import { useOrders, generateOrderId } from "../OrderHistory";  // ← updated
 import OrderReceipt from "../Receipt";                     // ← updated
 import "./style.scss";
 
-const WHATSAPP = "919999999999"; // ← apna number daalo
+const WHATSAPP = "916206869543"; // ← apna number daalo
 
 export default function OrderModal({ onClose }) {
   const { items, totalPrice, totalMrp, totalSaved, clearCart } = useCart();
