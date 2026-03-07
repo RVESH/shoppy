@@ -1,18 +1,23 @@
+// src/pages/Categories/index.jsx
+/* eslint-disable */
 import { useState, useEffect } from "react";
 import { fetchProducts, fetchCategories } from "../../api/api.js";
+import ProductView from "../../components/ProductView";
+import { useWishlist } from "../../components/WishlistSave";
+import { useRecent }   from "../../components/RecentlyViewed";
 import "./style.scss";
 
 const colorMap = {
-  "women-essentials":      { bg: "#fff7ed", accent: "#ea580c", light: "#ffedd5", badge: "#fed7aa" },
-  "grocery-fmcg":          { bg: "#f0fdf4", accent: "#16a34a", light: "#dcfce7", badge: "#bbf7d0" },
-  "household-essentials":  { bg: "#eff6ff", accent: "#2563eb", light: "#dbeafe", badge: "#bfdbfe" },
-  "mobile-accessories":    { bg: "#fdf4ff", accent: "#9333ea", light: "#f3e8ff", badge: "#e9d5ff" },
-  "service-hub":           { bg: "#fff1f2", accent: "#e11d48", light: "#ffe4e6", badge: "#fecdd3" },
-  "tailoring-accessories": { bg: "#f0fdfa", accent: "#0d9488", light: "#ccfbf1", badge: "#99f6e4" },
+  "women-essentials":      { bg:"#fff7ed", accent:"#ea580c", light:"#ffedd5", badge:"#fed7aa" },
+  "grocery-fmcg":          { bg:"#f0fdf4", accent:"#16a34a", light:"#dcfce7", badge:"#bbf7d0" },
+  "household-essentials":  { bg:"#eff6ff", accent:"#2563eb", light:"#dbeafe", badge:"#bfdbfe" },
+  "mobile-accessories":    { bg:"#fdf4ff", accent:"#9333ea", light:"#f3e8ff", badge:"#e9d5ff" },
+  "service-hub":           { bg:"#fff1f2", accent:"#e11d48", light:"#ffe4e6", badge:"#fecdd3" },
+  "tailoring-accessories": { bg:"#f0fdfa", accent:"#0d9488", light:"#ccfbf1", badge:"#99f6e4" },
 };
 
-const MiniCard = ({ product }) => (
-  <div className="miniCard">
+const MiniCard = ({ product, onClick }) => (
+  <div className="miniCard" onClick={() => onClick(product)}>
     {product.discountPercent > 0 && (
       <div className="miniDiscount">{product.discountPercent}% OFF</div>
     )}
@@ -32,12 +37,12 @@ const MiniCard = ({ product }) => (
   </div>
 );
 
-const CategorySection = ({ cat, products, isActive, onToggle }) => {
+const CategorySection = ({ cat, products, isActive, onToggle, onProductClick }) => {
   const colors = colorMap[cat.slug] || colorMap["women-essentials"];
-  const subCats = [...new Set(products.map((p) => p.subCategory))];
+  const subCats = [...new Set(products.map(p => p.subCategory))];
 
   return (
-    <div className="catSection" style={{ "--accent": colors.accent, "--bg": colors.bg, "--light": colors.light, "--badge": colors.badge }}>
+    <div className="catSection" style={{"--accent":colors.accent,"--bg":colors.bg,"--light":colors.light,"--badge":colors.badge}}>
       <div className="catSectionHeader" onClick={onToggle}>
         <div className="catSectionLeft">
           <div className="catSectionIcon">{cat.icon}</div>
@@ -45,9 +50,7 @@ const CategorySection = ({ cat, products, isActive, onToggle }) => {
             <h2 className="catSectionName">{cat.name}</h2>
             <p className="catSectionDesc">{cat.description}</p>
             <div className="catSectionSubcats">
-              {subCats.map((s) => (
-                <span key={s} className="subcatTag">{s}</span>
-              ))}
+              {subCats.map(s => <span key={s} className="subcatTag">{s}</span>)}
             </div>
           </div>
         </div>
@@ -59,21 +62,19 @@ const CategorySection = ({ cat, products, isActive, onToggle }) => {
           <div className={`toggleIcon ${isActive ? "toggleIconOpen" : ""}`}>▼</div>
         </div>
       </div>
-
       {isActive && (
         <div className="catSectionBody">
-          {subCats.map((sub) => {
-            const subProducts = products.filter((p) => p.subCategory === sub);
+          {subCats.map(sub => {
+            const subProducts = products.filter(p => p.subCategory === sub);
             return (
               <div key={sub} className="subCatGroup">
                 <div className="subCatLabel">
-                  <span className="subCatDot" />
-                  {sub}
+                  <span className="subCatDot" />{sub}
                   <span className="subCatCount">{subProducts.length}</span>
                 </div>
                 <div className="miniGrid">
-                  {subProducts.map((p) => (
-                    <MiniCard key={p.id} product={p} />
+                  {subProducts.map(p => (
+                    <MiniCard key={p.id} product={p} onClick={onProductClick} />
                   ))}
                 </div>
               </div>
@@ -86,47 +87,47 @@ const CategorySection = ({ cat, products, isActive, onToggle }) => {
 };
 
 export default function Categories() {
-  // ✅ CHANGE 1: data/index.js import hataya — ab API se aayega
   const [allProducts, setAllProducts] = useState([]);
-  const [categories, setCategories]   = useState([]);
-  const [loading, setLoading]         = useState(true);
-  const [openCats, setOpenCats]       = useState({});
-  const [search, setSearch]           = useState("");
+  const [categories,  setCategories]  = useState([]);
+  const [loading,     setLoading]     = useState(true);
+  const [openCats,    setOpenCats]    = useState({});
+  const [search,      setSearch]      = useState("");
+  const [popupProduct,setPopupProduct]= useState(null);
 
-  // ✅ CHANGE 2: useEffect add kiya — PHP API se data fetch karo
+  const { toggleWishlist, isWishlisted } = useWishlist();
+  const { addToRecent } = useRecent();
+
   useEffect(() => {
     async function loadData() {
       try {
-        const [prods, cats] = await Promise.all([
-          fetchProducts(),
-          fetchCategories(),
-        ]);
+        const [prods, cats] = await Promise.all([fetchProducts(), fetchCategories()]);
         setAllProducts(prods);
         setCategories(cats);
-        setOpenCats(Object.fromEntries(cats.map((c) => [c.slug, true])));
-      } catch (err) {
-        console.error("Load error:", err);
-      } finally {
-        setLoading(false);
-      }
+        setOpenCats(Object.fromEntries(cats.map(c => [c.slug, true])));
+      } catch (err) { console.error(err); }
+      finally { setLoading(false); }
     }
     loadData();
   }, []);
 
-  const toggleCat   = (slug) => setOpenCats((prev) => ({ ...prev, [slug]: !prev[slug] }));
-  const expandAll   = () => setOpenCats(Object.fromEntries(categories.map((c) => [c.slug, true])));
-  const collapseAll = () => setOpenCats(Object.fromEntries(categories.map((c) => [c.slug, false])));
+  function openProduct(product) {
+    setPopupProduct(product);
+    addToRecent(product);
+  }
 
-  const getProducts = (slug) => {
-    let list = allProducts.filter((p) => p.category === slug);
+  const toggleCat   = slug => setOpenCats(prev => ({ ...prev, [slug]: !prev[slug] }));
+  const expandAll   = () => setOpenCats(Object.fromEntries(categories.map(c => [c.slug, true])));
+  const collapseAll = () => setOpenCats(Object.fromEntries(categories.map(c => [c.slug, false])));
+
+  const getProducts = slug => {
+    let list = allProducts.filter(p => p.category === slug);
     if (search.trim()) {
       const q = search.toLowerCase();
-      list = list.filter(
-        (p) =>
-          p.name.toLowerCase().includes(q) ||
-          p.brand.toLowerCase().includes(q) ||
-          p.subCategory.toLowerCase().includes(q) ||
-          p.tags.some((t) => t.toLowerCase().includes(q))
+      list = list.filter(p =>
+        p.name.toLowerCase().includes(q) ||
+        p.brand.toLowerCase().includes(q) ||
+        p.subCategory.toLowerCase().includes(q) ||
+        (p.tags || []).some(t => t.toLowerCase().includes(q))
       );
     }
     return list;
@@ -137,48 +138,42 @@ export default function Categories() {
   return (
     <div className="categoriesPage">
 
+      {popupProduct && (
+        <ProductView
+          product={popupProduct}
+          onClose={() => setPopupProduct(null)}
+          onWishlist={() => toggleWishlist(popupProduct)}
+          isWishlisted={isWishlisted(popupProduct?.id)}
+        />
+      )}
+
       <div className="catPageHeader">
         <div className="catPageHeaderInner">
-          <div className="breadcrumb">🏠 Home &rsaquo; Categories</div>
+          <div className="breadcrumb">🏠 Home › Categories</div>
           <h1 className="catPageTitle">Sab Categories 🗂️</h1>
-          <p className="catPageSubtitle">
-            {categories.length} categories • {allProducts.length} total items
-          </p>
+          <p className="catPageSubtitle">{categories.length} categories • {allProducts.length} total items</p>
           <div className="catSearchWrap">
             <span className="catSearchIcon">🔍</span>
-            <input
-              type="text"
-              placeholder="Category mein search karo..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="catSearchInput"
-            />
-            {search && (
-              <button className="catSearchClear" onClick={() => setSearch("")}>✕</button>
-            )}
+            <input type="text" placeholder="Category mein search karo..."
+              value={search} onChange={e => setSearch(e.target.value)} className="catSearchInput" />
+            {search && <button className="catSearchClear" onClick={() => setSearch("")}>✕</button>}
           </div>
-          {search && (
-            <p className="catSearchResult">{totalVisible} items mile "{search}" ke liye</p>
-          )}
+          {search && <p className="catSearchResult">{totalVisible} items mile "{search}" ke liye</p>}
         </div>
       </div>
 
       <div className="quickJump">
         <div className="quickJumpInner">
           <span className="quickJumpLabel">Jump to:</span>
-          {categories.map((cat) => (
-            <a key={cat.id} href={`#${cat.slug}`} className="quickJumpPill">
-              {cat.icon} {cat.name}
-            </a>
+          {categories.map(cat => (
+            <a key={cat.id} href={`#${cat.slug}`} className="quickJumpPill">{cat.icon} {cat.name}</a>
           ))}
         </div>
       </div>
 
       <div className="catControls">
         <div className="catControlsInner">
-          <span className="catControlsInfo">
-            <strong>{totalVisible}</strong> items dikh rahe hain
-          </span>
+          <span className="catControlsInfo"><strong>{totalVisible}</strong> items dikh rahe hain</span>
           <div className="catControlsBtns">
             <button className="ctrlBtn" onClick={expandAll}>↓ Sab Kholna</button>
             <button className="ctrlBtn" onClick={collapseAll}>↑ Sab Band</button>
@@ -186,26 +181,19 @@ export default function Categories() {
         </div>
       </div>
 
-      {/* ✅ CHANGE 3: Loading state add kiya */}
       <div className="catList">
         {loading ? (
-          <div className="catEmptyState">
-            <div className="catEmptyEmoji">⏳</div>
-            <h3>Load ho raha hai...</h3>
-          </div>
+          <div className="catEmptyState"><div className="catEmptyEmoji">⏳</div><h3>Load ho raha hai...</h3></div>
         ) : (
           <>
-            {categories.map((cat) => {
+            {categories.map(cat => {
               const products = getProducts(cat.slug);
               if (products.length === 0 && search) return null;
               return (
                 <div key={cat.id} id={cat.slug}>
-                  <CategorySection
-                    cat={cat}
-                    products={products}
-                    isActive={openCats[cat.slug]}
-                    onToggle={() => toggleCat(cat.slug)}
-                  />
+                  <CategorySection cat={cat} products={products}
+                    isActive={openCats[cat.slug]} onToggle={() => toggleCat(cat.slug)}
+                    onProductClick={openProduct} />
                 </div>
               );
             })}
@@ -214,15 +202,12 @@ export default function Categories() {
                 <div className="catEmptyEmoji">🔍</div>
                 <h3>Koi item nahi mila!</h3>
                 <p>"{search}" ke liye kuch nahi mila</p>
-                <button className="catResetBtn" onClick={() => setSearch("")}>
-                  Search Clear Karo
-                </button>
+                <button className="catResetBtn" onClick={() => setSearch("")}>Search Clear Karo</button>
               </div>
             )}
           </>
         )}
       </div>
-
     </div>
   );
 }

@@ -1,6 +1,6 @@
 // src/components/Cart/index.jsx
-// Fix: Order button pe cart pehle band ho, phir modal khule
-import { useState, useEffect, useRef, useCallback  } from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../CartContext";
 import OrderModal from "../OrderModal";
@@ -89,19 +89,17 @@ export default function Cart() {
     return () => { document.body.style.overflow = ""; };
   }, [isOpen, showOrder]);
 
+  function handleClose() {
+    setClosing(true);
+    setTimeout(() => { setClosing(false); setIsOpen(false); }, 280);
+  }
 
-  const handleClose = useCallback(() => {
-  setClosing(true);
-  setTimeout(() => { setClosing(false); setIsOpen(false); }, 280);
-}, [setIsOpen]);
-
-  // ✅ FIX: Cart band karo → animation khatam ho → PHIR modal khulo
   function handleOrderClick() {
     setClosing(true);
     setTimeout(() => {
       setClosing(false);
       setIsOpen(false);
-      setShowOrder(true);   // ← drawer poora band hone ke BAAD
+      setShowOrder(true);
     }, 300);
   }
 
@@ -110,24 +108,18 @@ export default function Cart() {
     setTimeout(() => navigate("/products"), 300);
   }
 
-  if (!isOpen && !showOrder) return (
-    showOrder ? <OrderModal onClose={() => setShowOrder(false)} /> : null
-  );
+  if (!isOpen && !showOrder) return null;
 
   return (
     <>
-      {/* Backdrop */}
       {isOpen && (
         <div className={`cartBackdrop ${closing ? "cartBackdrop--out" : ""}`} onClick={handleClose} />
       )}
 
-      {/* Drawer */}
       {isOpen && (
         <div className={`cartDrawer ${closing ? "cartDrawer--out" : ""}`}>
-
           <div className="cartHandle" />
 
-          {/* Header */}
           <div className="cartHeader">
             <div className="cartHeaderLeft">
               <span className="cartHeaderIcon">🛒</span>
@@ -140,7 +132,7 @@ export default function Cart() {
               {items.length > 0 && (
                 <button className="cartClearBtn" onClick={clearCart}>Clear All</button>
               )}
-              <button className="cartCloseBtn" onClick={handleClose} title="Band karo">
+              <button className="cartCloseBtn" onClick={handleClose}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round">
                   <path d="M18 6L6 18M6 6l12 12"/>
                 </svg>
@@ -152,7 +144,6 @@ export default function Cart() {
             <div className="cartSwipeHint">← Item pe left swipe karke hatao</div>
           )}
 
-          {/* Body */}
           <div className="cartBody">
             {items.length === 0 ? (
               <div className="cartEmpty">
@@ -177,7 +168,6 @@ export default function Cart() {
             )}
           </div>
 
-          {/* Footer */}
           {items.length > 0 && (
             <div className="cartFooter">
               {totalSaved > 0 && (
@@ -203,8 +193,6 @@ export default function Cart() {
                   <span>₹{totalPrice.toLocaleString()}</span>
                 </div>
               </div>
-
-              {/* ✅ Ye button use karo — handleOrderClick */}
               <button className="cartOrderBtn" onClick={handleOrderClick}>
                 📋 Order Details Bharo
               </button>
@@ -214,7 +202,6 @@ export default function Cart() {
         </div>
       )}
 
-      {/* Order Modal — drawer band hone ke baad dikhta hai */}
       {showOrder && <OrderModal onClose={() => setShowOrder(false)} />}
     </>
   );
