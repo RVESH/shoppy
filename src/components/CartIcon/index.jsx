@@ -14,6 +14,7 @@ export default function CartIcon() {
       setAnimate(true);
       setTimeout(() => setAnimate(false), 600);
     }
+    
     prevCount.current = totalItems;
   }, [totalItems]);
 
