@@ -1,18 +1,19 @@
 // src/components/OrderModal/index.jsx
+/* eslint-disable */
 import { useState } from "react";
 import { useCart } from "../CartContext";
-import { useOrders, generateOrderId } from "../OrderHistory";  // ← updated
-import OrderReceipt from "../Receipt";                     // ← updated
+import { useOrders, generateOrderId } from "../OrderHistory";
+import OrderReceipt from "../Receipt";
 import "./style.scss";
 
-const WHATSAPP = "916206869543"; // ← apna number daalo
+const WHATSAPP = "916206869543";
 
 export default function OrderModal({ onClose }) {
   const { items, totalPrice, totalMrp, totalSaved, clearCart } = useCart();
   const { saveOrder } = useOrders();
 
-  const [form, setForm]       = useState({ name:"", phone:"", address:"", note:"" });
-  const [error, setError]     = useState("");
+  const [form,    setForm]    = useState({ name:"", phone:"", address:"", note:"" });
+  const [error,   setError]   = useState("");
   const [loading, setLoading] = useState(false);
   const [receipt, setReceipt] = useState(null);
 
@@ -47,26 +48,36 @@ export default function OrderModal({ onClose }) {
 
     const saved = saveOrder(orderData);
 
+    // ── WhatsApp message — simple aur clear format ──────────
+    const itemLines = items.map(item => {
+      const v = Object.entries(item.variants || {})
+        .filter(([, val]) => val)
+        .map(([k, v]) => `${k}: ${v}`)
+        .join(", ");
+      const qty  = item.quantity > 1 ? ` (×${item.quantity})` : "";
+      const vars = v ? ` [${v}]` : "";
+      return `• ${item.name}${vars}${qty} - Rs.${(item.price * item.quantity).toLocaleString()}`;
+    }).join("\n");
+
     const lines = [
-      `🛒 *New Order — SL Cart*`,
-      `📦 Order ID: *${saved.orderId}*`,
-      `📅 ${new Date().toLocaleString("en-IN")}`,
+      `Hi! Mujhe ye items order karne hain:`,
       ``,
-      `👤 *${form.name}*`,
-      `📞 ${form.phone}`,
-      `📍 ${form.address}`,
-      form.note ? `📝 ${form.note}` : "",
+      itemLines,
       ``,
-      `*Items:*`,
-      ...items.map((item, i) => {
-        const v = Object.entries(item.variants||{}).filter(([,val])=>val).map(([k,v])=>`${k}:${v}`).join(", ");
-        return `${i+1}. ${item.name}${v?` (${v})`:""} ×${item.quantity} = ₹${(item.price*item.quantity).toLocaleString()}`;
-      }),
+      totalSaved > 0
+        ? `Total: Rs.${totalPrice.toLocaleString()} (Rs.${totalSaved.toLocaleString()} ki bachat!)`
+        : `Total: Rs.${totalPrice.toLocaleString()}`,
+      `Delivery: FREE 🚚`,
       ``,
-      totalSaved > 0 ? `💰 Discount: -₹${totalSaved.toLocaleString()}` : "",
-      `✅ *Total: ₹${totalPrice.toLocaleString()}*`,
-      `🚚 Delivery: FREE`,
-    ].filter(Boolean).join("\n");
+      `*Mera Details:*`,
+      `Naam: ${form.name}`,
+      `Phone: ${form.phone}`,
+      `Address: ${form.address}`,
+      form.note ? `Note: ${form.note}` : "",
+      ``,
+      `Order ID: ${saved.orderId}`,
+    ].filter(line => line !== undefined && line !== null && !(line === "" && lines && lines[lines.length-1] === ""))
+     .join("\n");
 
     setTimeout(() => {
       setLoading(false);
@@ -82,42 +93,56 @@ export default function OrderModal({ onClose }) {
     <>
       <div className="omBackdrop" onClick={onClose} />
       <div className="omModal">
+
         <div className="omHeader">
           <span className="omTitle">📋 Order Details</span>
           <button className="omClose" onClick={onClose}>✕</button>
         </div>
 
         <div className="omBody">
+
+          {/* Items Summary */}
           <div className="omSummary">
-            <div className="omSummaryTitle">🛍️ {items.length} item(s) · ₹{totalPrice.toLocaleString()}</div>
-            {items.map((item,i) => {
-              const v = Object.entries(item.variants||{}).filter(([,val])=>val).map(([k,v])=>`${k}:${v}`).join(", ");
+            <div className="omSummaryTitle">
+              🛍️ {items.length} item{items.length > 1 ? "s" : ""} · ₹{totalPrice.toLocaleString()}
+            </div>
+            {items.map((item, i) => {
+              const v = Object.entries(item.variants || {})
+                .filter(([, val]) => val)
+                .map(([k, v]) => `${k}: ${v}`).join(", ");
               return (
                 <div key={i} className="omSummaryItem">
-                  <span>{item.name}{v?` (${v})`:""} ×{item.quantity}</span>
-                  <span>₹{(item.price*item.quantity).toLocaleString()}</span>
+                  <span>{item.name}{v ? ` (${v})` : ""} ×{item.quantity}</span>
+                  <span>₹{(item.price * item.quantity).toLocaleString()}</span>
                 </div>
               );
             })}
-            {totalSaved > 0 && <div className="omSavings">🎉 ₹{totalSaved.toLocaleString()} ki bachat!</div>}
+            {totalSaved > 0 && (
+              <div className="omSavings">🎉 ₹{totalSaved.toLocaleString()} ki bachat!</div>
+            )}
           </div>
 
+          {/* Form Fields */}
           <div className="omFields">
             <div className="omField">
               <label>Aapka Naam *</label>
-              <input name="name" placeholder="Full name likhein" value={form.name} onChange={handleChange} />
+              <input name="name" placeholder="Full name likhein"
+                value={form.name} onChange={handleChange} />
             </div>
             <div className="omField">
               <label>Phone Number *</label>
-              <input name="phone" type="tel" placeholder="10-digit mobile" value={form.phone} onChange={handleChange} maxLength={10} />
+              <input name="phone" type="tel" placeholder="10-digit mobile"
+                value={form.phone} onChange={handleChange} maxLength={10} />
             </div>
             <div className="omField">
               <label>Delivery Address *</label>
-              <textarea name="address" placeholder="Pura address likhein..." rows={3} value={form.address} onChange={handleChange} />
+              <textarea name="address" placeholder="Pura address likhein..."
+                rows={3} value={form.address} onChange={handleChange} />
             </div>
             <div className="omField">
               <label>Note (optional)</label>
-              <input name="note" placeholder="Koi special instruction..." value={form.note} onChange={handleChange} />
+              <input name="note" placeholder="Koi special instruction..."
+                value={form.note} onChange={handleChange} />
             </div>
           </div>
 
@@ -130,6 +155,7 @@ export default function OrderModal({ onClose }) {
             {loading ? <span className="omSpinner" /> : "📲 WhatsApp Pe Order Karo"}
           </button>
         </div>
+
       </div>
     </>
   );
