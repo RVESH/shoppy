@@ -69,7 +69,7 @@ export default function Contact() {
           {/* Contact Details */}
           <div className="ctDetailsList">
 
-            <a href="https://wa.me/919798855030" target="_blank" rel="noreferrer" className="ctDetailItem ctDetailWa">
+            <a href="https://wa.me/916206869543" target="_blank" rel="noreferrer" className="ctDetailItem ctDetailWa">
               <div className="ctDetailIcon ctDetailIconWa"><WaSvg size={22} /></div>
               <div className="ctDetailText">
                 <div className="ctDetailLabel">WhatsApp</div>

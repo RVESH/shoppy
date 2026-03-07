@@ -240,7 +240,7 @@ export default function ProductDetail({ productId: propId, onBack }) {
               </button>
 
               <a
-                href={`https://wa.me/919798855030?text=${encodeURIComponent(waMsg)}`}
+                href={`https://wa.me/916206869543?text=${encodeURIComponent(waMsg)}`}
                 target="_blank"
                 rel="noreferrer"
                 className="pdWaBtn"
