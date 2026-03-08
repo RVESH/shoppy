@@ -1,4 +1,3 @@
-// src/components/Cart/index.jsx
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
@@ -6,10 +5,12 @@ import { useCart } from "../CartContext";
 import OrderModal from "../OrderModal";
 import "./style.scss";
 
+
 function getItemImg(item) {
   if (item.image) return item.image;
   return `https://placehold.co/80x80/fff7ed/ea580c?text=${encodeURIComponent(item.name.slice(0,5))}`;
 }
+
 
 function CartItem({ item }) {
   const { removeFromCart, updateQty } = useCart();
@@ -36,7 +37,7 @@ function CartItem({ item }) {
   return (
     <div className="cartItemWrap">
       <div className="cartItemDeleteBg" onClick={() => removeFromCart(item.id, item.variants)}>
-        <span>🗑️</span><span>Hatao</span>
+        <span>🗑️</span><span>Remove</span>
       </div>
       <div className="cartItem" style={{ transform: `translateX(${swipeX}px)` }}
         onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd}>
@@ -71,6 +72,7 @@ function CartItem({ item }) {
     </div>
   );
 }
+
 
 export default function Cart() {
   const { items, isOpen, setIsOpen, totalItems, totalPrice, totalMrp, totalSaved, clearCart } = useCart();
@@ -124,7 +126,7 @@ export default function Cart() {
             <div className="cartHeaderLeft">
               <span className="cartHeaderIcon">🛒</span>
               <div>
-                <span className="cartHeaderTitle">Mera Cart</span>
+                <span className="cartHeaderTitle">My Cart</span>
                 {totalItems > 0 && <span className="cartHeaderSub">{totalItems} item{totalItems > 1 ? "s" : ""}</span>}
               </div>
             </div>
@@ -141,16 +143,16 @@ export default function Cart() {
           </div>
 
           {items.length > 0 && (
-            <div className="cartSwipeHint">← Item pe left swipe karke hatao</div>
+            <div className="cartSwipeHint">← Swipe left on item to remove</div>
           )}
 
           <div className="cartBody">
             {items.length === 0 ? (
               <div className="cartEmpty">
                 <div className="cartEmptyIcon">🛍️</div>
-                <div className="cartEmptyTitle">Cart Khaali Hai!</div>
-                <div className="cartEmptyMsg">Apne pasand ke products daalo cart mein</div>
-                <button className="cartEmptyBtn" onClick={goToProducts}>🔍 Products Dekho</button>
+                <div className="cartEmptyTitle">Cart is Empty!</div>
+                <div className="cartEmptyMsg">Add your favorite products to cart</div>
+                <button className="cartEmptyBtn" onClick={goToProducts}>🔍 View Products</button>
               </div>
             ) : (
               <div className="cartItemsList">
@@ -159,7 +161,7 @@ export default function Cart() {
                 ))}
                 <button className="cartMoreBtn" onClick={goToProducts}>
                   <span className="cartMorePlus">+</span>
-                  <span>Aur Products Daalo</span>
+                  <span>Add More Products</span>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M5 12h14M12 5l7 7-7 7"/>
                   </svg>
@@ -171,7 +173,7 @@ export default function Cart() {
           {items.length > 0 && (
             <div className="cartFooter">
               {totalSaved > 0 && (
-                <div className="cartSavingsStrip">🎉 ₹{totalSaved.toLocaleString()} ki bachat ho rahi hai!</div>
+                <div className="cartSavingsStrip">🎉 You're saving ₹{totalSaved.toLocaleString()}!</div>
               )}
               <div className="cartSummary">
                 <div className="cartSummaryRow">
@@ -194,9 +196,9 @@ export default function Cart() {
                 </div>
               </div>
               <button className="cartOrderBtn" onClick={handleOrderClick}>
-                📋 Order Details Bharo
+                📋 Fill Order Details
               </button>
-              <p className="cartOrderNote">WhatsApp pe order confirm hoga</p>
+              <p className="cartOrderNote">Order will be confirmed on WhatsApp</p>
             </div>
           )}
         </div>

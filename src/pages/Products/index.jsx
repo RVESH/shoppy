@@ -1,10 +1,10 @@
 import { useState, useMemo, useEffect } from "react";
 import { fetchProducts } from "../../api/api.js";
 import ProductView from "../../components/ProductView";
-import Pagination from "../../components/Pagination";   // ← import
+import Pagination from "../../components/Pagination";  // ← import
 import "./style.scss";
 
-const ITEMS_PER_PAGE = 20; // ek page pe kitne products
+const ITEMS_PER_PAGE = 20; // Items per page
 
 // ─── Star Rating ──────────────────────────────────────────────
 const Stars = ({ rating }) => (
@@ -17,10 +17,10 @@ const Stars = ({ rating }) => (
 
 const categories = [
   { id: 1, name: "Women Essentials",   slug: "women-essentials",     icon: "👗" },
-  { id: 2, name: "Mobile Accessories", slug: "mobile-accessories",    icon: "📱" },
-  { id: 3, name: "Grocery & FMCG",     slug: "grocery-fmcg",          icon: "🛒" },
-  { id: 4, name: "Services",           slug: "service-hub",           icon: "🛠️" },
-  { id: 5, name: "Household",          slug: "household-essentials",  icon: "🏠" },
+  { id: 2, name: "Mobile Accessories", slug: "mobile-accessories",   icon: "📱" },
+  { id: 3, name: "Grocery & FMCG",     slug: "grocery-fmcg",         icon: "🛒" },
+  { id: 4, name: "Services",           slug: "service-hub",          icon: "🛠️" },
+  { id: 5, name: "Household",          slug: "household-essentials", icon: "🏠" },
   { id: 6, name: "Tailoring",          slug: "tailoring-accessories", icon: "🧵" },
 ];
 
@@ -75,7 +75,7 @@ const FilterPanel = ({
     <div className="sideCard">
       <div className="sideCardTitle">🔍 Search</div>
       <div className="searchBox">
-        <input type="text" placeholder="Product ya brand dhundo..."
+        <input type="text" placeholder="Search product or brand..."
           value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
           className="searchInput" />
         {searchQuery && (
@@ -169,7 +169,7 @@ export default function Products() {
         });
         setAllProducts(data);
       } catch (err) {
-        setError("Products load nahi ho paaye");
+        setError("Products failed to load");
       } finally {
         setLoading(false);
       }
@@ -230,9 +230,9 @@ export default function Products() {
       <div className="pageHeader">
         <div className="pageHeaderInner">
           <div className="breadcrumb">🏠 Home &rsaquo; Products</div>
-          <h1 className="pageTitle">Hamare Saare Products 🛍️</h1>
+          <h1 className="pageTitle">All Our Products 🛍️</h1>
           <p className="pageSubtitle">
-            {filtered.length} items mile — groceries se lekar digital services tak!
+            {filtered.length} items found — from groceries to digital services!
           </p>
         </div>
       </div>
@@ -251,7 +251,7 @@ export default function Products() {
           {/* Toolbar */}
           <div className="toolbar">
             <span className="resultCount">
-              <strong>{filtered.length}</strong> products mile
+              <strong>{filtered.length}</strong> products found
               {totalPages > 1 && (
                 <span className="pageInfo"> · Page {currentPage}/{totalPages}</span>
               )}
@@ -308,8 +308,8 @@ export default function Products() {
           ) : (
             <div className="emptyState">
               <div className="emptyEmoji">🔍</div>
-              <h3>Koi product nahi mila!</h3>
-              <p>Search ya filter change karo</p>
+              <h3>No products found!</h3>
+              <p>Try changing search or filters</p>
               <button className="resetBtn" onClick={resetAll}>Reset Filters</button>
             </div>
           )}

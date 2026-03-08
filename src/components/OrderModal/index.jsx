@@ -1,4 +1,3 @@
-// src/components/OrderModal/index.jsx
 /* eslint-disable */
 import { useState } from "react";
 import { useCart } from "../CartContext";
@@ -25,9 +24,9 @@ export default function OrderModal({ onClose }) {
 
   function validate() {
     const e = {};
-    if (!form.name.trim())                  e.name    = "Naam zaroori hai";
-    if (!/^[6-9]\d{9}$/.test(form.phone))  e.phone   = "Valid 10-digit number daalo";
-    if (!form.address.trim())               e.address = "Address zaroori hai";
+    if (!form.name.trim())                  e.name    = "Name is required";
+    if (!/^[6-9]\d{9}$/.test(form.phone))  e.phone   = "Enter valid 10-digit number";
+    if (!form.address.trim())               e.address = "Address is required";
     return e;
   }
 
@@ -60,17 +59,17 @@ export default function OrderModal({ onClose }) {
     }).join("\n");
 
     const msg = [
-      `Hi! Mujhe ye items order karne hain:`,
+      `Hi! I want to order these items:`,
       ``,
       itemLines,
       ``,
       totalSaved > 0
-        ? `Total: Rs.${totalPrice.toLocaleString()} (Rs.${totalSaved.toLocaleString()} ki bachat! 🎉)`
+        ? `Total: Rs.${totalPrice.toLocaleString()} (Saved Rs.${totalSaved.toLocaleString()}! 🎉)`
         : `Total: Rs.${totalPrice.toLocaleString()}`,
       `Delivery: FREE 🚚`,
       ``,
-      `Mera Details:`,
-      `Naam: ${form.name}`,
+      `My Details:`,
+      `Name: ${form.name}`,
       `Phone: ${form.phone}`,
       `Address: ${form.address}`,
       form.note ? `Note: ${form.note}` : "",
@@ -104,18 +103,18 @@ export default function OrderModal({ onClose }) {
           <div className="omHeaderLeft">
             <span className="omHeaderIcon">📋</span>
             <div>
-              <div className="omTitle">Order Details Bharo</div>
+              <div className="omTitle">Fill Order Details</div>
               <div className="omSubtitle">{items.length} item{items.length>1?"s":""} · ₹{totalPrice.toLocaleString()}</div>
             </div>
           </div>
-          <button className="omClose" onClick={onClose} aria-label="Band karo">✕</button>
+          <button className="omClose" onClick={onClose} aria-label="Close">✕</button>
         </div>
 
         <div className="omBody">
 
           {/* Items Summary */}
           <div className="omSummary">
-            <div className="omSummaryHead">🛍️ Aapke Items</div>
+            <div className="omSummaryHead">🛍️ Your Items</div>
             <div className="omSummaryList">
               {items.map((item, i) => {
                 const v = Object.entries(item.variants || {})
@@ -134,7 +133,7 @@ export default function OrderModal({ onClose }) {
               })}
             </div>
             {totalSaved > 0 && (
-              <div className="omSavings">🎉 ₹{totalSaved.toLocaleString()} ki bachat!</div>
+              <div className="omSavings">🎉 Saved ₹{totalSaved.toLocaleString()}!</div>
             )}
             <div className="omSummaryTotal">
               <span>Total</span>
@@ -146,10 +145,10 @@ export default function OrderModal({ onClose }) {
           <div className="omFields">
 
             <div className="omField">
-              <label className="omLabel">Aapka Naam *</label>
+              <label className="omLabel">Your Name *</label>
               <input
                 name="name"
-                placeholder="Poora naam likhein"
+                placeholder="Enter full name"
                 value={form.name}
                 onChange={handleChange}
                 className={errors.name ? "omInput omInputErr" : "omInput"}
@@ -183,7 +182,7 @@ export default function OrderModal({ onClose }) {
               <label className="omLabel">Delivery Address *</label>
               <textarea
                 name="address"
-                placeholder="Ghar ka pura address likhein..."
+                placeholder="Enter your full address..."
                 rows={3}
                 value={form.address}
                 onChange={handleChange}
@@ -197,7 +196,7 @@ export default function OrderModal({ onClose }) {
               <label className="omLabel">Note <span className="omOptional">(Optional)</span></label>
               <input
                 name="note"
-                placeholder="Koi special instruction ho toh likhein..."
+                placeholder="Any special instructions..."
                 value={form.note}
                 onChange={handleChange}
                 className="omInput"
@@ -208,18 +207,24 @@ export default function OrderModal({ onClose }) {
 
         </div>
 
-        {/* Footer */}
-        <div className="omFooter">
-          <button className="omCancel" onClick={onClose} disabled={loading}>
-            Wapas Jao
-          </button>
-          <button className="omSubmit" onClick={handleSubmit} disabled={loading}>
-            {loading
-              ? <><span className="omSpinner" /> Bhej rahe hain...</>
-              : <><span>📲</span> WhatsApp Pe Order Karo</>
-            }
-          </button>
-        </div>
+ {/* Footer */}
+<div className="omFooter">
+  <button className="omCancel" onClick={onClose} disabled={loading}>
+    Go Back
+  </button>
+  <button className="omSubmit" onClick={handleSubmit} disabled={loading}>
+    {loading ? (
+      <>
+        <span className="omSpinner" /> Sending...
+      </>
+    ) : (
+      <>
+        <span>📲</span> Order on WhatsApp
+      </>
+    )}
+  </button>
+</div>
+
 
       </div>
     </>

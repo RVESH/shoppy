@@ -138,22 +138,22 @@ export default function Home() {
           <div className={styles.heroLeft}>
             <div className={styles.heroBadge}>🏪 Local Store + Online Shop</div>
             <h1 className={styles.heroTitle}>
-              Apna{" "}
+              Your{" "}
               <span className={styles.heroHighlight}>
                 SL Cart
                 <svg className={styles.underlineSvg} viewBox="0 0 200 12" fill="none">
                   <path d="M2 8 Q50 2 100 6 Q150 10 198 4" stroke="#f97316" strokeWidth="3" strokeLinecap="round" fill="none" />
                 </svg>
               </span>
-              <br />Sabka Dukan! 🛒
+              <br />Everyone's Store! 🛒
             </h1>
             <p className={styles.heroSubtext}>
-              Groceries se lekar tailoring tak — sab ek hi jagah! Physical store
-              aur online dono available. Apne ghar baithe order karo ya seedha aao!
+              From groceries to tailoring — everything in one place! Physical store
+              and online both available. Order from home or visit directly!
             </p>
             <div className={styles.heroBtns}>
-              <button className={styles.btnPrimary}>🛍️ Products Dekho</button>
-              <button className={styles.btnOutline}>📞 Contact Karo</button>
+              <button className={styles.btnPrimary}>🛍️ View Products</button>
+              <button className={styles.btnOutline}>📞 Contact Us</button>
             </div>
             <div className={styles.heroStats}>
               {[
@@ -206,7 +206,7 @@ export default function Home() {
       {/* ── CATEGORIES ───────────────────────────────── */}
       <section className={styles.section}>
         <div className={styles.container}>
-          <SectionHeader label="Browse Categories" title="Kya Dhundh Rahe Ho? 🔍" sub="Apni zaroorat ke hisaab se category chuniye" />
+          <SectionHeader label="Browse Categories" title="What Are You Looking For? 🔍" sub="Choose category according to your needs" />
           {loading ? (
             <div className={styles.loadingRow}>Loading categories...</div>
           ) : (
@@ -222,7 +222,7 @@ export default function Home() {
       {/* ── FEATURED PRODUCTS ────────────────────────── */}
       <section className={`${styles.section} ${styles.bgWhite}`}>
         <div className={styles.container}>
-          <SectionHeader label="Featured Products" title="Top Picks Tumhare Liye ⭐" sub="Sabse zyada pasand kiye gaye products" />
+          <SectionHeader label="Featured Products" title="Top Picks For You ⭐" sub="Most popular products" />
           {loading ? (
             <div className={styles.loadingRow}>Loading products...</div>
           ) : (
@@ -237,7 +237,7 @@ export default function Home() {
             </div>
           )}
           <div className={styles.centerBtn}>
-            <button className={styles.btnOutlineDark}>Sab Products Dekho →</button>
+            <button className={styles.btnOutlineDark}>View All Products →</button>
           </div>
         </div>
       </section>
@@ -245,7 +245,7 @@ export default function Home() {
       {/* ── SERVICES ─────────────────────────────────── */}
       <section className={styles.section}>
         <div className={styles.container}>
-          <SectionHeader label="Our Services" title="Digital Seva Hub 🖨️" sub="PAN card se resume tak — sab kuch ek hi jagah" />
+          <SectionHeader label="Our Services" title="Digital Service Hub 🖨️" sub="From PAN card to resume — everything in one place" />
           {loading ? (
             <div className={styles.loadingRow}>Loading services...</div>
           ) : (
@@ -260,7 +260,7 @@ export default function Home() {
             </div>
           )}
           <div className={styles.centerBtn}>
-            <button className={styles.btnPrimary}>Sab Services Dekho →</button>
+            <button className={styles.btnPrimary}>View All Services →</button>
           </div>
         </div>
       </section>
@@ -269,14 +269,14 @@ export default function Home() {
       <section className={styles.ctaSection}>
         <div className={styles.ctaInner}>
           <div className={styles.ctaEmoji}>💬</div>
-          <h2 className={styles.ctaTitle}>Seedha WhatsApp Karein!</h2>
+          <h2 className={styles.ctaTitle}>Contact on WhatsApp!</h2>
           <p className={styles.ctaSub}>
-            Koi bhi sawaal ho, order karna ho, ya koi service chahiye — hum
-            WhatsApp pe available hain. Turat reply guarantee!
+            Any question, order, or service needed — we're
+            available on WhatsApp. Instant reply guaranteed!
           </p>
           <a href="https://wa.me/916206869543" target="_blank" rel="noreferrer" className={styles.ctaWaBtn}>
             <WaSvg size={22} />
-            WhatsApp pe Message Karein!
+            Message on WhatsApp!
           </a>
         </div>
       </section>

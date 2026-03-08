@@ -16,10 +16,10 @@ export default function Contact() {
 
   const validate = () => {
     const e = {};
-    if (!form.name.trim())    e.name    = "Naam zaroori hai";
-    if (!form.phone.trim())   e.phone   = "Phone number zaroori hai";
-    else if (!/^\d{10}$/.test(form.phone.trim())) e.phone = "10 digit number daalo";
-    if (!form.message.trim()) e.message = "Message likhna zaroori hai";
+    if (!form.name.trim())    e.name    = "Name is required";
+    if (!form.phone.trim())   e.phone   = "Phone number is required";
+    else if (!/^\d{10}$/.test(form.phone.trim())) e.phone = "Enter 10 digit number";
+    if (!form.message.trim()) e.message = "Message is required";
     return e;
   };
 
@@ -28,7 +28,7 @@ export default function Contact() {
     if (Object.keys(e).length > 0) { setErrors(e); return; }
     setErrors({});
     const text = encodeURIComponent(
-      `Namaste! Main ${form.name} hun.\nPhone: ${form.phone}\n\n${form.message}`
+      `Hello! I am ${form.name}.\nPhone: ${form.phone}\n\n${form.message}`
     );
     window.open(`https://wa.me/916206869543?text=${text}`, "_blank");
     setSubmitted(true);
@@ -45,8 +45,8 @@ export default function Contact() {
       <div className="ctPageHeader">
         <div className="ctPageHeaderInner">
           <div className="breadcrumb">🏠 Home › Contact</div>
-          <h1 className="ctPageTitle">Humse Baat Karein 💬</h1>
-          <p className="ctPageSubtitle">Sawaal ho, order karna ho ya koi bhi kaam — hum yahan hain!</p>
+          <h1 className="ctPageTitle">Contact Us 💬</h1>
+          <p className="ctPageSubtitle">Questions, orders or any help — we're here!</p>
         </div>
       </div>
 
@@ -56,7 +56,7 @@ export default function Contact() {
           <div className="ctStoreCard">
             <div className="ctStoreEmoji">🏪</div>
             <h2 className="ctStoreName">SL Cart</h2>
-            <p className="ctStoreTagline">Apna Local Store — Sab Kuch Ek Jagah!</p>
+            <p className="ctStoreTagline">Your Local Store — Everything in One Place!</p>
           </div>
 
           <div className="ctDetailsList">
@@ -65,15 +65,15 @@ export default function Contact() {
               <div className="ctDetailText">
                 <div className="ctDetailLabel">WhatsApp</div>
                 <div className="ctDetailValue">+91 6206869543</div>
-                <div className="ctDetailHint">Turant reply payen!</div>
+                <div className="ctDetailHint">Instant reply!</div>
               </div>
               <div className="ctDetailArrow">→</div>
             </a>
             {[
-              { icon:"📞", label:"Phone",         value:"+91 62068 69543",              hint:"Mon–Sat, 9am–8pm" },
+              { icon:"📞", label:"Phone",         value:"+91 62068 69543",         hint:"Mon–Sat, 9am–8pm" },
               { icon:"📍", label:"Address",        value:"Middle School Gali, AmbedkarNagar", hint:"Sangatpar Bakhtiyarpur (Patna)" },
-              { icon:"🕐", label:"Shop Timings",   value:"6:00 AM – 8:00 PM",           hint:"Monday to Sunday" },
-              { icon:"📧", label:"Email",          value:"slcart26@gmail.com",           hint:"Reply within 24 hours" },
+              { icon:"🕐", label:"Shop Timings",   value:"6:00 AM – 8:00 PM",        hint:"Monday to Sunday" },
+              { icon:"📧", label:"Email",          value:"slcart26@gmail.com",        hint:"Reply within 24 hours" },
             ].map(item => (
               <div key={item.label} className="ctDetailItem">
                 <div className="ctDetailIcon">{item.icon}</div>
@@ -108,12 +108,12 @@ export default function Contact() {
         <div className="ctFormCol">
           {!submitted ? (
             <div className="ctFormCard">
-              <h2 className="ctFormTitle">Message Dalein 📩</h2>
-              <p className="ctFormSubtitle">Form bhare — WhatsApp pe seedha message chala jaayega!</p>
+              <h2 className="ctFormTitle">Send Message 📩</h2>
+              <p className="ctFormSubtitle">Fill form — WhatsApp message goes directly!</p>
               <div className="ctFormFields">
                 <div className="ctField">
-                  <label className="ctLabel">Aapka Naam *</label>
-                  <input type="text" placeholder="Jaise: Rahul Kumar"
+                  <label className="ctLabel">Your Name *</label>
+                  <input type="text" placeholder="Like: Rahul Kumar"
                     value={form.name} onChange={e => handleChange("name", e.target.value)}
                     className={`ctInput ${errors.name ? "ctInputError" : ""}`} />
                   {errors.name && <span className="ctError">{errors.name}</span>}
@@ -131,34 +131,34 @@ export default function Contact() {
                 </div>
                 <div className="ctField">
                   <label className="ctLabel">Message *</label>
-                  <textarea placeholder="Kya chahiye? Order, service, ya koi sawaal..."
+                  <textarea placeholder="What do you need? Order, service, or question..."
                     value={form.message} onChange={e => handleChange("message", e.target.value)}
                     className={`ctInput ctTextarea ${errors.message ? "ctInputError" : ""}`} rows={4} />
                   {errors.message && <span className="ctError">{errors.message}</span>}
                 </div>
                 <button className="ctSubmitBtn" onClick={handleSubmit}>
-                  <WaSvg size={18} /> WhatsApp pe Bhejo
+                  <WaSvg size={18} /> Send on WhatsApp
                 </button>
               </div>
             </div>
           ) : (
             <div className="ctSuccessCard">
               <div className="ctSuccessEmoji">🎉</div>
-              <h2 className="ctSuccessTitle">Message Send Ho Gaya!</h2>
-              <p className="ctSuccessText">WhatsApp khul gaya hai — message bhej do! Hum jald reply karenge.</p>
+              <h2 className="ctSuccessTitle">Message Sent!</h2>
+              <p className="ctSuccessText">WhatsApp is open — send the message! We'll reply soon.</p>
               <button className="ctSuccessReset"
                 onClick={() => { setSubmitted(false); setForm({ name:"", phone:"", message:"" }); }}>
-                Naya Message Bheje
+                Send New Message
               </button>
             </div>
           )}
 
           <div className="ctMapCard">
             <div className="ctMapHeader">
-              <span>📍 Hamari Location</span>
+              <span>📍 Our Location</span>
               <a href="https://maps.google.com/?q=Bakhtiyarpur+Patna+Bihar"
                 target="_blank" rel="noreferrer" className="ctMapLink">
-                Google Maps pe Dekhein →
+                View on Google Maps →
               </a>
             </div>
             <div className="ctMapPlaceholder">
@@ -176,8 +176,8 @@ export default function Contact() {
       <div className="ctWaStrip">
         <div className="ctWaStripInner">
           <div className="ctWaStripText">
-            <div className="ctWaStripTitle">Seedha WhatsApp Karein! ⚡</div>
-            <div className="ctWaStripSub">Sabse fast tarika — turat reply milega</div>
+            <div className="ctWaStripTitle">Contact on WhatsApp! ⚡</div>
+            <div className="ctWaStripSub">Fastest way — instant reply</div>
           </div>
           <a href="https://wa.me/916206869543" target="_blank" rel="noreferrer" className="ctWaStripBtn">
             <WaSvg size={20} /> Chat Now

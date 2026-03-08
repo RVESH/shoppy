@@ -20,7 +20,7 @@ export default function ProductCard({ product, onClick, onWishlist, isWishlisted
   if (!product) return null;
 
   const handleWishlist = (e) => {
-    e.stopPropagation(); // card click prevent karo
+    e.stopPropagation(); // prevent card click
     if (onWishlist) onWishlist(product.id);
   };
 
@@ -44,7 +44,7 @@ export default function ProductCard({ product, onClick, onWishlist, isWishlisted
       <button
         className={`pcWishlistBtn ${isWishlisted ? "pcWishlistBtnActive" : ""}`}
         onClick={handleWishlist}
-        title={isWishlisted ? "Wishlist se hatao" : "Wishlist mein daalo"}
+        title={isWishlisted ? "Remove from Wishlist" : "Add to Wishlist"}
       >
         {isWishlisted ? "❤️" : "🤍"}
       </button>
@@ -81,7 +81,7 @@ export default function ProductCard({ product, onClick, onWishlist, isWishlisted
         <div className="pcFooter">
           {!product.isService ? (
             <span className={`pcStock ${product.stock > 20 ? "pcStockIn" : "pcStockLow"}`}>
-              {product.stock > 20 ? "✓ In Stock" : `⚠ ${product.stock} left`}
+              {product.stock > 20 ? "✓ In Stock" : `${product.stock} left`}
             </span>
           ) : (
             <span className="pcProcessing">🕐 {product.processingTime?.split(";")[0]}</span>
