@@ -54,6 +54,64 @@ $spring:      all 0.3s cubic-bezier(0.34,1.56,0.64,1);
   border-bottom: 2px solid #fed7aa;
 }
 
+/* ── Add these styles to Services/style.scss ── */
+
+/* Poori card clickable cursor */
+.serviceCard {
+  cursor: pointer;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(234, 88, 12, 0.12);
+  }
+
+  &:active {
+    transform: translateY(-1px);
+  }
+}
+
+/* Tap hint text */
+.scTapHint {
+  font-size: 0.68rem;
+  color: #ea580c;
+  font-weight: 700;
+  text-align: center;
+  padding: 6px 0 2px;
+  opacity: 0.7;
+  letter-spacing: 0.2px;
+}
+
+/* WA button — full width now (no View Details beside it) */
+.scWaBtn {
+  width: 100%;
+  margin-top: 6px;
+  padding: 12px;
+  background: linear-gradient(135deg, #25d366, #22c55e);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.88rem;
+  font-weight: 900;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 4px 14px rgba(37, 211, 102, 0.25);
+  transition: all 0.18s;
+  font-family: inherit;
+
+  &:hover {
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    box-shadow: 0 6px 20px rgba(37, 211, 102, 0.35);
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+}
 .srvPageHeaderInner {
   max-width: 1000px;
   margin: 0 auto;
