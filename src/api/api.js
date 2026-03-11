@@ -21,34 +21,30 @@ export async function fetchProducts({ category, search, sort } = {}) {
     ? `${BASE_URL}/products.php?${query}`
     : `${BASE_URL}/products.php`;
 
-const res = await fetch(url);
-
+  const res  = await fetch(url);
   const data = await res.json();
   if (!data.success) throw new Error(data.message);
-
   return data.data;
 }
 
 // ─── Single Product ───────────────────────────────────────────
 export async function fetchProductById(id) {
-  const res = await fetch(`${BASE_URL}/products.php?id=${id}`,);
-
+  const res  = await fetch(`${BASE_URL}/products.php?id=${id}`);
   const data = await res.json();
   if (!data.success) throw new Error(data.message);
   return data.data;
 }
+
 // ─── Categories ───────────────────────────────────────────────
 export async function fetchCategories() {
-  const res = await fetch(`${BASE_URL}/categories.php`);
-
+  const res  = await fetch(`${BASE_URL}/categories.php`);
   const data = await res.json();
   if (!data.success) throw new Error(data.message);
-
   return data.data;
 }
+
 // ════════════════════════════════════════════════════════════
-// ADMIN API — Session based (key kabhi URL mein nahi)
-// credentials: "include" → session cookie automatically jaati hai
+// ADMIN API — Session based
 // ════════════════════════════════════════════════════════════
 
 // ─── Login ────────────────────────────────────────────────────
@@ -64,7 +60,7 @@ export async function adminLogin(username, password) {
   return data;
 }
 
-// ─── Session Check (page reload pe) ──────────────────────────
+// ─── Session Check ────────────────────────────────────────────
 export async function checkAdminSession() {
   const res  = await fetch(`${BASE_URL}/admin_login.php`, {
     credentials: "include",
@@ -130,4 +126,129 @@ export async function deleteProduct(id) {
   const data = await res.json();
   if (!data.success) throw new Error(data.message);
   return data;
+}
+
+// ════════════════════════════════════════════════════════════
+// USER AUTH API — JWT Token based
+// ════════════════════════════════════════════════════════════
+
+// ─── Helper: token header ─────────────────────────────────────
+function authHeader(token) {
+  return token ? { "Authorization": `Bearer ${token}` } : {};
+}
+
+// ─── Signup: OTP Bhejo ────────────────────────────────────────
+export async function signupSendOTP(name, email, phone, password) {
+  const res  = await fetch(`${BASE_URL}/signup.php`, {
+    method:  "POST",
+    headers: { "Content-Type": "application/json" },
+    body:    JSON.stringify({ step: "send_otp", name, email, phone, password }),
+  });
+  return await res.json();
+}
+
+// ─── Signup: OTP Verify + Account Banao ──────────────────────
+export async function signupVerifyOTP(name, email, phone, password, otp) {
+  const res  = await fetch(`${BASE_URL}/signup.php`, {
+    method:  "POST",
+    headers: { "Content-Type": "application/json" },
+    body:    JSON.stringify({ step: "verify_otp", name, email, phone, password, otp }),
+  });
+  return await res.json();
+}
+
+// ─── Login: Password se ───────────────────────────────────────
+export async function loginWithPassword(identifier, password) {
+  const res  = await fetch(`${BASE_URL}/login.php`, {
+    method:  "POST",
+    headers: { "Content-Type": "application/json" },
+    body:    JSON.stringify({ method: "password", identifier, password }),
+  });
+  return await res.json();
+}
+
+// ─── Login: OTP Bhejo ─────────────────────────────────────────
+export async function loginSendOTP(identifier) {
+  const res  = await fetch(`${BASE_URL}/login.php`, {
+    method:  "POST",
+    headers: { "Content-Type": "application/json" },
+    body:    JSON.stringify({ method: "otp_send", identifier }),
+  });
+  return await res.json();
+}
+
+// ─── Login: OTP Verify ────────────────────────────────────────
+export async function loginVerifyOTP(identifier, otp) {
+  const res  = await fetch(`${BASE_URL}/login.php`, {
+    method:  "POST",
+    headers: { "Content-Type": "application/json" },
+    body:    JSON.stringify({ method: "otp_verify", identifier, otp }),
+  });
+  return await res.json();
+}
+
+// ─── Forgot Password: OTP Bhejo ───────────────────────────────
+export async function forgotSendOTP(identifier) {
+  const res  = await fetch(`${BASE_URL}/forgot-password.php`, {
+    method:  "POST",
+    headers: { "Content-Type": "application/json" },
+    body:    JSON.stringify({ step: "send_otp", identifier }),
+  });
+  return await res.json();
+}
+
+// ─── Forgot Password: OTP Verify ──────────────────────────────
+export async function forgotVerifyOTP(identifier, otp) {
+  const res  = await fetch(`${BASE_URL}/forgot-password.php`, {
+    method:  "POST",
+    headers: { "Content-Type": "application/json" },
+    body:    JSON.stringify({ step: "verify_otp", identifier, otp }),
+  });
+  return await res.json();
+}
+
+// ─── Reset Password ───────────────────────────────────────────
+export async function resetPassword(resetToken, password) {
+  const res  = await fetch(`${BASE_URL}/reset-password.php`, {
+    method:  "POST",
+    headers: { "Content-Type": "application/json" },
+    body:    JSON.stringify({ reset_token: resetToken, password }),
+  });
+  return await res.json();
+}
+
+// ─── Orders: Save ─────────────────────────────────────────────
+export async function saveOrder(orderData, token) {
+  const res  = await fetch(`${BASE_URL}/orders.php`, {
+    method:  "POST",
+    headers: { "Content-Type": "application/json", ...authHeader(token) },
+    body:    JSON.stringify(orderData),
+  });
+  return await res.json();
+}
+
+// ─── Orders: Fetch (user ke saare orders) ────────────────────
+export async function fetchUserOrders(token) {
+  const res  = await fetch(`${BASE_URL}/orders.php`, {
+    headers: { ...authHeader(token) },
+  });
+  return await res.json();
+}
+
+// ─── Profile: Fetch ───────────────────────────────────────────
+export async function fetchProfile(token) {
+  const res  = await fetch(`${BASE_URL}/profile.php`, {
+    headers: { ...authHeader(token) },
+  });
+  return await res.json();
+}
+
+// ─── Profile: Update ──────────────────────────────────────────
+export async function updateProfile(data, token) {
+  const res  = await fetch(`${BASE_URL}/profile.php`, {
+    method:  "PUT",
+    headers: { "Content-Type": "application/json", ...authHeader(token) },
+    body:    JSON.stringify(data),
+  });
+  return await res.json();
 }

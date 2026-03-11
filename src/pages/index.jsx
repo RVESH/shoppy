@@ -4,7 +4,11 @@ import Categories from './Categories/index.jsx';
 import ProductDetail from './ProductDetail/index.jsx';
 import Services from './Services/index.jsx';
 import Contact from './Contact/index.jsx';  
-import Admin from './Admin/index.jsx';    
+import Admin from './Admin/index.jsx';  
+import ForgotPassword from './ForgotPassword/index.jsx';
+import Login from './Login/index.jsx';
+import Signup from './Signup/index.jsx';    
+import UserDashboard from './UserDashboard/index.jsx';  
 export { Home, Products, Categories,
          ProductDetail, Services,  
-         Contact , Admin}
+         Contact , Admin, ForgotPassword, Login, Signup, UserDashboard,  }

@@ -5,6 +5,9 @@ import { useOrders, generateOrderId } from "../OrderHistory";
 import OrderReceipt from "../Receipt";
 import "./style.scss";
 
+import { useAuth }   from "../AuthContext";
+import LoginPopup    from "../LoginPopup";
+
 const WHATSAPP = "916206869543";
 
 export default function OrderModal({ onClose }) {
@@ -16,6 +19,8 @@ export default function OrderModal({ onClose }) {
   const [errors,  setErrors]  = useState({});
   const [loading, setLoading] = useState(false);
   const [receipt, setReceipt] = useState(null);
+  const { user }                     = useAuth();
+  const [showLogin, setShowLogin]    = useState(false);
 
   function handleChange(e) {
     setForm(f => ({ ...f, [e.target.name]: e.target.value }));
@@ -30,22 +35,41 @@ export default function OrderModal({ onClose }) {
     return e;
   }
 
-  function handleSubmit() {
-    const e = validate();
-    if (Object.keys(e).length > 0) { setErrors(e); return; }
-    setLoading(true);
+  
+function handleSubmit(e) {
+  e.preventDefault();
 
-    const orderData = {
-      orderId:  generateOrderId(),
-      customer: { ...form },
-      items: items.map(i => ({
-        id: i.id, name: i.name, brand: i.brand,
-        price: i.price, mrp: i.mrp || i.price,
-        quantity: i.quantity, variants: i.variants || {},
-        category: i.category,
-      })),
-      totalMrp, totalSaved, totalPrice,
-    };
+  // guest user hai → login popup
+  if (!user) {
+    setShowLogin(true);
+    return;
+  }
+
+  const e2 = validate();
+  if (Object.keys(e2).length > 0) {
+    setErrors(e2);
+    return;
+  }
+
+  setLoading(true);
+
+  const orderData = {
+    orderId: generateOrderId(),
+    customer: { ...form },
+    items: items.map(i => ({
+      id: i.id,
+      name: i.name,
+      brand: i.brand,
+      price: i.price,
+      mrp: i.mrp || i.price,
+      quantity: i.quantity,
+      variants: i.variants || {},
+      category: i.category,
+    })),
+    totalMrp,
+    totalSaved,
+    totalPrice,
+  };
 
     const saved = saveOrder(orderData);
 
@@ -94,6 +118,12 @@ export default function OrderModal({ onClose }) {
   // ── Form screen ──────────────────────────────────────────────
   return (
     <>
+        {showLogin && (
+      <LoginPopup
+        onClose={() => setShowLogin(false)}
+        onSuccess={() => setShowLogin(false)}
+      />
+    )}
       <div className="omBackdrop" onClick={onClose} />
 
       <div className="omModal">

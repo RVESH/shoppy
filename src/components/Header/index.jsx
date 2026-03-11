@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import CartIcon from '../CartIcon';
 import './style.scss';
+import { useAuth } from "../AuthContext";
 
 const CATEGORIES = [
   { emoji: '💄', label: 'Women Essentials',          sub: 'Cosmetics, hair care & jewellery',       slug: 'women-essentials'    },
@@ -71,6 +72,7 @@ export default function Header() {
   }
 
   const active = (path) => location.pathname === path;
+  const { user } = useAuth();
 
   return (
     <>
@@ -157,7 +159,16 @@ export default function Header() {
             <Link to="/contact" className={`hdr-navlink ${active('/contact') ? 'hdr-navlink--on' : ''}`}>
               Contact
             </Link>
-
+              {/* // JSX mein — cart icon ke PAAS ye add karo: */}
+              <button
+                className="headerUserBtn"
+                onClick={() => navigate(user ? "/dashboard" : "/login")}
+              >
+                {user
+                  ? <div className="headerAvatar">{user.name?.[0]?.toUpperCase()}</div>
+                  : <span className="headerLoginText">👤 Login</span>
+                }
+              </button>
           </nav>
 
           {/* ── Search bar ────────────────────────── */}
@@ -282,7 +293,16 @@ export default function Header() {
           <Link to="/contact"  className={`hdr-dlink ${active('/contact')  ? 'hdr-dlink--on' : ''}`}>
             <span className="hdr-dlink-emoji">📞</span> Contact
           </Link>
-
+{/* // JSX mein — cart icon ke PAAS ye add karo: */}
+<button
+  className="headerUserBtn"
+  onClick={() => navigate(user ? "/dashboard" : "/login")}
+>
+  {user
+    ? <div className="headerAvatar">{user.name?.[0]?.toUpperCase()}</div>
+    : <span className="headerLoginText">👤 Login</span>
+  }
+</button>
         </nav>
 
         {/* WhatsApp CTA */}
