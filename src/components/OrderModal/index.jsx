@@ -73,6 +73,26 @@ function handleSubmit(e) {
 
     const saved = saveOrder(orderData);
 
+// ── DB mein bhi save karo (logged in user ke liye) ──────────
+if (user) {
+  fetch(`https://shoppy-api.rishabh-gaurav-verma.workers.dev/api/orders.php?token=${user.token}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      customer_name:    form.name,
+      phone:            form.phone,
+      address:          form.address,
+      note:             form.note || "",
+      total_price:      totalPrice,
+      items: items.map(i => ({
+        product_id: i.id,
+        name:       i.name,
+        price:      i.price,
+        quantity:   i.quantity,
+      }))
+    })
+  }).catch(() => {}); // silent fail — WhatsApp order toh ho hi gaya
+}
     // ── WhatsApp message ─────────────────────────────────────
     const itemLines = items.map(item => {
       const v = Object.entries(item.variants || {})
