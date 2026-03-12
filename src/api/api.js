@@ -219,17 +219,17 @@ export async function resetPassword(resetToken, password) {
 
 // ─── Orders: Save ─────────────────────────────────────────────
 export async function saveOrder(orderData, token) {
-  const res  = await fetch(`${BASE_URL}/orders.php`, {
-    method:  "POST",
+  const res = await fetch(`${BASE_URL}/orders.php?token=${token}`, {
+    method: "POST",
     headers: { "Content-Type": "application/json", ...authHeader(token) },
-    body:    JSON.stringify(orderData),
+    body: JSON.stringify(orderData),
   });
   return await res.json();
 }
 
 // ─── Orders: Fetch (user ke saare orders) ────────────────────
 export async function fetchUserOrders(token) {
-  const res  = await fetch(`${BASE_URL}/orders.php`, {
+  const res = await fetch(`${BASE_URL}/orders.php?token=${token}`, {
     headers: { ...authHeader(token) },
   });
   return await res.json();
@@ -237,7 +237,7 @@ export async function fetchUserOrders(token) {
 
 // ─── Profile: Fetch ───────────────────────────────────────────
 export async function fetchProfile(token) {
-  const res  = await fetch(`${BASE_URL}/profile.php`, {
+  const res = await fetch(`${BASE_URL}/profile.php?token=${token}`, {
     headers: { ...authHeader(token) },
   });
   return await res.json();
@@ -245,10 +245,10 @@ export async function fetchProfile(token) {
 
 // ─── Profile: Update ──────────────────────────────────────────
 export async function updateProfile(data, token) {
-  const res  = await fetch(`${BASE_URL}/profile.php`, {
-    method:  "PUT",
+  const res = await fetch(`${BASE_URL}/profile.php?token=${token}`, {
+    method: "PUT",
     headers: { "Content-Type": "application/json", ...authHeader(token) },
-    body:    JSON.stringify(data),
+    body: JSON.stringify(data),
   });
   return await res.json();
 }

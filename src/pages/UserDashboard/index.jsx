@@ -49,7 +49,7 @@ export default function UserDashboard() {
 
   async function fetchOrders() {
     try {
-      const res  = await fetch(`${API}/orders.php`, { headers: { "Authorization": `Bearer ${user.token}` } });
+      const res  = await fetch(`${API}/orders.php?token=${user.token}`);
       const data = await res.json();
       if (data.success) setOrders(data.orders);
     } catch {} finally { setLoading(false); }
@@ -57,7 +57,7 @@ export default function UserDashboard() {
 
   async function fetchProfile() {
     try {
-      const res  = await fetch(`${API}/profile.php`, { headers: { "Authorization": `Bearer ${user.token}` } });
+      const res  = await fetch(`${API}/profile.php?token=${user.token}`);
       const data = await res.json();
       if (data.success) {
         setProfile(data.user); setAddresses(data.addresses);
@@ -68,8 +68,8 @@ export default function UserDashboard() {
 
   async function saveProfile(e) {
     e.preventDefault(); setMsg({type:"",text:""});
-    const res = await fetch(`${API}/profile.php`, {
-      method:"PUT", headers:{"Content-Type":"application/json","Authorization":`Bearer ${user.token}`},
+    const res = await fetch(`${API}/profile.php?token=${user.token}`, {
+      method:"PUT", headers:{"Content-Type":"application/json"},
       body: JSON.stringify({action:"profile", name:editName, phone:editPhone})
     }).then(r=>r.json());
     setMsg({ type: res.success?"success":"error", text: res.message });
@@ -78,8 +78,8 @@ export default function UserDashboard() {
   async function changePassword(e) {
     e.preventDefault(); setMsg({type:"",text:""});
     if (newPass !== confPass) return setMsg({type:"error",text:"Passwords match nahi kar rahe"});
-    const res = await fetch(`${API}/profile.php`, {
-      method:"PUT", headers:{"Content-Type":"application/json","Authorization":`Bearer ${user.token}`},
+    const res = await fetch(`${API}/profile.php?token=${user.token}`, {
+      method:"PUT", headers:{"Content-Type":"application/json"},
       body: JSON.stringify({action:"password", old_password:oldPass, new_password:newPass})
     }).then(r=>r.json());
     setMsg({ type: res.success?"success":"error", text: res.message });
@@ -88,8 +88,8 @@ export default function UserDashboard() {
 
   async function addAddress(e) {
     e.preventDefault();
-    const res = await fetch(`${API}/profile.php`, {
-      method:"PUT", headers:{"Content-Type":"application/json","Authorization":`Bearer ${user.token}`},
+    const res = await fetch(`${API}/profile.php?token=${user.token}`, {
+      method:"PUT", headers:{"Content-Type":"application/json"},
       body: JSON.stringify({action:"add_address", ...newAddr})
     }).then(r=>r.json());
     if (res.success) { setShowAddrForm(false); setNewAddr({label:"Home",address:"",city:"",pincode:"",is_default:false}); fetchProfile(); }
@@ -97,8 +97,8 @@ export default function UserDashboard() {
 
   async function deleteAddress(id) {
     if (!window.confirm("Address delete karna hai?")) return;
-    await fetch(`${API}/profile.php`, {
-      method:"PUT", headers:{"Content-Type":"application/json","Authorization":`Bearer ${user.token}`},
+    await fetch(`${API}/profile.php?token=${user.token}`, {
+      method:"PUT", headers:{"Content-Type":"application/json"},
       body: JSON.stringify({action:"delete_address", address_id:id})
     });
     fetchProfile();
