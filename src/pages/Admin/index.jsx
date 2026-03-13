@@ -10,6 +10,7 @@ import ProductsTable from "./components/ProductsTable";
 import ProductModal  from "./components/ProductModal";
 import ConfirmModal  from "./components/ConfirmModal";
 import Toast         from "./components/Toast";
+import AdminOrders   from "../AdminOrders";
 import "./style.scss";
 
 export default function Admin() {
@@ -21,8 +22,6 @@ export default function Admin() {
   const [modal, setModal]           = useState(null);
   const [confirm, setConfirm]       = useState(null);
   const [toast, setToast]           = useState(null);
-
-
 
   const loadProducts = useCallback(async () => {
     setLoading(true);
@@ -36,7 +35,6 @@ export default function Admin() {
     setLoading(false);
   }, []);
 
-    // Session check
   useEffect(() => {
     checkSession().then(ok => {
       setLoggedIn(ok);
@@ -109,40 +107,48 @@ export default function Admin() {
       />
 
       <main className="admin-main">
-        <div className="admin-header">
-          <div>
-            <h1 className="admin-page-title">
-              {activeView === "dashboard" ? "📊 Dashboard" : "📦 Products"}
-            </h1>
-            <p className="admin-page-sub">
-              {activeView === "dashboard"
-                ? "Apne store ka overview"
-                : `${products.length} total products`}
-            </p>
-          </div>
-          <div className="admin-header-right">
-            <button className="admin-refresh-btn" onClick={loadProducts} disabled={loading}>
-              {loading ? "⏳" : "🔄"} Refresh
-            </button>
-            <button className="admin-add-btn" onClick={() => setModal({ mode: "add", product: null })}>
-              ➕ Add Product
-            </button>
-          </div>
-        </div>
 
-        <div className="admin-content">
-          {loading ? (
-            <div className="admin-loading">⏳ Loading products...</div>
-          ) : activeView === "dashboard" ? (
-            <StatsBar products={products} />
-          ) : (
-            <ProductsTable
-              products={products}
-              onEdit={p => setModal({ mode: "edit", product: p })}
-              onDelete={p => setConfirm({ product: p })}
-            />
-          )}
-        </div>
+        {/* ── Orders View ────────────────────────────────── */}
+        {activeView === "orders" ? (
+          <AdminOrders />
+        ) : (
+          <>
+            <div className="admin-header">
+              <div>
+                <h1 className="admin-page-title">
+                  {activeView === "dashboard" ? "📊 Dashboard" : "📦 Products"}
+                </h1>
+                <p className="admin-page-sub">
+                  {activeView === "dashboard"
+                    ? "Apne store ka overview"
+                    : `${products.length} total products`}
+                </p>
+              </div>
+              <div className="admin-header-right">
+                <button className="admin-refresh-btn" onClick={loadProducts} disabled={loading}>
+                  {loading ? "⏳" : "🔄"} Refresh
+                </button>
+                <button className="admin-add-btn" onClick={() => setModal({ mode: "add", product: null })}>
+                  ➕ Add Product
+                </button>
+              </div>
+            </div>
+
+            <div className="admin-content">
+              {loading ? (
+                <div className="admin-loading">⏳ Loading products...</div>
+              ) : activeView === "dashboard" ? (
+                <StatsBar products={products} />
+              ) : (
+                <ProductsTable
+                  products={products}
+                  onEdit={p => setModal({ mode: "edit", product: p })}
+                  onDelete={p => setConfirm({ product: p })}
+                />
+              )}
+            </div>
+          </>
+        )}
       </main>
 
       {modal && (

@@ -1,9 +1,19 @@
-const ADMIN_API = "https://shoppy-api.rishabh-gaurav-verma.workers.dev/api";
+// src/admin/adminApi.js
+// ══════════════════════════════════════════════════════════════
+// SL Cart — Admin API (Products + Orders + Users)
+// ══════════════════════════════════════════════════════════════
 
-function getToken()      { return localStorage.getItem("shoppy_admin_token") || ""; }
-function setToken(t)     { localStorage.setItem("shoppy_admin_token", t); }
-function clearToken()    { localStorage.removeItem("shoppy_admin_token"); }
-function authHeaders()   { return { "Content-Type": "application/json", "X-Admin-Token": getToken() }; }
+export const ADMIN_API = "https://shoppy-api.rishabh-gaurav-verma.workers.dev/api";
+const ADMIN_KEY = "slcart_admin_2025";
+
+// ── Token helpers ─────────────────────────────────────────────
+function getToken()    { return localStorage.getItem("shoppy_admin_token") || ""; }
+function setToken(t)   { localStorage.setItem("shoppy_admin_token", t); }
+function clearToken()  { localStorage.removeItem("shoppy_admin_token"); }
+function authHeaders() { return { "Content-Type": "application/json", "X-Admin-Token": getToken() }; }
+function adminKeyHeaders() { return { "Content-Type": "application/json", "X-Admin-Key": ADMIN_KEY }; }
+
+// ══ AUTH ══════════════════════════════════════════════════════
 
 export async function adminLogin(username, password) {
   const res  = await fetch(`${ADMIN_API}/admin-login`, {
@@ -21,15 +31,15 @@ export async function checkSession() {
   const token = getToken();
   if (!token) return false;
   try {
-    const res  = await fetch(`${ADMIN_API}/admin-login`, {
-      headers: { "X-Admin-Token": token },
-    });
+    const res  = await fetch(`${ADMIN_API}/admin-login`, { headers: { "X-Admin-Token": token } });
     const data = await res.json();
     return data.loggedIn === true;
   } catch { return false; }
 }
 
 export async function adminLogout() { clearToken(); }
+
+// ══ PRODUCTS ══════════════════════════════════════════════════
 
 export async function fetchAllProducts() {
   const res  = await fetch(`${ADMIN_API}/admin`, { headers: authHeaders() });
@@ -68,3 +78,80 @@ export async function deleteProduct(id) {
   if (!data.success) throw new Error(data.message);
   return data;
 }
+
+// ══ ORDERS ════════════════════════════════════════════════════
+
+// Saare orders fetch karo (admin)
+export async function fetchAllOrders() {
+  const res  = await fetch(`${ADMIN_API}/admin/orders.php`, { headers: adminKeyHeaders() });
+  const data = await res.json();
+  if (!data.success) throw new Error(data.message);
+  return data.orders;
+}
+
+// Order status update karo
+export async function updateOrderStatus(orderId, status, estimatedDelivery = null) {
+  const res  = await fetch(`${ADMIN_API}/orders.php`, {
+    method: "PUT",
+    headers: adminKeyHeaders(),
+    body: JSON.stringify({ order_id: orderId, status, estimated_delivery: estimatedDelivery }),
+  });
+  const data = await res.json();
+  if (!data.success) throw new Error(data.message);
+  return data; // returns otp + whatsapp_url if "Out for Delivery"
+}
+
+// Delivery OTP verify karo
+export async function verifyDeliveryOTP(orderId, otp) {
+  const res  = await fetch(`${ADMIN_API}/verify-delivery-otp.php`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ order_id: orderId, otp }),
+  });
+  const data = await res.json();
+  return data;
+}
+
+// ══ USERS ═════════════════════════════════════════════════════
+
+export async function fetchAllUsers() {
+  const res  = await fetch(`${ADMIN_API}/admin/users.php`, { headers: adminKeyHeaders() });
+  const data = await res.json();
+  if (!data.success) throw new Error(data.message);
+  return data.users;
+}
+
+// ══ CONSTANTS ═════════════════════════════════════════════════
+
+export const CATEGORIES = [
+  { slug: "women-essentials",      name: "Women Essentials",   icon: "👗" },
+  { slug: "mobile-accessories",    name: "Mobile Accessories", icon: "📱" },
+  { slug: "grocery-fmcg",          name: "Grocery & FMCG",     icon: "🛒" },
+  { slug: "service-hub",           name: "Services",           icon: "🛠️" },
+  { slug: "household-essentials",  name: "Household",          icon: "🏠" },
+  { slug: "tailoring-accessories", name: "Tailoring",          icon: "🧵" },
+];
+
+export const EMPTY_PRODUCT = {
+  id: "", name: "", category: "women-essentials", subCategory: "",
+  brand: "", description: "", price: "", mrp: "", stock: "", rating: "4.5",
+  image: "", isService: false, deliveryAvailable: true, priceType: "fixed",
+  processingTime: "", tags: "", variants: {}, documentsRequired: [],
+};
+
+export const ORDER_STATUSES = [
+  "Pending", "Confirmed", "Packed", "Dispatched", "Out for Delivery", "Delivered", "Cancelled"
+];
+
+export const STATUS_STYLE = {
+  "Pending"          : { bg: "#fef3c7", color: "#92400e", icon: "⏳" },
+  "Confirmed"        : { bg: "#dbeafe", color: "#1e40af", icon: "✅" },
+  "Packed"           : { bg: "#ede9fe", color: "#5b21b6", icon: "📦" },
+  "Dispatched"       : { bg: "#fce7f3", color: "#9d174d", icon: "🚀" },
+  "Out for Delivery" : { bg: "#d1fae5", color: "#065f46", icon: "🚚" },
+  "Delivered"        : { bg: "#dcfce7", color: "#14532d", icon: "🎉" },
+  "Cancelled"        : { bg: "#fee2e2", color: "#991b1b", icon: "❌" },
+};
+
+export const calcDiscount = (price, mrp) =>
+  mrp > price && mrp > 0 ? Math.round(((mrp - price) / mrp) * 100) : 0;

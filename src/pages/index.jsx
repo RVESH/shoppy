@@ -9,6 +9,8 @@ import ForgotPassword from './ForgotPassword/index.jsx';
 import Login from './Login/index.jsx';
 import Signup from './Signup/index.jsx';    
 import UserDashboard from './UserDashboard/index.jsx';  
+import AdminOrders from './AdminOrders/index.jsx';          
 export { Home, Products, Categories,
          ProductDetail, Services,  
-         Contact , Admin, ForgotPassword, Login, Signup, UserDashboard,  }
+         Contact , Admin, ForgotPassword, Login, Signup, UserDashboard,
+         AdminOrders };
