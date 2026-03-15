@@ -4,8 +4,8 @@
 
 //const BASE_URL = "https://shoppy.page.gd/shoppy_backend/api";
 //const BASE_URL = "/shoppy_backend/api"; // ← yeh karo
-// const BASE_URL = "https://shoppy-api.rishabh-gaurav-verma.workers.dev/api"// PUBLIC API — Products & Categories
-const BASE_URL = "https://shoppy-api.rishabh-gaurav-verma.workers.dev";
+const BASE_URL = "https://slcart.rishabh-gaurav-verma.workers.dev/api"// PUBLIC API — Products & Categories
+// const BASE_URL = "https://slcart.rishabh-gaurav-verma.workers.dev";
 // ════════════════════════════════════════════════════════════
 
 // ─── Sab Products Fetch ───────────────────────────────────────
@@ -18,8 +18,8 @@ export async function fetchProducts({ category, search, sort } = {}) {
 
   const query = params.toString();
   const url = query
-    ? `${BASE_URL}/products.php?${query}`
-    : `${BASE_URL}/products.php`;
+    ? `${BASE_URL}/products?${query}`
+    : `${BASE_URL}/products`;
 
   const res  = await fetch(url);
   const data = await res.json();
@@ -29,7 +29,7 @@ export async function fetchProducts({ category, search, sort } = {}) {
 
 // ─── Single Product ───────────────────────────────────────────
 export async function fetchProductById(id) {
-  const res  = await fetch(`${BASE_URL}/products.php?id=${id}`);
+  const res  = await fetch(`${BASE_URL}/products?id=${id}`);
   const data = await res.json();
   if (!data.success) throw new Error(data.message);
   return data.data;
@@ -219,17 +219,17 @@ export async function resetPassword(resetToken, password) {
 
 // ─── Orders: Save ─────────────────────────────────────────────
 export async function saveOrder(orderData, token) {
-  const res = await fetch(`${BASE_URL}/orders.php?token=${token}`, {
-    method: "POST",
+  const res  = await fetch(`${BASE_URL}/orders.php`, {
+    method:  "POST",
     headers: { "Content-Type": "application/json", ...authHeader(token) },
-    body: JSON.stringify(orderData),
+    body:    JSON.stringify(orderData),
   });
   return await res.json();
 }
 
 // ─── Orders: Fetch (user ke saare orders) ────────────────────
 export async function fetchUserOrders(token) {
-  const res = await fetch(`${BASE_URL}/orders.php?token=${token}`, {
+  const res  = await fetch(`${BASE_URL}/orders.php`, {
     headers: { ...authHeader(token) },
   });
   return await res.json();
@@ -237,7 +237,7 @@ export async function fetchUserOrders(token) {
 
 // ─── Profile: Fetch ───────────────────────────────────────────
 export async function fetchProfile(token) {
-  const res = await fetch(`${BASE_URL}/profile.php?token=${token}`, {
+  const res  = await fetch(`${BASE_URL}/profile.php`, {
     headers: { ...authHeader(token) },
   });
   return await res.json();
@@ -245,10 +245,10 @@ export async function fetchProfile(token) {
 
 // ─── Profile: Update ──────────────────────────────────────────
 export async function updateProfile(data, token) {
-  const res = await fetch(`${BASE_URL}/profile.php?token=${token}`, {
-    method: "PUT",
+  const res  = await fetch(`${BASE_URL}/profile.php`, {
+    method:  "PUT",
     headers: { "Content-Type": "application/json", ...authHeader(token) },
-    body: JSON.stringify(data),
+    body:    JSON.stringify(data),
   });
   return await res.json();
 }

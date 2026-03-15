@@ -2,7 +2,7 @@
 /* eslint-disable */
 import { createContext, useContext, useState, useEffect } from "react";
 
-const API = "https://shoppy-api.rishabh-gaurav-verma.workers.dev/api";
+const API = "https://slcart.rishabh-gaurav-verma.workers.dev/api";
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {

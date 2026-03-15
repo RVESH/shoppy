@@ -1,22 +1,23 @@
-// src/admin/adminApi.js
-// ══════════════════════════════════════════════════════════════
-// SL Cart — Admin API (Products + Orders + Users)
-// ══════════════════════════════════════════════════════════════
-
-export const ADMIN_API = "https://shoppy-api.rishabh-gaurav-verma.workers.dev/api";
+// src/pages/Admin/adminApi.js
+const BASE = "https://slcart.rishabh-gaurav-verma.workers.dev/api";
 const ADMIN_KEY = "slcart_admin_2025";
 
-// ── Token helpers ─────────────────────────────────────────────
-function getToken()    { return localStorage.getItem("shoppy_admin_token") || ""; }
-function setToken(t)   { localStorage.setItem("shoppy_admin_token", t); }
-function clearToken()  { localStorage.removeItem("shoppy_admin_token"); }
-function authHeaders() { return { "Content-Type": "application/json", "X-Admin-Token": getToken() }; }
-function adminKeyHeaders() { return { "Content-Type": "application/json", "X-Admin-Key": ADMIN_KEY }; }
+function getToken()   { return localStorage.getItem("shoppy_admin_token") || ""; }
+function setToken(t)  { localStorage.setItem("shoppy_admin_token", t); }
+function clearToken() { localStorage.removeItem("shoppy_admin_token"); }
+
+function authHeaders() {
+  return { "Content-Type": "application/json", "X-Admin-Token": getToken() };
+}
+function adminKeyHeaders() {
+  return { "Content-Type": "application/json", "X-Admin-Key": ADMIN_KEY };
+}
+
+export const ADMIN_API = BASE;
 
 // ══ AUTH ══════════════════════════════════════════════════════
-
 export async function adminLogin(username, password) {
-  const res  = await fetch(`${ADMIN_API}/admin-login`, {
+  const res  = await fetch(`${BASE}/admin-login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ username, password }),
@@ -31,7 +32,9 @@ export async function checkSession() {
   const token = getToken();
   if (!token) return false;
   try {
-    const res  = await fetch(`${ADMIN_API}/admin-login`, { headers: { "X-Admin-Token": token } });
+    const res  = await fetch(`${BASE}/admin-login`, {
+      headers: { "X-Admin-Token": token }
+    });
     const data = await res.json();
     return data.loggedIn === true;
   } catch { return false; }
@@ -40,9 +43,8 @@ export async function checkSession() {
 export async function adminLogout() { clearToken(); }
 
 // ══ PRODUCTS ══════════════════════════════════════════════════
-
 export async function fetchAllProducts() {
-  const res  = await fetch(`${ADMIN_API}/admin`, { headers: authHeaders() });
+  const res  = await fetch(`${BASE}/admin/products`, { headers: authHeaders() });
   if (res.status === 401) throw new Error("UNAUTHORIZED");
   const data = await res.json();
   if (!data.success) throw new Error(data.message);
@@ -50,7 +52,7 @@ export async function fetchAllProducts() {
 }
 
 export async function addProduct(product) {
-  const res  = await fetch(`${ADMIN_API}/admin`, {
+  const res  = await fetch(`${BASE}/admin/products`, {
     method: "POST", headers: authHeaders(), body: JSON.stringify(product),
   });
   if (res.status === 401) throw new Error("UNAUTHORIZED");
@@ -60,7 +62,7 @@ export async function addProduct(product) {
 }
 
 export async function updateProduct(product) {
-  const res  = await fetch(`${ADMIN_API}/admin`, {
+  const res  = await fetch(`${BASE}/admin/products`, {
     method: "PUT", headers: authHeaders(), body: JSON.stringify(product),
   });
   if (res.status === 401) throw new Error("UNAUTHORIZED");
@@ -70,7 +72,7 @@ export async function updateProduct(product) {
 }
 
 export async function deleteProduct(id) {
-  const res  = await fetch(`${ADMIN_API}/admin?id=${encodeURIComponent(id)}`, {
+  const res  = await fetch(`${BASE}/admin/products?id=${encodeURIComponent(id)}`, {
     method: "DELETE", headers: authHeaders(),
   });
   if (res.status === 401) throw new Error("UNAUTHORIZED");
@@ -80,49 +82,34 @@ export async function deleteProduct(id) {
 }
 
 // ══ ORDERS ════════════════════════════════════════════════════
-
-// Saare orders fetch karo (admin)
 export async function fetchAllOrders() {
-  const res  = await fetch(`${ADMIN_API}/admin/orders.php`, { headers: adminKeyHeaders() });
+  const res  = await fetch(`${BASE}/admin/orders.php`, { headers: adminKeyHeaders() });
   const data = await res.json();
   if (!data.success) throw new Error(data.message);
   return data.orders;
 }
 
-// Order status update karo
 export async function updateOrderStatus(orderId, status, estimatedDelivery = null) {
-  const res  = await fetch(`${ADMIN_API}/orders.php`, {
+  const res  = await fetch(`${BASE}/orders.php`, {
     method: "PUT",
     headers: adminKeyHeaders(),
     body: JSON.stringify({ order_id: orderId, status, estimated_delivery: estimatedDelivery }),
   });
   const data = await res.json();
   if (!data.success) throw new Error(data.message);
-  return data; // returns otp + whatsapp_url if "Out for Delivery"
+  return data;
 }
 
-// Delivery OTP verify karo
 export async function verifyDeliveryOTP(orderId, otp) {
-  const res  = await fetch(`${ADMIN_API}/verify-delivery-otp.php`, {
+  const res  = await fetch(`${BASE}/verify-delivery-otp.php`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ order_id: orderId, otp }),
   });
-  const data = await res.json();
-  return data;
-}
-
-// ══ USERS ═════════════════════════════════════════════════════
-
-export async function fetchAllUsers() {
-  const res  = await fetch(`${ADMIN_API}/admin/users.php`, { headers: adminKeyHeaders() });
-  const data = await res.json();
-  if (!data.success) throw new Error(data.message);
-  return data.users;
+  return await res.json();
 }
 
 // ══ CONSTANTS ═════════════════════════════════════════════════
-
 export const CATEGORIES = [
   { slug: "women-essentials",      name: "Women Essentials",   icon: "👗" },
   { slug: "mobile-accessories",    name: "Mobile Accessories", icon: "📱" },

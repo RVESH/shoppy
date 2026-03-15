@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../components/AuthContext";
 import "./style.scss";
 
-const API = "https://shoppy-api.rishabh-gaurav-verma.workers.dev/api";
+const API = "https://slcart.rishabh-gaurav-verma.workers.dev/api";
 
 const STATUS_STEPS = ["Pending","Confirmed","Packed","Out for Delivery","Delivered"];
 const STATUS_STYLE = {

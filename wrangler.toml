@@ -1,0 +1,9 @@
+name = "slcart"
+main = "worker/index.js"
+compatibility_date = "2024-01-01"
+workers_dev = true
+
+[[d1_databases]]
+binding = "slcart_db"
+database_name = "slcart-db"
+database_id = "d145043b-9cc3-4617-8d3d-d845a0d13090"
