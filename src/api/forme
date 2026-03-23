@@ -1,0 +1,428 @@
+// SL Cart — Cloudflare Worker + D1 — FINAL CLEAN
+const CORS = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type, X-Admin-Key, X-Admin-Token, Authorization",
+};
+
+const ADMIN_KEY   = "slcart_admin_2025";
+const ADMIN_TOKEN = "admin_token_slcart_2025";
+const JWT_SECRET  = "slcart_jwt_secret_2025";
+
+function res(body, status = 200) {
+  return new Response(JSON.stringify(body), {
+    status, headers: { ...CORS, "Content-Type": "application/json" }
+  });
+}
+
+function b64(str) {
+  return btoa(unescape(encodeURIComponent(str))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');
+}
+
+async function signJWT(payload) {
+  const header = b64(JSON.stringify({ alg:"HS256", typ:"JWT" }));
+  const body   = b64(JSON.stringify({ ...payload, exp: Math.floor(Date.now()/1000) + 7*24*3600 }));
+  const key    = await crypto.subtle.importKey("raw", new TextEncoder().encode(JWT_SECRET), { name:"HMAC", hash:"SHA-256" }, false, ["sign"]);
+  const sig    = await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(`${header}.${body}`));
+  const sigB64 = b64(String.fromCharCode(...new Uint8Array(sig)));
+  return `${header}.${body}.${sigB64}`;
+}
+
+async function verifyJWT(token) {
+  try {
+    const parts = token.split(".");
+    if (parts.length !== 3) return null;
+    const [h, b, s] = parts;
+    const key = await crypto.subtle.importKey("raw", new TextEncoder().encode(JWT_SECRET), { name:"HMAC", hash:"SHA-256" }, false, ["verify"]);
+    const sigBytes = Uint8Array.from(atob(s.replace(/-/g,'+').replace(/_/g,'/')), c=>c.charCodeAt(0));
+    const valid = await crypto.subtle.verify("HMAC", key, sigBytes, new TextEncoder().encode(`${h}.${b}`));
+    if (!valid) return null;
+    const payload = JSON.parse(decodeURIComponent(escape(atob(b.replace(/-/g,'+').replace(/_/g,'/')))));
+    if (payload.exp < Math.floor(Date.now()/1000)) return null;
+    return payload;
+  } catch(e) { return null; }
+}
+
+async function hashPassword(pass) {
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(pass + JWT_SECRET));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+async function getAuthUser(request, db) {
+  const token = new URL(request.url).searchParams.get("token");
+  if (!token) return null;
+  const payload = await verifyJWT(token);
+  if (!payload) return null;
+  return await db.prepare("SELECT * FROM users WHERE id=?").bind(payload.user_id).first() || null;
+}
+
+async function makeOrderId(db) {
+  const year = new Date().getFullYear();
+  const row  = await db.prepare("SELECT COUNT(*) as cnt FROM orders WHERE strftime('%Y', created_at)=?").bind(String(year)).first();
+  const cnt  = parseInt(row?.cnt ?? 0) + 1;
+  return `SL-${year}-${String(cnt).padStart(4,'0')}`;
+}
+
+async function sendEmail(to, name, subject, html) {
+  try {
+    await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        "Authorization": "Bearer re_H5rYh9m7_QASP51yFqPtChiPtnJN8pmaD",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        from: "SL Cart <onboarding@resend.dev>",
+        to: [to], subject, html
+      })
+    });
+  } catch(e) { console.error("Email error:", e); }
+}
+
+export default {
+  async fetch(request, env) {
+    const url    = new URL(request.url);
+    const path   = url.pathname;
+    const method = request.method;
+    const db     = env.slcart_db;
+
+    if (method === "OPTIONS")
+      return new Response(null, { status: 204, headers: CORS });
+
+    try {
+
+      // ── Test ──────────────────────────────────────────────
+      if (path === "/api/test")
+        return res({ success:true, message:"SL Cart D1 Working! 🚀" });
+
+      // ══ PRODUCTS ══════════════════════════════════════════
+      if (path === "/api/products" && method === "GET") {
+        const id       = url.searchParams.get("id");
+        const category = url.searchParams.get("category");
+        const search   = url.searchParams.get("search");
+        const sort     = url.searchParams.get("sort");
+
+        if (id) {
+          const product = await db.prepare("SELECT * FROM products WHERE id=?").bind(id).first();
+          if (!product) return res({ success:false, message:"Product nahi mila" }, 404);
+          return res({ success:true, data: product });
+        }
+
+        let query = "SELECT * FROM products WHERE 1=1";
+        const params = [];
+        if (category && category !== "all") { query += " AND category=?"; params.push(category); }
+        if (search) { query += " AND (name LIKE ? OR brand LIKE ?)"; params.push(`%${search}%`, `%${search}%`); }
+        if (sort === "price_asc")       query += " ORDER BY price ASC";
+        else if (sort === "price_desc") query += " ORDER BY price DESC";
+        else if (sort === "rating")     query += " ORDER BY rating DESC";
+        else if (sort === "discount")   query += " ORDER BY (mrp - price) DESC";
+        else                            query += " ORDER BY id DESC";
+
+        const stmt     = params.length ? db.prepare(query).bind(...params) : db.prepare(query);
+        const products = await stmt.all();
+        const data = products.results.map(p => ({
+          ...p,
+          isService:         p.is_service === 1,
+          deliveryAvailable: p.delivery_available === 1,
+          subCategory:       p.sub_category,
+          priceType:         p.price_type,
+          discountPercent:   p.mrp > p.price ? Math.round(((p.mrp - p.price) / p.mrp) * 100) : 0,
+          variants:          p.variants ? (() => { try { return JSON.parse(p.variants); } catch { return {}; } })() : {},
+        }));
+        return res({ success:true, data });
+      }
+
+      // ══ CATEGORIES ════════════════════════════════════════
+      if (path === "/api/categories" && method === "GET") {
+        const cats = await db.prepare("SELECT DISTINCT category FROM products WHERE category IS NOT NULL AND category != ''").all();
+        const data = cats.results.map(r => ({ slug: r.category, name: r.category }));
+        return res({ success:true, data });
+      }
+
+      // ══ ADMIN LOGIN ═══════════════════════════════════════
+      if (path === "/api/admin-login") {
+        if (method === "POST") {
+          const { username, password } = await request.json();
+          if (username === "Adiyogi" && password === "Adiyogi@2019")
+            return res({ success:true, loggedIn:true, token: ADMIN_TOKEN });
+          return res({ success:false, message:"Wrong username or password" }, 401);
+        }
+        if (method === "GET") {
+          const token = request.headers.get("X-Admin-Token") || "";
+          return res({ loggedIn: token === ADMIN_TOKEN });
+        }
+      }
+
+      // ══ ADMIN PRODUCTS ════════════════════════════════════
+      if (path === "/api/admin/products") {
+        const token = request.headers.get("X-Admin-Token") || "";
+        if (token !== ADMIN_TOKEN) return res({ success:false, message:"UNAUTHORIZED" }, 401);
+
+        if (method === "GET") {
+          const products = await db.prepare("SELECT * FROM products ORDER BY id DESC").all();
+          return res({ success:true, data: products.results });
+        }
+        if (method === "POST") {
+          const d = await request.json();
+          await db.prepare("INSERT INTO products (name,brand,description,price,mrp,category,sub_category,stock,rating,image,is_service,delivery_available,price_type,tags,variants) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)")
+            .bind(d.name, d.brand||'', d.description||'', d.price, d.mrp||d.price, d.category||'', d.subCategory||'', d.stock||0, d.rating||4.5, d.image||'', d.isService?1:0, d.deliveryAvailable!==false?1:0, d.priceType||'fixed', d.tags||'', JSON.stringify(d.variants||{})).run();
+          return res({ success:true, message:"Product add ho gaya!" });
+        }
+        if (method === "PUT") {
+          const d = await request.json();
+          await db.prepare("UPDATE products SET name=?,brand=?,description=?,price=?,mrp=?,category=?,sub_category=?,stock=?,rating=?,image=?,is_service=?,delivery_available=?,price_type=?,tags=?,variants=? WHERE id=?")
+            .bind(d.name, d.brand||'', d.description||'', d.price, d.mrp||d.price, d.category||'', d.subCategory||'', d.stock||0, d.rating||4.5, d.image||'', d.isService?1:0, d.deliveryAvailable!==false?1:0, d.priceType||'fixed', d.tags||'', JSON.stringify(d.variants||{}), d.id).run();
+          return res({ success:true, message:"Product update ho gaya!" });
+        }
+        if (method === "DELETE") {
+          const id = url.searchParams.get("id");
+          await db.prepare("DELETE FROM products WHERE id=?").bind(id).run();
+          return res({ success:true, message:"Product delete ho gaya!" });
+        }
+      }
+
+      // ══ SIGNUP ════════════════════════════════════════════
+      if (path === "/api/signup.php" && method === "POST") {
+        const data = await request.json();
+
+        if (data.step === "send_otp") {
+          const { name, email, phone, password } = data;
+          if (!name || !email || !password) return res({ success:false, message:"Fields required" }, 400);
+          const exists = await db.prepare("SELECT id FROM users WHERE email=?").bind(email).first();
+          if (exists) return res({ success:false, message:"Email already registered" }, 400);
+          const otp     = String(Math.floor(100000 + Math.random()*900000));
+          const expires = new Date(Date.now() + 10*60*1000).toISOString();
+          await db.prepare("DELETE FROM otp_verifications WHERE email=? AND type='signup'").bind(email).run();
+          await db.prepare("INSERT INTO otp_verifications (email,otp,type,expires_at) VALUES (?,?,?,?)").bind(email,otp,'signup',expires).run();
+          await sendEmail(email, name, "SL Cart - Signup OTP: "+otp,
+            `<div style='font-family:Arial;padding:20px;text-align:center'><h2 style='color:#ea580c'>SL Cart</h2><p>Namaste ${name}!</p><h1 style='color:#ea580c;letter-spacing:8px'>${otp}</h1><p>10 minutes mein expire hoga.</p></div>`);
+          return res({ success:true, message:"OTP bheja gaya!" });
+        }
+
+        if (data.step === "verify_otp") {
+          const { name, email, phone, password, otp } = data;
+          const record = await db.prepare("SELECT * FROM otp_verifications WHERE email=? AND type='signup' AND used=0 ORDER BY id DESC LIMIT 1").bind(email).first();
+          if (!record || record.otp !== otp) return res({ success:false, message:"Galat OTP" }, 400);
+          if (new Date(record.expires_at) < new Date()) return res({ success:false, message:"OTP expire ho gaya" }, 400);
+          const hashed = await hashPassword(password);
+          await db.prepare("INSERT INTO users (name,email,phone,password) VALUES (?,?,?,?)").bind(name, email, phone||'', hashed).run();
+          await db.prepare("UPDATE otp_verifications SET used=1 WHERE id=?").bind(record.id).run();
+          const user  = await db.prepare("SELECT * FROM users WHERE email=?").bind(email).first();
+          const token = await signJWT({ user_id:user.id, email });
+          return res({ success:true, message:"Account ban gaya!", user_id:user.id, name:user.name, email:user.email, phone:user.phone, token });
+        }
+      }
+
+      // ══ LOGIN ═════════════════════════════════════════════
+      if (path === "/api/login.php" && method === "POST") {
+        const data    = await request.json();
+        const method2 = data.method;
+
+        if (method2 === "password") {
+          const user = await db.prepare("SELECT * FROM users WHERE email=? OR phone=?").bind(data.identifier, data.identifier).first();
+          if (!user) return res({ success:false, message:"User nahi mila" }, 400);
+          const hashed = await hashPassword(data.password);
+          if (user.password !== hashed) return res({ success:false, message:"Galat password" }, 400);
+          const token = await signJWT({ user_id:user.id, email:user.email });
+          return res({ success:true, user_id:user.id, name:user.name, email:user.email, phone:user.phone, token });
+        }
+        if (method2 === "otp_send") {
+          const user = await db.prepare("SELECT * FROM users WHERE email=? OR phone=?").bind(data.identifier, data.identifier).first();
+          if (!user) return res({ success:false, message:"User nahi mila" }, 400);
+          const otp     = String(Math.floor(100000 + Math.random()*900000));
+          const expires = new Date(Date.now() + 10*60*1000).toISOString();
+          await db.prepare("DELETE FROM otp_verifications WHERE email=? AND type='login'").bind(user.email).run();
+          await db.prepare("INSERT INTO otp_verifications (email,otp,type,expires_at) VALUES (?,?,?,?)").bind(user.email,otp,'login',expires).run();
+          await sendEmail(user.email, user.name, "SL Cart - Login OTP: "+otp,
+            `<div style='font-family:Arial;padding:20px;text-align:center'><h2 style='color:#ea580c'>SL Cart</h2><h1 style='color:#ea580c;letter-spacing:8px'>${otp}</h1><p>10 min mein expire hoga.</p></div>`);
+          return res({ success:true, message:"OTP bheja gaya!" });
+        }
+        if (method2 === "otp_verify") {
+          const user   = await db.prepare("SELECT * FROM users WHERE email=? OR phone=?").bind(data.identifier, data.identifier).first();
+          if (!user) return res({ success:false, message:"User nahi mila" }, 400);
+          const record = await db.prepare("SELECT * FROM otp_verifications WHERE email=? AND type='login' AND used=0 ORDER BY id DESC LIMIT 1").bind(user.email).first();
+          if (!record || record.otp !== data.otp) return res({ success:false, message:"Galat OTP" }, 400);
+          if (new Date(record.expires_at) < new Date()) return res({ success:false, message:"OTP expire" }, 400);
+          await db.prepare("UPDATE otp_verifications SET used=1 WHERE id=?").bind(record.id).run();
+          const token = await signJWT({ user_id:user.id, email:user.email });
+          return res({ success:true, user_id:user.id, name:user.name, email:user.email, phone:user.phone, token });
+        }
+      }
+
+      // ══ FORGOT PASSWORD ═══════════════════════════════════
+      if (path === "/api/forgot-password.php" && method === "POST") {
+        const data = await request.json();
+
+        if (data.step === "send_otp") {
+          const user = await db.prepare("SELECT * FROM users WHERE email=? OR phone=?").bind(data.identifier, data.identifier).first();
+          if (!user) return res({ success:false, message:"User nahi mila" }, 400);
+          const otp     = String(Math.floor(100000 + Math.random()*900000));
+          const expires = new Date(Date.now() + 10*60*1000).toISOString();
+          await db.prepare("DELETE FROM otp_verifications WHERE email=? AND type='forgot'").bind(user.email).run();
+          await db.prepare("INSERT INTO otp_verifications (email,otp,type,expires_at) VALUES (?,?,?,?)").bind(user.email,otp,'forgot',expires).run();
+          await sendEmail(user.email, user.name, `SL Cart - Reset OTP: ${otp}`,
+            `<div style='font-family:Arial;padding:20px;text-align:center'><h2 style='color:#ea580c'>SL Cart</h2><h1 style='color:#ea580c;letter-spacing:8px'>${otp}</h1><p>10 min mein expire hoga.</p></div>`);
+          return res({ success:true, message:"OTP bheja gaya!" });
+        }
+
+        if (data.step === "verify_otp") {
+          const user = await db.prepare("SELECT * FROM users WHERE email=? OR phone=?").bind(data.identifier, data.identifier).first();
+          if (!user) return res({ success:false, message:"User nahi mila" }, 400);
+          const record = await db.prepare("SELECT * FROM otp_verifications WHERE email=? AND type='forgot' AND used=0 ORDER BY id DESC LIMIT 1").bind(user.email).first();
+          if (!record || record.otp !== data.otp) return res({ success:false, message:"Galat OTP" }, 400);
+          if (new Date(record.expires_at) < new Date()) return res({ success:false, message:"OTP expire" }, 400);
+          await db.prepare("UPDATE otp_verifications SET used=1 WHERE id=?").bind(record.id).run();
+          // DB-based token — no JWT!
+          const resetToken  = crypto.randomUUID();
+          const tokenExpiry = new Date(Date.now() + 15*60*1000).toISOString();
+          await db.prepare("DELETE FROM reset_tokens WHERE user_id=?").bind(user.id).run();
+          await db.prepare("INSERT INTO reset_tokens (user_id, token, expires_at) VALUES (?,?,?)").bind(user.id, resetToken, tokenExpiry).run();
+          return res({ success:true, message:"OTP verified!", reset_token: resetToken });
+        }
+      }
+
+      // ══ RESET PASSWORD ════════════════════════════════════
+      if (path === "/api/reset-password.php" && method === "POST") {
+        const { reset_token, password } = await request.json();
+        if (!reset_token || !password) return res({ success:false, message:"Token required" }, 400);
+        if (password.length < 6) return res({ success:false, message:"Password kam se kam 6 characters" }, 400);
+        const tokenRecord = await db.prepare("SELECT * FROM reset_tokens WHERE token=? AND used=0").bind(reset_token).first();
+        if (!tokenRecord) return res({ success:false, message:"Invalid token — dobara OTP lo" }, 400);
+        if (new Date(tokenRecord.expires_at) < new Date()) return res({ success:false, message:"Token expire — dobara OTP lo" }, 400);
+        const hashed = await hashPassword(password);
+        await db.prepare("UPDATE users SET password=? WHERE id=?").bind(hashed, tokenRecord.user_id).run();
+        await db.prepare("UPDATE reset_tokens SET used=1 WHERE token=?").bind(reset_token).run();
+        return res({ success:true, message:"Password reset ho gaya ✅" });
+      }
+
+      // ══ ORDERS ════════════════════════════════════════════
+      if (path === "/api/orders.php") {
+        if (method === "GET") {
+          const user = await getAuthUser(request, db);
+          if (!user) return res({ success:false, message:"Login required" }, 401);
+          const orders = await db.prepare("SELECT * FROM orders WHERE user_id=? ORDER BY created_at DESC").bind(user.id).all();
+          const result = [];
+          for (const o of orders.results) {
+            const items = await db.prepare("SELECT * FROM order_items WHERE order_id=?").bind(o.order_id).all();
+            const order = { ...o, items: items.results };
+            delete order.delivery_otp;
+            result.push(order);
+          }
+          return res({ success:true, orders:result });
+        }
+        if (method === "POST") {
+          const user = await getAuthUser(request, db);
+          if (!user) return res({ success:false, message:"Login required" }, 401);
+          const { customer_name, phone, address, note="", total_price, items=[] } = await request.json();
+          if (!customer_name || !phone || !address || !total_price || !items.length)
+            return res({ success:false, message:"Fields missing" }, 400);
+          const oid = await makeOrderId(db);
+          await db.prepare("INSERT INTO orders (order_id,user_id,customer_name,phone,address,note,total_price,status) VALUES (?,?,?,?,?,?,?,'Pending')")
+            .bind(oid, user.id, customer_name, phone, address, note, total_price).run();
+          for (const it of items) {
+            await db.prepare("INSERT INTO order_items (order_id,product_id,name,price,quantity) VALUES (?,?,?,?,?)")
+              .bind(oid, it.product_id||0, it.name, it.price, it.quantity).run();
+          }
+          return res({ success:true, message:"Order saved!", order_id:oid });
+        }
+        if (method === "PUT") {
+          const key = request.headers.get("X-Admin-Key");
+          if (key !== ADMIN_KEY) return res({ success:false, message:"Unauthorized" }, 401);
+          const { order_id, status, estimated_delivery=null } = await request.json();
+          if (!order_id || !status) return res({ success:false, message:"order_id + status required" }, 400);
+          if (status === "Out for Delivery") {
+            const otp = String(Math.floor(100000 + Math.random()*900000));
+            const exp = new Date(Date.now() + 15*60*1000).toISOString();
+            await db.prepare("UPDATE orders SET status=?,delivery_otp=?,otp_expires_at=?,otp_used=0,estimated_delivery=? WHERE order_id=?")
+              .bind(status, otp, exp, estimated_delivery, order_id).run();
+            const order = await db.prepare("SELECT o.*,u.email FROM orders o LEFT JOIN users u ON o.user_id=u.id WHERE o.order_id=?").bind(order_id).first();
+            if (order?.email) {
+              await sendEmail(order.email, order.customer_name, `SL Cart - Delivery OTP: ${otp}`,
+                `<div style='font-family:Arial;padding:20px;text-align:center'><h2 style='color:#ea580c'>SL Cart</h2><p>Order #${order_id}</p><h1 style='color:#ea580c;letter-spacing:8px'>${otp}</h1><p>15 min mein expire hoga.</p></div>`);
+            }
+            const waUrl = `https://wa.me/91${order?.phone}?text=${encodeURIComponent(`SL Cart\nOrder: #${order_id}\nDelivery OTP: ${otp}`)}`;
+            return res({ success:true, message:"OTP sent!", otp, whatsapp_url:waUrl });
+          }
+          await db.prepare("UPDATE orders SET status=?,estimated_delivery=? WHERE order_id=?").bind(status, estimated_delivery, order_id).run();
+          return res({ success:true, message:"Status updated!" });
+        }
+      }
+
+      // ══ PROFILE ═══════════════════════════════════════════
+      if (path === "/api/profile.php") {
+        const user = await getAuthUser(request, db);
+        if (!user) return res({ success:false, message:"Login required" }, 401);
+        if (method === "GET") {
+          const addrs = await db.prepare("SELECT * FROM addresses WHERE user_id=? ORDER BY is_default DESC").bind(user.id).all();
+          return res({ success:true, user:{ id:user.id, name:user.name, email:user.email, phone:user.phone, created_at:user.created_at }, addresses:addrs.results });
+        }
+        if (method === "PUT") {
+          const data   = await request.json();
+          const action = data.action || "profile";
+          if (action === "profile") {
+            await db.prepare("UPDATE users SET name=?,phone=? WHERE id=?").bind(data.name, data.phone, user.id).run();
+            return res({ success:true, message:"Profile update ho gayi ✅" });
+          }
+          if (action === "password") {
+            const oldHash = await hashPassword(data.old_password);
+            if (user.password !== oldHash) return res({ success:false, message:"Purana password galat hai" }, 400);
+            const newHash = await hashPassword(data.new_password);
+            await db.prepare("UPDATE users SET password=? WHERE id=?").bind(newHash, user.id).run();
+            return res({ success:true, message:"Password badal gaya ✅" });
+          }
+          if (action === "add_address") {
+            const { label="Home", address, city, pincode, is_default=false } = data;
+            if (!address || !city || !pincode) return res({ success:false, message:"Address fields required" }, 400);
+            if (is_default) await db.prepare("UPDATE addresses SET is_default=0 WHERE user_id=?").bind(user.id).run();
+            await db.prepare("INSERT INTO addresses (user_id,label,address,city,pincode,is_default) VALUES (?,?,?,?,?,?)").bind(user.id,label,address,city,pincode,is_default?1:0).run();
+            return res({ success:true, message:"Address save ho gaya ✅" });
+          }
+          if (action === "delete_address") {
+            await db.prepare("DELETE FROM addresses WHERE id=? AND user_id=?").bind(data.address_id, user.id).run();
+            return res({ success:true, message:"Address delete ho gaya" });
+          }
+        }
+      }
+
+      // ══ ADMIN ORDERS ══════════════════════════════════════
+      if (path === "/api/admin/orders.php") {
+        const key = request.headers.get("X-Admin-Key");
+        if (key !== ADMIN_KEY) return res({ success:false, message:"Unauthorized" }, 401);
+        if (method === "GET") {
+          const search = url.searchParams.get("search") || "";
+          const status = url.searchParams.get("status") || "";
+          let query  = "SELECT * FROM orders WHERE 1=1";
+          const params = [];
+          if (search) { query += " AND (order_id LIKE ? OR customer_name LIKE ? OR phone LIKE ?)"; params.push(`%${search}%`,`%${search}%`,`%${search}%`); }
+          if (status) { query += " AND status=?"; params.push(status); }
+          query += " ORDER BY created_at DESC";
+          const stmt   = params.length ? db.prepare(query).bind(...params) : db.prepare(query);
+          const orders = await stmt.all();
+          const result = [];
+          for (const o of orders.results) {
+            const items = await db.prepare("SELECT * FROM order_items WHERE order_id=?").bind(o.order_id).all();
+            result.push({ ...o, items: items.results });
+          }
+          return res({ success:true, orders:result, total:result.length });
+        }
+      }
+
+      // ══ VERIFY DELIVERY OTP ═══════════════════════════════
+      if (path === "/api/verify-delivery-otp.php" && method === "POST") {
+        const { order_id, otp } = await request.json();
+        const order = await db.prepare("SELECT * FROM orders WHERE order_id=?").bind(order_id).first();
+        if (!order) return res({ success:false, message:"Order nahi mila" }, 404);
+        if (order.otp_used) return res({ success:false, message:"OTP already used" }, 400);
+        if (new Date(order.otp_expires_at) < new Date()) return res({ success:false, message:"OTP expire ho gaya" }, 400);
+        if (order.delivery_otp !== otp) return res({ success:false, message:"Galat OTP" }, 400);
+        await db.prepare("UPDATE orders SET status='Delivered',otp_used=1 WHERE order_id=?").bind(order_id).run();
+        return res({ success:true, message:"Delivered! ✅" });
+      }
+
+      return res({ success:false, message:"Route not found: " + path }, 404);
+
+    } catch(e) {
+      return res({ success:false, message:"Error: " + e.message }, 500);
+    }
+  }
+};

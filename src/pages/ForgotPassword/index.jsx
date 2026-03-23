@@ -47,6 +47,15 @@ export default function ForgotPassword() {
   }
 
   async function handleVerifyOTP(e) {
+//     if (res.success && res.reset_token) {
+//   setResetToken(res.reset_token);
+
+//   // ✅ YAHAN ADD KARO
+//   localStorage.setItem("reset_token", res.reset_token);
+
+//   setStep("password");
+//   setSuccess("OTP verified! ✅ Naya password set karo");
+// }
     e.preventDefault();
     setError("");
     if (otp.length !== 6) return setError("6 digit OTP daalo");
@@ -63,9 +72,11 @@ export default function ForgotPassword() {
       if (res.success && res.reset_token) {
         setResetToken(res.reset_token);
         setStep("password");
-        setSuccess("OTP verified! ✅ Naya password set karo");
+        setSuccess("OTP verified! ✅set new password");
+          localStorage.setItem("reset_token", res.reset_token);
+
       } else {
-        setError(res.message || "Kuch galat hua");
+        setError(res.message || "somthing worng");
       }
     } catch(e) {
       setError("Network error: " + e.message);
@@ -73,36 +84,52 @@ export default function ForgotPassword() {
     setLoading(false);
   }
 
-  async function handleResetPassword(e) {
-    e.preventDefault();
-    setError("");
-    if (newPass !== confirm) return setError("Passwords match nahi kar rahe");
-    if (newPass.length < 6)  return setError("Password kam se kam 6 characters");
-    if (!resetToken)         return setError("Reset token missing — dobara OTP lo");
+async function handleResetPassword(e) {
+  e.preventDefault();
+  setError("");
 
-    setLoading(true);
-    try {
-      console.log("Sending reset token:", resetToken); // Debug
+  if (newPass !== confirm)
+    return setError("Passwords match nahi kar rahe");
 
-      const res = await fetch(`${API}/reset-password.php`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ reset_token: resetToken, password: newPass })
-      }).then(r => r.json());
+  if (newPass.length < 6)
+    return setError("Password kam se kam 6 characters");
 
-      console.log("Reset response:", res); // Debug
+  // ✅ localStorage se token lo
+  const token = localStorage.getItem("reset_token");
 
-      if (res.success) {
-        setSuccess(res.message);
-        setTimeout(() => navigate("/login"), 2000);
-      } else {
-        setError(res.message);
-      }
-    } catch(e) {
-      setError("Network error: " + e.message);
+  if (!token)
+    return setError("Reset token missing — dobara OTP lo");
+
+  setLoading(true);
+  try {
+    console.log("Sending reset token:", token);
+
+    const res = await fetch(`${API}/reset-password.php`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        reset_token: token,   // ✅ yahan change
+        password: newPass
+      })
+    }).then(r => r.json());
+
+    console.log("Reset response:", res);
+
+    if (res.success) {
+      setSuccess(res.message);
+
+      // ✅ cleanup
+      localStorage.removeItem("reset_token");
+
+      setTimeout(() => navigate("/login"), 2000);
+    } else {
+      setError(res.message);
     }
-    setLoading(false);
+  } catch (e) {
+    setError("Network error: " + e.message);
   }
+  setLoading(false);
+}
 
   return (
     <div className="authPage">
