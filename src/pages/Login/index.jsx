@@ -5,6 +5,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../../components/AuthContext";
 import "./style.scss";
 
+
 export default function Login() {
   const { loginPassword, loginSendOTP, loginVerifyOTP } = useAuth();
   const navigate = useNavigate();
