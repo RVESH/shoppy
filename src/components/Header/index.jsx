@@ -6,7 +6,6 @@ import './style.scss';
 import { useAuth } from "../AuthContext";
 
 
-
 const CATEGORIES = [
   { emoji: '💄', label: 'Women Essentials',          sub: 'Cosmetics, hair care & jewellery',       slug: 'women-essentials'    },
   { emoji: '🛒', label: 'Grocery & FMCG',            sub: 'Snacks, staples & daily items',           slug: 'grocery-fmcg'        },
