@@ -15,6 +15,7 @@ const CATEGORIES = [
   { emoji: '🧵', label: 'Tailoring & Accessories',   sub: 'Threads, buttons, zips & stitching',      slug: 'tailoring-accessories'},
 ];
 
+
 export default function Header() {
   const [scrolled,      setScrolled]      = useState(false);
   const [mobileOpen,    setMobileOpen]    = useState(false);
