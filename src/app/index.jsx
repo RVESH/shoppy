@@ -33,6 +33,7 @@ function App() {
                   <Route path="/contact"     element={<pages.Contact />} />
                   <Route path="/admin"       element={<pages.Admin />} />
 
+
                   <Route path="/AdminOrders"element={<pages.AdminOrders />} />
                   <Route path="/signup"          element={<Signup />} />
                   <Route path="/login"           element={<Login />} />
