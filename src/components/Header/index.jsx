@@ -20,6 +20,7 @@ const CATEGORIES = [
 
 
 
+
 export default function Header() {
   const [scrolled,      setScrolled]      = useState(false);
   const [mobileOpen,    setMobileOpen]    = useState(false);
