@@ -81,6 +81,7 @@ export default function Admin() {
     }
   }
 
+
   
   function handleNav(view) {
     if (view === "add") { setModal({ mode: "add", product: null }); return; }
